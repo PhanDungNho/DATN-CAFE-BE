@@ -35,16 +35,16 @@ public class Addresses {
 	@Column(name = "citycode", nullable = false)
 	private int citycode;
 	
-	@Column(name = "fulladdresstext", nullable = false, length = 255)
+	 @Column(columnDefinition = "TEXT")
 	private String fulladdresstext;
 	
-	@Column(name = "default", nullable = false)
-	private Boolean default1;
+	@Column(name = "isdefault", nullable = false)
+	private Boolean isdefault;
 	
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 	
 	@ManyToOne
 	@JoinColumn(name = "account", nullable = false)
-	private Accounts account;
+	private Account account;
 }

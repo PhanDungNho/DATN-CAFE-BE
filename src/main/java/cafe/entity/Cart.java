@@ -18,30 +18,22 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "transactions")
-public class Transactions {
+@Table(name = "cart")
+public class Cart {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-	
-	@Column(name = "transactiontime", nullable = false)
-	private Date transactiontime;
-	
-	@Column(name = "amount", nullable = false)
-	private int amount;
-	
-	@Column(name = "transactionmethod", nullable = false)
-	private String transactionmethod;
-	
-	@Column(name = "status", nullable = false)
-	private TransactionStatus status;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "orderid", nullable = false)
-	private Order order;
-	
+	@JoinColumn(name = "account", nullable = false)
+	private Account account;
+
 	@ManyToOne
-	@JoinColumn(name = "customer", nullable = false)
-	private Account customer;
+	@JoinColumn(name = "productvariantid", nullable = false)
+	private ProductVariant productvariant;
+
+	@Column(name = "quantity")
+	private Integer quantity;
+
 }

@@ -16,8 +16,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user_toles")
-public class UserRoles {
+@Table(name = "AccountRole")
+public class AccountRole {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
@@ -25,9 +25,9 @@ public class UserRoles {
 
 	@ManyToOne
 	@JoinColumn(name = "roleid", nullable = false)
-	private Roles roleid;
+	private Role role;
 	
 	@ManyToOne
-	@JoinColumn(name = "username", nullable = false)
-	private Accounts username;
+	@JoinColumn(name = "account", nullable = false)
+	private Account account;
 }
