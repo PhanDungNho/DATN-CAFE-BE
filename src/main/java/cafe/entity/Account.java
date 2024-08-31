@@ -41,6 +41,6 @@ public class Account {
 	@Column(name = "active", nullable = false, length = 255)
 	private Boolean active;
 
-	@OneToMany(mappedBy = "username")
-	private List<AccountRole> userRoles;
+	@OneToMany(mappedBy = "account")
+	private List<AccountRole> accountroles;
 }
