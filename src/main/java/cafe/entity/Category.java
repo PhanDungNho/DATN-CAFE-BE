@@ -34,8 +34,6 @@ private Long id;
 @Column (name ="name", nullable = false, length = 255)
 private String name;
 
-@Column (name ="image", nullable = true, length = 255)
-private String image;
 
 @Column(name = "active")
 private Boolean active;

@@ -32,7 +32,7 @@ public class Transactions {
 	private int amount;
 	
 	@Column(name = "transactionmethod", nullable = false)
-	private String transactionmethod;
+	private TransactionMethod transactionmethod;
 	
 	@Column(name = "status", nullable = false)
 	private TransactionStatus status;

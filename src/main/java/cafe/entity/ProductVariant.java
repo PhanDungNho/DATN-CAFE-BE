@@ -27,9 +27,7 @@ public class ProductVariant {
 	@Column(name = "id")
 	private int id;
 	
-	@Column(name = "name",length=255)
-	private String name;
-	
+
 	@Column(name = "active")
 	private Boolean active;
 

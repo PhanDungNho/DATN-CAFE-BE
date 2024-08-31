@@ -1,5 +1,7 @@
 package cafe.entity;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -38,7 +40,7 @@ public class Order {
 	private Date createdtime;
 	
 	@Column(name = "totalamount", nullable = false)
-	private Double totalamount;
+	private BigDecimal totalamount;
 	
 	@Column(name = "status", nullable = false)
 	private OrderStatus status;
@@ -49,8 +51,8 @@ public class Order {
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 	
-	@Column(name = "shippingfee", nullable = false)
-	private Double shippingfee; 
+	@Column(name = "shippingfee", nullable = true)
+	private BigDecimal shippingfee; 
 	
 	@Column(name = "fulladdresstext", nullable = true)
 	private String fulladdresstext;

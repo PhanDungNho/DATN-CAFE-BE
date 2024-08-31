@@ -44,7 +44,7 @@ public class OrderDetail {
 	@Column(nullable = false)
 	private BigDecimal momentprice;
 
-	@Column(name = "note", length = 255)
+	@Column(columnDefinition = "TEXT")
 	private String note;
 	
 	 @OneToMany(mappedBy = "orderdetail")
