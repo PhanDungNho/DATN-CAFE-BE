@@ -1,5 +1,6 @@
 package cafe.entity;
 
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.Column;
@@ -16,8 +17,8 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "accounts")
-public class Accounts {
+@Table(name = "account")
+public class Account {
 	@Id
 	@Column(name = "username", nullable = false, length = 255)
 	private String username;
@@ -40,6 +41,6 @@ public class Accounts {
 	@Column(name = "active", nullable = false, length = 255)
 	private Boolean active;
 
-	@OneToMany(mappedBy = "username")
-	private Set<UserRoles> userRoles;
+	@OneToMany(mappedBy = "account")
+	private List<AccountRole> accountroles;
 }

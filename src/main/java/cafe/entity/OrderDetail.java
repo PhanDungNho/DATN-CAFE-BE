@@ -1,6 +1,10 @@
 package cafe.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,32 +23,32 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "transactions")
-public class Transactions {
+@Table(name = "orderdetail")
+public class OrderDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-	
-	@Column(name = "transactiontime", nullable = false)
-	private Date transactiontime;
-	
-	@Column(name = "amount", nullable = false)
-	private int amount;
-	
-	@Column(name = "transactionmethod", nullable = false)
-	private TransactionMethod transactionmethod;
-	
-	@Column(name = "status", nullable = false)
-	private TransactionStatus status;
-	
+
 	@ManyToOne
-	@JoinColumn(name = "orderid", nullable = false)
+	@JoinColumn(name = "orderid")
 	private Order order;
-	
-	//Test
-	//DungNho
+
 	@ManyToOne
-	@JoinColumn(name = "customer", nullable = false)
-	private Account customer;
+	@JoinColumn(name = "productvariantid")
+	private ProductVariant productvariant;
+
+	@Column(nullable = false)
+	private Integer quantity;
+
+	@Column(nullable = false)
+	private BigDecimal momentprice;
+
+	@Column(columnDefinition = "TEXT")
+	private String note;
+	
+	 @OneToMany(mappedBy = "orderdetail")
+	    private List<OrderDetailTopping> orderdetailtoppings;
+
+
 }

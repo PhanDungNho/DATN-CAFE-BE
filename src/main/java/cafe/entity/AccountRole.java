@@ -16,35 +16,18 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "addresses")
-public class Addresses {
+@Table(name = "accountrole")
+public class AccountRole {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-	
-	@Column(name = "street", nullable = false, length = 255)
-	private String street;
-	
-	@Column(name = "wardcode", nullable = false)
-	private int wardcode;
-	
-	@Column(name = "districtcode", nullable = false)
-	private int districtcode;
-	
-	@Column(name = "citycode", nullable = false)
-	private int citycode;
-	
-	@Column(name = "fulladdresstext", nullable = false, length = 255)
-	private String fulladdresstext;
-	
-	@Column(name = "default", nullable = false)
-	private Boolean default1;
-	
-	@Column(name = "active", nullable = false)
-	private Boolean active;
+
+	@ManyToOne
+	@JoinColumn(name = "roleid", nullable = false)
+	private Role role;
 	
 	@ManyToOne
 	@JoinColumn(name = "account", nullable = false)
-	private Accounts account;
+	private Account account;
 }
