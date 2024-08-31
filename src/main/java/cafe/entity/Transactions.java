@@ -41,6 +41,8 @@ public class Transactions {
 //	@JoinColumn(name = "orderid", nullable = false)
 //	private Orders orderid;
 	
+	//Test
+	//DungNho
 	@ManyToOne
 	@JoinColumn(name = "customer", nullable = false)
 	private Accounts customer;
