@@ -35,7 +35,8 @@ public class Address {
 	@Column(name = "citycode", nullable = false)
 	private int citycode;
 	
-	 @Column(columnDefinition = "TEXT")
+ 
+	 @Column(name = "fulladdresstext", columnDefinition = "nvarchar(max)")
 	private String fulladdresstext;
 	
 	@Column(name = "isdefault", nullable = false)

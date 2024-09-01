@@ -25,7 +25,7 @@ public class ProductVariant {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
-	private int id;
+	private Long id;
 	
 
 	@Column(name = "active")
@@ -35,13 +35,15 @@ public class ProductVariant {
 	@JoinColumn(name = "productid")
 	private Product product;
 	
+	 @Column(nullable = false)
+	    private BigDecimal price;
+	
 	 @ManyToOne
 	    @JoinColumn(name = "sizeid")
 	    private Size size;
 	
 
-	 @Column(nullable = false)
-	    private BigDecimal price;
+
 
 
 	// Getters and Setters

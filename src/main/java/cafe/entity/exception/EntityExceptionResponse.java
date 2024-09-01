@@ -3,10 +3,10 @@ package cafe.entity.exception;
 import lombok.Data;
 
 @Data
-public class CategoryExceptionResponse {
+public class EntityExceptionResponse {
 private String message;
 
-public CategoryExceptionResponse(String message) {
+public EntityExceptionResponse(String message) {
 	this.message = message;
 }
 
