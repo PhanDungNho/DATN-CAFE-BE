@@ -57,10 +57,10 @@ public class ProductVariantController {
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
 	}
-
+//Test code
 	//cập nhật
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> updateProductVariant(@PathVariable Long id, @RequestBody ProductVariantDto dto) {
+	public ResponseEntity<?> UpdateProductVariant(@PathVariable Long id, @RequestBody ProductVariantDto dto) {
 		ProductVariant entity = new ProductVariant();
 		BeanUtils.copyProperties(dto, entity);
 		entity = productVariantService.update(id, entity);
