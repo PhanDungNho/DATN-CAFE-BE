@@ -9,14 +9,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cafe.entity.Category;
-import cafe.entity.exception.CategoryException;
+import cafe.entity.exception.EntityException;
+import cafe.repository.CategoryRepository;
 
  
 
 @Service
 public class CategoryService {
 	@Autowired
-	private cafe.repository.CategoryRepository categoryRepository;
+	private  CategoryRepository categoryRepository;
 
 	public Category save(Category entity) {
 		return categoryRepository.save(entity);
@@ -26,7 +27,7 @@ public class CategoryService {
 		Optional<Category> existed = categoryRepository.findById(id);
 		if (existed.isEmpty()) {
 			// neu k tim thay thi tra ve ngoai le
-			throw new CategoryException("Category id " + id + " does not exist");
+			throw new EntityException("Category id " + id + " does not exist");
 
 		}
 		try {
@@ -38,7 +39,7 @@ public class CategoryService {
 			// thì tiến hành cập nhật thủ công bth
 		} catch (Exception ex) {
 			// nếu có lỗi sẽ ném ra ngoại lệ
-			throw new CategoryException("Category is updated failed");
+			throw new EntityException("Category is updated failed");
 		}
 
 	}
@@ -54,7 +55,7 @@ public class CategoryService {
 	public Category findById(Long id) {
 		Optional<Category> found = categoryRepository.findById(id);
 		if (found.isEmpty()) {
-			throw new CategoryException("Category with id " + id + " does not exist");
+			throw new EntityException("Category with id " + id + " does not exist");
 		}
 		return found.get();
 	}

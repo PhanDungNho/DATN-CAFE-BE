@@ -54,7 +54,8 @@ public class Order {
 	@Column(name = "shippingfee", nullable = true)
 	private BigDecimal shippingfee; 
 	
-	@Column(name = "fulladdresstext", nullable = true)
+ 
+    @Column(name = "fulladdresstext", columnDefinition = "nvarchar(max)")
 	private String fulladdresstext;
 	
 	@ManyToOne

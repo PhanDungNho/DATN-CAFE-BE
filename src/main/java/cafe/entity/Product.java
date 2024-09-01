@@ -25,7 +25,7 @@ public class Product    {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private int id;
+    private Long id;
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
@@ -37,7 +37,7 @@ public class Product    {
     @Column(name = "active")
     private Boolean active;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(name = "description", columnDefinition = "nvarchar(max)")
     private String description ;
     
 
