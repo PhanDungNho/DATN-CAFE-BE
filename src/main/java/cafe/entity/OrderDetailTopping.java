@@ -44,9 +44,4 @@ public class OrderDetailTopping {
 
 	@Column(nullable = false)
 	private BigDecimal momentprice;
-
- 
-	
- 
-
 }
