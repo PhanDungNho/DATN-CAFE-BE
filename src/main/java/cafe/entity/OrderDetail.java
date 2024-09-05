@@ -25,30 +25,29 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "orderdetail")
 public class OrderDetail {
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id", nullable = false)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false)
+    private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "orderid")
-	private Order order;
+    @ManyToOne
+    @JoinColumn(name = "orderid")
+    private Order order;
 
-	@ManyToOne
-	@JoinColumn(name = "productvariantid")
-	private ProductVariant productvariant;
+    @ManyToOne
+    @JoinColumn(name = "productvariantid")
+    private ProductVariant productvariant;
 
-	@Column(nullable = false)
-	private Integer quantity;
+    @Column(nullable = false)
+    private Integer quantity;
 
-	@Column(nullable = false)
-	private BigDecimal momentprice;
+    @Column(nullable = false)
+    private BigDecimal momentprice;
 
-	@Column(columnDefinition = "TEXT")
-	private String note;
-	
-	 @OneToMany(mappedBy = "orderdetail")
-	    private List<OrderDetailTopping> orderdetailtoppings;
+    @Column(columnDefinition = "TEXT")
+    private String note;
 
-
+    @OneToMany(mappedBy = "orderdetail")
+    private List<OrderDetailTopping> orderdetailtoppings;
 }
+
