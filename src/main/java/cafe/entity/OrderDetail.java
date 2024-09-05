@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,7 +48,8 @@ public class OrderDetail {
     @Column(columnDefinition = "TEXT")
     private String note;
 
-    @OneToMany(mappedBy = "orderdetail")
+    @JsonIgnore
+    @OneToMany(mappedBy = "orderdetail", fetch = FetchType.EAGER)
     private List<OrderDetailTopping> orderdetailtoppings;
 }
 

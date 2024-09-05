@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
+import cafe.modal.OrderResponse;
 import cafe.service.OrderDetailService;
 import cafe.service.OrderService;
 
@@ -29,7 +30,7 @@ public class OrderController {
 
 	@GetMapping
 	public ResponseEntity<?> getAllOrder() {
-		return new ResponseEntity<>(orderService.findAll(), HttpStatus.OK);
+		return new ResponseEntity<>(orderService.findAll().stream().map(OrderResponse::convert).toList(), HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}/details")
@@ -39,13 +40,10 @@ public class OrderController {
 	
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getOrder(@PathVariable("id") Long id) {
-	    Optional<Order> orderOptional = orderService.findById(id);
-	    if (orderOptional.isPresent()) {
-	        return ResponseEntity.ok(orderOptional.get());
-	    } else {
-	        return ResponseEntity.status(HttpStatus.NOT_FOUND)
-	                             .body("Order not found with ID: " + id);
-	    }
+	    return orderService.findById(id)
+	        .map(order -> ResponseEntity.ok(OrderResponse.convert(order)))  // Chuyển đổi Order thành OrderResponse
+	        .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND)
+	                                       .body(new OrderResponse()));  // Trả về một OrderResponse rỗng hoặc null
 	}
 
 }
