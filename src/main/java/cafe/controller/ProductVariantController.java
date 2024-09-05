@@ -21,11 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 import cafe.dto.CategoryDto;
 import cafe.dto.ProductDto;
 import cafe.dto.ProductVariantDto;
+import cafe.dto.SizeDto;
 import cafe.entity.Category;
 import cafe.entity.Product;
 import cafe.entity.ProductVariant;
+import cafe.entity.Size;
+import cafe.entity.exception.EntityException;
 import cafe.service.MapValidationErrorService;
+import cafe.service.ProductService;
 import cafe.service.ProductVariantService;
+import cafe.service.SizeService;
 import jakarta.validation.Valid;
 
 @RestController
@@ -35,39 +40,88 @@ public class ProductVariantController {
 
 	@Autowired
 	ProductVariantService productVariantService;
-
+	@Autowired
+	ProductService productService;
+	@Autowired
+	SizeService sizeService;
+	
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
 	@PostMapping
-	public ResponseEntity<?> createProductVariant(@Valid @RequestBody ProductVariantDto dto, BindingResult result) {
+	public ResponseEntity<?> createProductVariant(@Valid @RequestBody ProductVariantDto productVariantDto, BindingResult result) {
+	    // Kiểm tra lỗi validation
+	    ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
+	    if (responseEntity != null) {
+	        return responseEntity;
+	    }
 
-		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
-		if (responseEntity != null) {
-			return responseEntity;
-		}
-		//		if(true) {
-//			throw new CategoryException("Category is error");
-//		}
-		ProductVariant entity = new ProductVariant();
-		BeanUtils.copyProperties(dto, entity);
-		entity = productVariantService.save(entity);
+	    // Lưu ProductVariant thông qua service
+	    ProductVariant productVariant = productVariantService.save(productVariantDto);
 
-		dto.setId(entity.getId());
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	    // Tạo ProductVariantDto từ ProductVariant và trả về
+	    ProductVariantDto responseDto = new ProductVariantDto();
+	    responseDto.setId(productVariant.getId());
+	    responseDto.setActive(productVariant.getActive());
+	    responseDto.setPrice(productVariant.getPrice());
 
+	    // Map Product entity sang ProductDto
+	    ProductDto productDto = new ProductDto();
+	    productDto.setId(productVariant.getProduct().getId());
+	    productDto.setName(productVariant.getProduct().getName());
+	    productDto.setActive(productVariant.getProduct().getActive());
+	    productDto.setDescription(productVariant.getProduct().getDescription());
+	    responseDto.setProductid(productDto.getId());
+
+	    // Map Size entity sang SizeDto
+	    SizeDto sizeDto = new SizeDto();
+	    sizeDto.setId(productVariant.getSize().getId());
+	    sizeDto.setName(productVariant.getSize().getName());
+	    responseDto.setSizeid(sizeDto.getId());
+
+	    return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 	}
+
 
 	//cập nhật
+	// cập nhật ProductVariant
 	@PatchMapping("/{id}")
-	public ResponseEntity<?> updateProductVariant(@PathVariable Long id, @RequestBody ProductVariantDto dto) {
-		ProductVariant entity = new ProductVariant();
-		BeanUtils.copyProperties(dto, entity);
-		entity = productVariantService.update(id, entity);
-		dto.setId(entity.getId());
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	public ResponseEntity<?> updateProductVariant(@PathVariable Long id, @Valid @RequestBody ProductVariantDto dto, BindingResult result) {
+	    ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
+	    if (responseEntity != null) {
+	        return responseEntity;
+	    }
 
+	    // Gọi service để cập nhật ProductVariant
+	    ProductVariant updatedProductVariant = productVariantService.update(id, dto);
+
+	    // Tạo ProductVariantDto để trả về thông tin ProductVariant đã cập nhật
+	    ProductVariantDto responseDto = new ProductVariantDto();
+	    responseDto.setId(updatedProductVariant.getId());
+	    responseDto.setPrice(updatedProductVariant.getPrice());
+	    responseDto.setActive(updatedProductVariant.getActive());
+
+	    // Map Product và Size sang ProductDto và SizeDto
+	    if (updatedProductVariant.getProduct() != null) {
+	        responseDto.setProductid(updatedProductVariant.getProduct().getId());
+	    }
+	    if (updatedProductVariant.getSize() != null) {
+	        responseDto.setSizeid(updatedProductVariant.getSize().getId());
+	    }
+
+	    return new ResponseEntity<>(responseDto, HttpStatus.OK);
 	}
+
+
+//	@PatchMapping("/{id}")
+//	public ResponseEntity<?> updateProductVariant(@PathVariable Long id, @RequestBody ProductVariantDto dto) {
+//		ProductVariant entity = new ProductVariant();
+//		BeanUtils.copyProperties(dto, entity);
+//		entity = productVariantService.update(id, entity);
+//		dto.setId(entity.getId());
+//		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+//
+//	}
 
 	@GetMapping()
 	public ResponseEntity<?> getProductVariants() {

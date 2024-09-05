@@ -107,28 +107,33 @@ public class ProductController {
 	    return new ResponseEntity<>(responseDto, HttpStatus.OK);
 	}
 
+//	@GetMapping()
+//	public ResponseEntity<?> getProducts() {
+//	    List<Product> products = productService.findAll();
+//
+//	    List<ProductDto> productDtos = products.stream().map(product -> {
+//	        ProductDto dto = new ProductDto();
+//	        dto.setId(product.getId());
+//	        dto.setName(product.getName());
+//	        dto.setActive(product.getActive());
+//	        dto.setDescription(product.getDescription());
+//
+//	        if (product.getCategory() != null) {
+//	            CategoryDto categoryDto = new CategoryDto();
+//	            categoryDto.setId(product.getCategory().getId());
+//	            categoryDto.setName(product.getCategory().getName());
+//	            dto.setCategory(categoryDto);
+//	        }
+//
+//	        return dto;
+//	    }).toList();
+//
+//	    return new ResponseEntity<>(productDtos, HttpStatus.OK);
+//	}
+	
 	@GetMapping()
-	public ResponseEntity<?> getProducts() {
-	    List<Product> products = productService.findAll();
-
-	    List<ProductDto> productDtos = products.stream().map(product -> {
-	        ProductDto dto = new ProductDto();
-	        dto.setId(product.getId());
-	        dto.setName(product.getName());
-	        dto.setActive(product.getActive());
-	        dto.setDescription(product.getDescription());
-
-	        if (product.getCategory() != null) {
-	            CategoryDto categoryDto = new CategoryDto();
-	            categoryDto.setId(product.getCategory().getId());
-	            categoryDto.setName(product.getCategory().getName());
-	            dto.setCategory(categoryDto);
-	        }
-
-	        return dto;
-	    }).toList();
-
-	    return new ResponseEntity<>(productDtos, HttpStatus.OK);
+	public ResponseEntity<?> getProductVariants() {
+		return new ResponseEntity<>(productService.findAll(), HttpStatus.OK);
 	}
 
 	// cái này để phân trang
