@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,9 +33,8 @@ public class Order {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "cashier", nullable = false)
-	private Account cashier;
-	
+    @JoinColumn(name = "cashier", nullable = false)
+    private Account cashier;
 
 	@Column(name = "createdtime", nullable = false)
 	private Date createdtime;
@@ -58,15 +58,11 @@ public class Order {
     @Column(name = "fulladdresstext", columnDefinition = "nvarchar(max)")
 	private String fulladdresstext;
 	
-	@ManyToOne
-	@JoinColumn(name = "customer", nullable = false)
-	private Account customer;
+    @ManyToOne
+    @JoinColumn(name = "customer", nullable = false)
+    private Account customer;
 	
     @JsonIgnore
-    @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderdetails;
-
-	
-	
-
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderDetail> orderdetails; 
 }
