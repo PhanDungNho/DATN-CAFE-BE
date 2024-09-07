@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class ProductVariantDto {
 	
-	 private Long id;
+	 	private Long id;
 
 	    @NotNull(message = "Active status is required")
 	    private Boolean active;

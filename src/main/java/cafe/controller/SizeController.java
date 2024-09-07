@@ -62,7 +62,6 @@ public class SizeController {
 		entity = sizeService.update(id, entity);
 		dto.setId(entity.getId());
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
-
 	}
 
 	@GetMapping()
