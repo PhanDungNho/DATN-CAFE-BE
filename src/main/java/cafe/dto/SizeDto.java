@@ -17,6 +17,8 @@ public class SizeDto {
 
     @NotNull(message = "Active status is required")
     private Boolean active;
-
+    
+   
+    
 //    private List<ProductVariantDto> productVariants;
 }
