@@ -8,5 +8,4 @@ import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 
 public interface OrderRepository extends JpaRepository<Order, Long> {
-
 }
