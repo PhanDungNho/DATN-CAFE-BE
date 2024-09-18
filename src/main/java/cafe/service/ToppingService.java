@@ -2,14 +2,17 @@ package cafe.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cafe.dto.ToppingDto;
 import cafe.entity.Topping;
 import cafe.entity.exception.EntityException;
 import cafe.repository.ToppingRepository;
@@ -36,7 +39,21 @@ public class ToppingService {
 		return found.get();
 	}
 	
-	
+	public Page<ToppingDto> findToppingsByName(String name, Pageable pageable){
+		var list = toppingRepository.findByNameContainsIgnoreCase(name, pageable);
+		
+		var newList = list.getContent().stream()
+				.map(item -> {
+					ToppingDto dto = new ToppingDto();
+					BeanUtils.copyProperties(item, dto, "orderdetailtopping");
+					
+					return dto;
+				}).collect(Collectors.toList());
+		
+		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
+		
+		return newPage;
+	}
 	
 	public Page<Topping> findAll(Pageable pageable) {
 		return toppingRepository.findAll(pageable);
