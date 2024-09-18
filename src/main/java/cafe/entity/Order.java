@@ -4,11 +4,13 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -32,9 +34,8 @@ public class Order {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "cashier", nullable = false)
-	private Account cashier;
-	
+    @JoinColumn(name = "cashier", nullable = false)
+    private Account cashier;
 
 	@Column(name = "createdtime", nullable = false)
 	private Date createdtime;
@@ -58,15 +59,25 @@ public class Order {
     @Column(name = "fulladdresstext", columnDefinition = "nvarchar(max)")
 	private String fulladdresstext;
 	
-	@ManyToOne
-	@JoinColumn(name = "customer", nullable = false)
-	private Account customer;
+    @ManyToOne
+    @JoinColumn(name = "customer", nullable = false)
+    private Account customer;
 	
     @JsonIgnore
-    @OneToMany(mappedBy = "order")
-    private List<OrderDetail> orderdetails;
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private List<OrderDetail> orderdetails; 
 
-	
-	
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderDetail orderDetail = (OrderDetail) o;
+        return Objects.equals(id, orderDetail.getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Chỉ sử dụng id hoặc các thuộc tính cơ bản khác
+    }
 
 }

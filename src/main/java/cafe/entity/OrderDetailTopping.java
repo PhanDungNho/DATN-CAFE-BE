@@ -29,7 +29,6 @@ public class OrderDetailTopping {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-
 	
 	@ManyToOne
 	@JoinColumn(name = "orderdetailid")
@@ -44,9 +43,4 @@ public class OrderDetailTopping {
 
 	@Column(nullable = false)
 	private BigDecimal momentprice;
-
- 
-	
- 
-
 }

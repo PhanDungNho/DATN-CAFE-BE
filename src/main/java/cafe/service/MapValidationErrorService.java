@@ -21,7 +21,6 @@ public class MapValidationErrorService {
 				//tên trường và thông báo lỗi
 				errorMap.put(error.getField(), error.getDefaultMessage());
 				return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST);
-
 			}
 		}
 		return null;
