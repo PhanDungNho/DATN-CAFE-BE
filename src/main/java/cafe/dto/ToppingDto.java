@@ -8,6 +8,7 @@ import lombok.Data;
 
 @Data
 public class ToppingDto {
+	private Long id;
 	private String name;
 	private BigDecimal price;
 	private Boolean active;

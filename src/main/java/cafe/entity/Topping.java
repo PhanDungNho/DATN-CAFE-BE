@@ -44,6 +44,6 @@ public class Topping {
 	private String image;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "topping", fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "topping", fetch = FetchType.LAZY)
 	private List<OrderDetailTopping> orderdetailtopping;
 }
