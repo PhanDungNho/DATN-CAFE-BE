@@ -31,3 +31,4 @@ public class AccountRole {
 	@JoinColumn(name = "account", nullable = false)
 	private Account account;
 }
+ 	

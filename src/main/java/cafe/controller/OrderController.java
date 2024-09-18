@@ -1,9 +1,11 @@
 package cafe.controller;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,10 +19,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import cafe.dto.OrderDetailToppingDto;
 import cafe.dto.OrderDto;
 import cafe.dto.OrderdetailDto;
+import cafe.dto.ToppingDto;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
+import cafe.entity.OrderDetailTopping;
+import cafe.entity.Topping;
 import cafe.modal.OrderResponse;
 import cafe.service.MapValidationErrorService;
 import cafe.service.OrderDetailService;
@@ -90,12 +96,33 @@ public class OrderController {
 	}
 
 	private OrderdetailDto convertToDto(OrderDetail orderDetail) {
-		OrderdetailDto dto = new OrderdetailDto();
-		dto.setProductvariant(orderDetail.getProductvariant());
-		dto.setQuantity(orderDetail.getQuantity());
-		dto.setMomentprice(orderDetail.getMomentprice());
-		dto.setNote(orderDetail.getNote());
-		return dto;
+	    OrderdetailDto dto = new OrderdetailDto();
+	    dto.setProductvariant(orderDetail.getProductvariant());
+	    dto.setQuantity(orderDetail.getQuantity());
+	    dto.setMomentprice(orderDetail.getMomentprice());
+	    dto.setNote(orderDetail.getNote());
+	    
+	    // Chuyển đổi danh sách orderdetailtopping sang DTO
+	    List<OrderDetailToppingDto> toppingDtos = orderDetail.getOrderdetailtoppings().stream()
+	        .map(this::convertToppingToDto)
+	        .collect(Collectors.toList());
+	    dto.setOrderdetailtoppings(toppingDtos);
+	    
+	    return dto;
+	}
+
+	private OrderDetailToppingDto convertToppingToDto(OrderDetailTopping orderDetailTopping) {
+	    OrderDetailToppingDto dto = new OrderDetailToppingDto();
+	    dto.setId(orderDetailTopping.getId());
+	    dto.setQuantity(orderDetailTopping.getQuantity());
+	    dto.setMomentprice(orderDetailTopping.getMomentprice());
+
+	    // Chuyển đổi thông tin topping
+	    ToppingDto toppingDto = new ToppingDto();
+	    BeanUtils.copyProperties(orderDetailTopping.getTopping(), toppingDto);
+	    dto.setTopping(toppingDto);
+
+	    return dto;
 	}
 
 }

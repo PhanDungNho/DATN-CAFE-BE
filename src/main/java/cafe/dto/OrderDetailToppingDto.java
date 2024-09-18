@@ -8,8 +8,9 @@ import lombok.Data;
 
 @Data
 public class OrderDetailToppingDto {
+	private Long id;
 	private BigDecimal momentprice;
 	private Integer quantity;
-	private Topping topping;
+	private ToppingDto topping;
 	private OrderDetail orderDetail;
 }
