@@ -17,12 +17,16 @@ import cafe.entity.Account;
 import cafe.entity.AccountRole;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
+import cafe.entity.OrderDetailTopping;
 import cafe.entity.ProductVariant;
+import cafe.entity.Topping;
 import cafe.entity.exception.EntityException;
 import cafe.repository.AccountRepository;
 import cafe.repository.OrderDetailRepository;
+import cafe.repository.OrderDetailToppingRepository;
 import cafe.repository.OrderRepository;
 import cafe.repository.ProductVariantRepository;
+import cafe.repository.ToppingRepository;
 
 @Service
 public class OrderService {
@@ -31,12 +35,18 @@ public class OrderService {
 
 	@Autowired
 	private AccountRepository accountRepository;
-	
+
 	@Autowired
 	private OrderDetailRepository orderDetailRepository;
-	
+
 	@Autowired
 	private ProductVariantRepository productVariantRepository;
+
+	@Autowired
+	private ToppingRepository toppingRepository;
+	
+	@Autowired
+	private OrderDetailToppingRepository orderDetailToppingRepository;
 
 	public List<Order> findAll() {
 		return orderRepository.findAll();
@@ -47,65 +57,78 @@ public class OrderService {
 	}
 
 	public Order createOrder(OrderDto dto) {
-	    Order order = new Order();
-	    
-	    // Chuyển đổi các thuộc tính đơn giản từ DTO sang entity Order
-	    order.setCreatedtime(dto.getCreatedtime());
-	    order.setTotalamount(dto.getTotalamount());
-	    order.setStatus(dto.getStatus());
-	    order.setPaymentmethod(dto.getPaymentmethod());
-	    order.setActive(dto.getActive());
-	    order.setShippingfee(dto.getShippingfee());
-	    order.setFulladdresstext(dto.getFulladdresstext());
+		Order order = new Order();
 
-	    // Tìm và gán đối tượng Cashier
-	    Account cashier = accountRepository.findById(dto.getCashier().getUsername())
-	        .orElseThrow(() -> new EntityException("Cashier not found"));
-	    order.setCashier(cashier);
+		// Chuyển đổi các thuộc tính đơn giản từ DTO sang entity Order
+		order.setCreatedtime(dto.getCreatedtime());
+		order.setTotalamount(dto.getTotalamount());
+		order.setStatus(dto.getStatus());
+		order.setPaymentmethod(dto.getPaymentmethod());
+		order.setActive(dto.getActive());
+		order.setShippingfee(dto.getShippingfee());
+		order.setFulladdresstext(dto.getFulladdresstext());
 
-	    // Tìm và gán đối tượng Customer
-	    Account customer = accountRepository.findById(dto.getCustomer().getUsername())
-	        .orElseThrow(() -> new EntityException("Customer not found"));
-	    order.setCustomer(customer);
+		// Tìm và gán đối tượng Cashier
+		Account cashier = accountRepository.findById(dto.getCashier().getUsername())
+				.orElseThrow(() -> new EntityException("Cashier not found"));
+		order.setCashier(cashier);
 
-	    // Lưu Order trước để có ID
-	    Order savedOrder = orderRepository.save(order);
+		// Tìm và gán đối tượng Customer
+		Account customer = accountRepository.findById(dto.getCustomer().getUsername())
+				.orElseThrow(() -> new EntityException("Customer not found"));
+		order.setCustomer(customer);
 
-	    // Xử lý OrderDetail từ DTO và liên kết với Order vừa lưu
-	    List<OrderDetail> orderDetails = dto.getOrderdetails().stream()
-	        .map(detailDto -> {
-	            OrderDetail detail = new OrderDetail();
+		// Lưu Order trước để có ID
+		Order savedOrder = orderRepository.save(order);
 
-	            // Tìm và gán ProductVariant
-	            ProductVariant productVariant = productVariantRepository.findById(detailDto.getProductvariant().getId())
-	                .orElseThrow(() -> new EntityException("ProductVariant not found"));
-	            detail.setProductvariant(productVariant);
+		// Xử lý OrderDetail từ DTO và liên kết với Order vừa lưu
+		List<OrderDetail> orderDetails = dto.getOrderdetails().stream().map(detailDto -> {
+			OrderDetail detail = new OrderDetail();
 
-	            detail.setQuantity(detailDto.getQuantity());
-	            detail.setMomentprice(detailDto.getMomentprice());
-	            detail.setNote(detailDto.getNote());
+			// Tìm và gán ProductVariant
+			ProductVariant productVariant = productVariantRepository.findById(detailDto.getProductvariant().getId())
+					.orElseThrow(() -> new EntityException("ProductVariant not found"));
+			detail.setProductvariant(productVariant);
 
-	            // Gán Order cho OrderDetail
-	            detail.setOrder(savedOrder);
-	            
-	            return detail;
-	        })
-	        .collect(Collectors.toList());
+			detail.setQuantity(detailDto.getQuantity());
+			detail.setMomentprice(detailDto.getMomentprice());
+			detail.setNote(detailDto.getNote());
 
-	    // Lưu các OrderDetail
-	    orderDetailRepository.saveAll(orderDetails);
+			// Gán Order cho OrderDetail
+			detail.setOrder(savedOrder);
 
-	    // Cập nhật danh sách OrderDetail vào Order và lưu lại
-	    savedOrder.setOrderdetails(orderDetails);
-	    return orderRepository.save(savedOrder);
+			OrderDetail saveOrderDetail = orderDetailRepository.save(detail);
+			// Xử lý các Topping nếu có
+			List<OrderDetailTopping> orderDetailToppings = detailDto.getOrderdetailtoppings().stream()
+					.map(toppingDto -> {
+						OrderDetailTopping orderDetailTopping = new OrderDetailTopping();
+						// Tìm và gán Topping
+						Topping topping = toppingRepository.findById(toppingDto.getTopping().getId())
+								.orElseThrow(() -> new EntityException("Topping not found"));
+						orderDetailTopping.setTopping(topping);
+
+						orderDetailTopping.setQuantity(toppingDto.getQuantity());
+						orderDetailTopping.setMomentprice(toppingDto.getMomentprice());
+
+						orderDetailTopping.setOrderdetail(saveOrderDetail);
+						
+						return orderDetailTopping;
+					}).collect(Collectors.toList());
+
+			// Lưu danh sách OrderDetailTopping vào OrderDetail
+			detail.setOrderdetailtoppings(orderDetailToppings);
+			orderDetailToppingRepository.saveAll(orderDetailToppings);
+
+			return detail;
+		}).collect(Collectors.toList());
+
+		// Lưu các OrderDetail
+		orderDetailRepository.saveAll(orderDetails);
+		
+
+		// Cập nhật danh sách OrderDetail vào Order và lưu lại
+		savedOrder.setOrderdetails(orderDetails);
+		return orderRepository.save(savedOrder);
 	}
 
-	private OrderDetail convertToEntity(OrderdetailDto dto) {
-		OrderDetail entity = new OrderDetail();
-		entity.setProductvariant(dto.getProductvariant());
-		entity.setQuantity(dto.getQuantity());
-		entity.setMomentprice(dto.getMomentprice());
-		entity.setNote(dto.getNote());
-		return entity;
-	}
 }

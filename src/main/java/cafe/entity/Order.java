@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -65,4 +66,18 @@ public class Order {
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderDetail> orderdetails; 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderDetail orderDetail = (OrderDetail) o;
+        return Objects.equals(id, orderDetail.getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Chỉ sử dụng id hoặc các thuộc tính cơ bản khác
+    }
+
 }
