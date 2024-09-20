@@ -8,6 +8,8 @@ import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import cafe.enums.OrderStatus;
+import cafe.enums.PaymentMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,16 +36,16 @@ public class Order {
 	private Long id;
 	
 	@ManyToOne
-    @JoinColumn(name = "cashier", nullable = false)
+    @JoinColumn(name = "cashier", nullable = true)
     private Account cashier;
 
-	@Column(name = "createdtime", nullable = false)
+	@Column(name = "createdtime", nullable = true)
 	private Date createdtime;
 	
-	@Column(name = "totalamount", nullable = false)
+	@Column(name = "totalamount", nullable = true)
 	private BigDecimal totalamount;
 	
-	@Column(name = "status", nullable = false)
+	@Column(name = "status", nullable = true)
 	private OrderStatus status;
 	
 	@Column(name = "paymentmethod", nullable = false)
@@ -60,7 +62,7 @@ public class Order {
 	private String fulladdresstext;
 	
     @ManyToOne
-    @JoinColumn(name = "customer", nullable = false)
+    @JoinColumn(name = "customer", nullable = true)
     private Account customer;
 	
     @JsonIgnore

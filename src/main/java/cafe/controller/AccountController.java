@@ -1,7 +1,7 @@
 package cafe.controller;
 
-
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,14 +19,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cafe.dto.AccountDto;
-import cafe.dto.CategoryDto;
-import cafe.dto.ProductDto;
 import cafe.entity.Account;
-import cafe.entity.Product;
-import cafe.entity.Size;
 import cafe.service.AccountService;
 import cafe.service.MapValidationErrorService;
 import jakarta.validation.Valid;
@@ -35,13 +32,13 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/v1/account")
 @CrossOrigin
 public class AccountController {
-	
+
 	@Autowired
 	AccountService accountService;
-	
+
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
-	
+
 	@PostMapping
 	public ResponseEntity<?> createAccount(@Valid @RequestBody AccountDto accountDto, BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
@@ -51,93 +48,72 @@ public class AccountController {
 		Account account = accountService.save(accountDto);
 		// Tạo ProductDto từ Product và trả về
 		AccountDto responseDto = new AccountDto();
-		responseDto.setUsername(account.getUsername());
-		responseDto.setActive(account.getActive());
-		responseDto.setAmountpaid(account.getAmountpaid());
-		responseDto.setEmail(account.getEmail());
-		responseDto.setFullname(account.getFullname());
-		responseDto.setPassword(account.getPassword());
-		responseDto.setPhone(account.getPhone());
-		
+		BeanUtils.copyProperties(account, responseDto, "password");
+		// trả về người dùng responseDto
 		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 	}
 
 	@PatchMapping("/{username}")
-	public ResponseEntity<?> updateAccount(@PathVariable("username") String username, @RequestBody AccountDto dto) {
-	    // Fetch the existing account from the service
-	    Account existingAccount = accountService.findById(username);
+	public ResponseEntity<?> updateAccount(@PathVariable String username, @RequestBody AccountDto dto) {
+		// Fetch the existing account from the service
+		Account existingAccount = accountService.findById(username);
 
-	    // Check if the account exists
-	    if (existingAccount == null) {
-	        return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
-	    }
+		// Check if the account exists
+		if (existingAccount == null) {
+			return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+		}
 
-	    // Update the fields of the existing account
-	    existingAccount.setActive(dto.getActive());
-	    existingAccount.setEmail(dto.getEmail());
-	    existingAccount.setFullname(dto.getFullname());
-	    existingAccount.setPassword(dto.getPassword());
-	    existingAccount.setPhone(dto.getPhone());
-	    existingAccount.setAmountpaid(dto.getAmountpaid());
+		// Update the fields of the existing account
+//	    existingAccount.setActive(dto.getActive());
+//	    existingAccount.setEmail(dto.getEmail());
+//	    existingAccount.setFullname(dto.getFullname());
+//	    existingAccount.setPassword(dto.getPassword());
+//	    existingAccount.setPhone(dto.getPhone());
+//	    existingAccount.setAmountpaid(dto.getAmountpaid());
+		BeanUtils.copyProperties(dto, existingAccount);
 
-	    // Persist the changes
-	    Account updatedAccount = accountService.update(existingAccount);
+		// Persist the changes
+		Account updatedAccount = accountService.update(existingAccount);
 
-	    // Prepare the response DTO
-	    AccountDto responseDto = new AccountDto();
-	    responseDto.setUsername(updatedAccount.getUsername());
-	    responseDto.setActive(updatedAccount.getActive());
-	    responseDto.setAmountpaid(updatedAccount.getAmountpaid());
-	    responseDto.setEmail(updatedAccount.getEmail());
-	    responseDto.setFullname(updatedAccount.getFullname());
-	    responseDto.setPassword(updatedAccount.getPassword());
-	    responseDto.setPhone(updatedAccount.getPhone());
-
-	    return new ResponseEntity<>(responseDto, HttpStatus.OK);
+		// Prepare the response DTO
+		AccountDto responseDto = new AccountDto();
+		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
 	}
 
-	
 	@PatchMapping("/{username}/toggle-active")
-	public ResponseEntity<?> toggleActive(@PathVariable("username") String username) {
-	    // Call the service to toggle the account's active status
-	    Account updatedAccount = accountService.toggleActive(username);
+	public ResponseEntity<?> toggleActive(@PathVariable String username) {
+		// Call the service to toggle the account's active status
+		Account updatedAccount = accountService.toggleActive(username);
+		// Check if the account was found
+		if (updatedAccount == null) {
+			return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+		}
+		// Create AccountDto to return updated account information
+		AccountDto responseDto = new AccountDto();
+		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
 
-	    // Check if the account was found
-	    if (updatedAccount == null) {
-	        return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
-	    }
-
-	    // Create AccountDto to return updated account information
-	    AccountDto responseDto = new AccountDto();
-	    responseDto.setUsername(updatedAccount.getUsername());
-	    responseDto.setActive(updatedAccount.getActive());
-	    responseDto.setEmail(updatedAccount.getEmail());
-	    responseDto.setFullname(updatedAccount.getFullname());
-	    responseDto.setPhone(updatedAccount.getPhone());
-	    responseDto.setAmountpaid(updatedAccount.getAmountpaid());
-	    
-	    // Note: Remove the password from the response for security reasons
-
-	    return new ResponseEntity<>(responseDto, HttpStatus.OK);
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
 	}
 
 	@GetMapping()
 	public ResponseEntity<?> getAccounts() {
-	    List<Account> accounts = accountService.findAll();
+		List<Account> accounts = accountService.findAll();
 
-	    List<AccountDto> accountDtos = accounts.stream().map(account -> {
-	    	AccountDto dto = new AccountDto();
-	        dto.setUsername(account.getUsername());
-	        dto.setActive(account.getActive());
-	        dto.setAmountpaid(account.getAmountpaid());
-	        dto.setEmail(account.getEmail());
-	        dto.setPassword(account.getPassword());
-	        dto.setFullname(account.getFullname());
-	        dto.setPhone(account.getPhone());
+		List<AccountDto> accountDtos = accounts.stream().map(account -> {
+			AccountDto dto = new AccountDto();
+			BeanUtils.copyProperties(account, dto, "password");
+//	        dto.setUsername(account.getUsername());
+//	        dto.setActive(account.getActive());
+//	        dto.setAmountpaid(account.getAmountpaid());
+//	        dto.setEmail(account.getEmail());
+//	        dto.setPassword(account.getPassword());
+//	        dto.setFullname(account.getFullname());
+//	        dto.setPhone(account.getPhone());
 
-	        return dto;
-	    }).toList();
-	    return new ResponseEntity<>(accountDtos, HttpStatus.OK);
+			return dto;
+		}).toList();
+		return new ResponseEntity<>(accountDtos, HttpStatus.OK);
 	}
 
 	// cái này để phân trang
@@ -156,5 +132,14 @@ public class AccountController {
 	public ResponseEntity<?> deleteAccounts(@PathVariable("username") String username) {
 		accountService.deleteById(username);
 		return new ResponseEntity<>("Product with Id: " + username + " was deleted", HttpStatus.OK);
+	}
+
+	/// phân quyền
+	@GetMapping("/admin")
+	public List<Account> findAll(@RequestParam("admin") Optional<Boolean> admin) {
+		if (admin.orElse(false)) {
+			return accountService.getAdministrators();
+		}
+		return accountService.findAll();
 	}
 }

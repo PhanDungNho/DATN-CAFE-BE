@@ -26,11 +26,11 @@ public class Cart {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "account", nullable = false)
+	@JoinColumn(name = "account", nullable = true)
 	private Account account;
 
 	@ManyToOne
-	@JoinColumn(name = "productvariantid", nullable = false)
+	@JoinColumn(name = "productvariantid", nullable = true)
 	private ProductVariant productvariant;
 
 	@Column(name = "quantity")

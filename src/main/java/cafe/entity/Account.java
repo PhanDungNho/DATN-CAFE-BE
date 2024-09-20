@@ -46,5 +46,5 @@ public class Account {
 
     @JsonIgnore
 	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
-	private List<AccountRole> accountroles;
+	private List<Authority> authorities;
 }

@@ -9,8 +9,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import cafe.entity.Account;
 import cafe.entity.OrderDetail;
-import cafe.entity.OrderStatus;
-import cafe.entity.PaymentMethod;
+import cafe.enums.OrderStatus;
+import cafe.enums.PaymentMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;

@@ -2,6 +2,8 @@ package cafe.entity;
 
 import java.util.Date;
 
+import cafe.enums.TransactionMethod;
+import cafe.enums.TransactionStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,12 +40,12 @@ public class Transactions {
 	private TransactionStatus status;
 	
 	@ManyToOne
-	@JoinColumn(name = "orderid", nullable = false)
+	@JoinColumn(name = "orderid", nullable = true)
 	private Order order;
 	
 	//Test
 	//DungNho
 	@ManyToOne
-	@JoinColumn(name = "customer", nullable = false)
+	@JoinColumn(name = "customer", nullable = true)
 	private Account customer;
 }
