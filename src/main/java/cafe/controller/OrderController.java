@@ -7,6 +7,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import cafe.dto.OrderDetailToppingDto;
@@ -57,6 +62,12 @@ public class OrderController {
 		return orderService.findById(id).map(order -> ResponseEntity.ok(OrderResponse.convert(order))) // Chuyển đổi Order thành OrderResponse
 				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new OrderResponse())); // Trả về một OrderResponse rỗng hoặc null
 	}
+	
+//	@GetMapping("/find")
+//	public ResponseEntity<?> getOrdersByStatus(@RequestParam("query") String query, 
+//			@PageableDefault(size = 5, sort = "status", direction = Sort.Direction.ASC) Pageable pageable) {
+//		return new ResponseEntity<>(orderService.getOrdersByStatus(query, pageable), HttpStatus.OK);
+//	}
 
 	@PostMapping
 	public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDto dto, BindingResult result) {
