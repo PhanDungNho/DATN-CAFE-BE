@@ -62,13 +62,18 @@ public class ToppingController {
 		return new ResponseEntity<>(toppingService.findById(id), HttpStatus.OK);
 	}
 	
+	@GetMapping("/find")
+	public ResponseEntity<?> getToppingsByName(@RequestParam("query") String query, 
+			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+		return new ResponseEntity<>(toppingService.findToppingsByName(query, pageable), HttpStatus.OK);
+	}
+	
 	@GetMapping("/page")
 	public ResponseEntity<?> getTopping(
 			@PageableDefault(size=5,sort="name",direction = Sort.Direction.ASC) Pageable pageable) {
 		return new ResponseEntity<>(toppingService.findAll(pageable), HttpStatus.OK);
 	}
 	
-
 	@PatchMapping("/{id}")
 	public ResponseEntity<?> updateTopping(
 			@PathVariable("id") Long id,
