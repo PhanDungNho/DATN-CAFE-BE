@@ -13,16 +13,19 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import cafe.dto.CategoryDto;
 import cafe.dto.OrderDetailToppingDto;
 import cafe.dto.OrderDto;
 import cafe.dto.OrderdetailDto;
 import cafe.dto.ToppingDto;
+import cafe.entity.Category;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
@@ -61,57 +64,51 @@ public class OrderController {
 	@PostMapping
 	public ResponseEntity<?> createOrder(@Valid @RequestBody OrderDto dto, BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
-
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-
 		// Kiểm tra và khởi tạo danh sách rỗng nếu cần
 		if (dto.getOrderdetails() == null) {
 			dto.setOrderdetails(new ArrayList<>());
 		}
-
 		// Tạo Order từ OrderDto
 		Order order = orderService.createOrder(dto);
-
 		// Chuyển đổi Order thành OrderDto để trả về cho client
 		OrderDto respDto = new OrderDto();
+		respDto.setId(order.getId());
 		respDto.setActive(order.getActive());
 		respDto.setCashier(order.getCashier());
+		respDto.setOrdertype(order.getOrdertype());
 		respDto.setCreatedtime(order.getCreatedtime());
 		respDto.setCustomer(order.getCustomer());
 		respDto.setFulladdresstext(order.getFulladdresstext());
-
 		// Chuyển đổi OrderDetail thành OrderdetailDto
-		List<OrderdetailDto> orderDetailDtos = order.getOrderdetails().stream().map(this::convertToDto)
+		List<OrderdetailDto> orderDetailDtos = order.getOrderdetails().stream().map(this::convertToOrderdetailDto)
 				.collect(Collectors.toList());
 		respDto.setOrderdetails(orderDetailDtos);
-
 		respDto.setPaymentmethod(order.getPaymentmethod());
 		respDto.setShippingfee(order.getShippingfee());
 		respDto.setStatus(order.getStatus());
 		respDto.setTotalamount(order.getTotalamount());
-
 		return new ResponseEntity<>(respDto, HttpStatus.CREATED);
 	}
 
-	private OrderdetailDto convertToDto(OrderDetail orderDetail) {
+	private OrderdetailDto convertToOrderdetailDto(OrderDetail orderDetail) {
 	    OrderdetailDto dto = new OrderdetailDto();
 	    dto.setProductvariant(orderDetail.getProductvariant());
 	    dto.setQuantity(orderDetail.getQuantity());
 	    dto.setMomentprice(orderDetail.getMomentprice());
 	    dto.setNote(orderDetail.getNote());
-	    
 	    // Chuyển đổi danh sách orderdetailtopping sang DTO
 	    List<OrderDetailToppingDto> toppingDtos = orderDetail.getOrderdetailtoppings().stream()
-	        .map(this::convertToppingToDto)
+	        .map(this::convertToOrderDetailToppingDto)
 	        .collect(Collectors.toList());
 	    dto.setOrderdetailtoppings(toppingDtos);
 	    
 	    return dto;
 	}
 
-	private OrderDetailToppingDto convertToppingToDto(OrderDetailTopping orderDetailTopping) {
+	private OrderDetailToppingDto convertToOrderDetailToppingDto(OrderDetailTopping orderDetailTopping) {
 	    OrderDetailToppingDto dto = new OrderDetailToppingDto();
 	    dto.setId(orderDetailTopping.getId());
 	    dto.setQuantity(orderDetailTopping.getQuantity());
@@ -123,6 +120,18 @@ public class OrderController {
 	    dto.setTopping(toppingDto);
 
 	    return dto;
+	}
+	
+	//cập nhật
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> updateStatusOrder(@PathVariable Long id, @RequestBody OrderDto dto) {
+	//chỉ quan tâm đến status thôi hà
+		Order entity = new Order();
+		entity.setStatus(dto.getStatus());
+		entity = orderService.updateStatus(id, entity);
+		dto.setId(entity.getId());
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+
 	}
 
 }

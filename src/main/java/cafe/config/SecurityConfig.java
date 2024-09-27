@@ -37,18 +37,19 @@ public class SecurityConfig {
 	}
 	 @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                 		.requestMatchers("/api/v1/login").permitAll()
-                		.requestMatchers("/api/v1/cart/**","/api/v1/order/**").hasAnyRole("ADMIN","USER")
+                		.requestMatchers("/api/v1/cart/**","/api/v1/categories/**","/api/v1/products/**","/api/v1/orders/**").hasAnyRole("ADMIN","STAFF")
                 		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/home").permitAll() // với endpoint /hello thì sẽ được cho qua
-                        .requestMatchers("/cart/**","/order/**").hasAnyRole("ADMIN","USER")
-                        .requestMatchers("/admin/**").hasRole("ADMIN") // với endpoint /admin/** sẽ yêu cầu authenticate
+                        .requestMatchers("/home").permitAll()  
+                        .requestMatchers("/cart/**","/order/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .formLogin(form -> form
-            			.loginPage("/login")
+            			.loginPage("/login") 
             			.permitAll()
             		)
                 .logout((logout) -> logout

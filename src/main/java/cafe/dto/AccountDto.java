@@ -3,6 +3,9 @@ package cafe.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotBlank;
@@ -39,6 +42,11 @@ public class AccountDto implements Serializable{
     @Size(max = 15, message = "Phone must be less than or equal to 255 characters")
     private String phone;
     
+    
+	private String image;
+
+	@JsonIgnore
+	private MultipartFile imageFile;
 //    private List<AccountRoleDto> accountRoleDtos;
     
 }

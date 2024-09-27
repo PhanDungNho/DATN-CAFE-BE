@@ -14,13 +14,13 @@ import org.springframework.stereotype.Service;
 import cafe.dto.OrderDto;
 import cafe.dto.OrderdetailDto;
 import cafe.entity.Account;
-
+import cafe.entity.Category;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
 import cafe.entity.ProductVariant;
 import cafe.entity.Topping;
-import cafe.entity.exception.EntityException;
+import cafe.exception.EntityException;
 import cafe.repository.AccountRepository;
 import cafe.repository.OrderDetailRepository;
 import cafe.repository.OrderDetailToppingRepository;
@@ -58,16 +58,15 @@ public class OrderService {
 
 	public Order createOrder(OrderDto dto) {
 		Order order = new Order();
-
 		// Chuyển đổi các thuộc tính đơn giản từ DTO sang entity Order
 		order.setCreatedtime(dto.getCreatedtime());
 		order.setTotalamount(dto.getTotalamount());
 		order.setStatus(dto.getStatus());
 		order.setPaymentmethod(dto.getPaymentmethod());
+		order.setOrdertype(dto.getOrdertype());
 		order.setActive(dto.getActive());
 		order.setShippingfee(dto.getShippingfee());
 		order.setFulladdresstext(dto.getFulladdresstext());
-
 		// Tìm và gán đối tượng Cashier
 		Account cashier = accountRepository.findById(dto.getCashier().getUsername())
 				.orElseThrow(() -> new EntityException("Cashier not found"));
@@ -130,5 +129,22 @@ public class OrderService {
 		savedOrder.setOrderdetails(orderDetails);
 		return orderRepository.save(savedOrder);
 	}
+	
+	public Order updateStatus (Long id, Order order) {
+		Optional<Order> existed = orderRepository.findById(id);
+		if (existed.isEmpty()) {
+			throw new EntityException("Order id " + id + " does not exist");
+		}
+		try {
+			Order existedOrder = existed.get();
+			existedOrder.setStatus(order.getStatus());
+		 
+			return orderRepository.save(existedOrder);
+		} catch (Exception ex) {
+			throw new EntityException("Order is updated failed");
+		}
+	}
+	
+ 
 
 }

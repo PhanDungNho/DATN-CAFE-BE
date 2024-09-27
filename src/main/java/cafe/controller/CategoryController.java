@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/categories")
-@CrossOrigin
+@CrossOrigin("*")
 public class CategoryController {
 
 	@Autowired
@@ -37,7 +37,6 @@ public class CategoryController {
 
 	@PostMapping
 	public ResponseEntity<?> createCategory(@Valid @RequestBody CategoryDto dto, BindingResult result) {
-
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
 		if (responseEntity != null) {
 			return responseEntity;
@@ -64,7 +63,7 @@ public class CategoryController {
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
 	}
-
+ 
 	@GetMapping()
 	public ResponseEntity<?> getCategories() {
 		return new ResponseEntity<>(categoryService.findAll(), HttpStatus.OK);

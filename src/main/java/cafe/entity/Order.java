@@ -9,6 +9,7 @@ import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import cafe.enums.OrderStatus;
+import cafe.enums.OrderType;
 import cafe.enums.PaymentMethod;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -47,6 +48,10 @@ public class Order {
 	
 	@Column(name = "status", nullable = true)
 	private OrderStatus status;
+	
+	@Column(name = "ordertype", nullable = true)
+	private OrderType ordertype;
+	
 	
 	@Column(name = "paymentmethod", nullable = false)
 	private PaymentMethod paymentmethod; 

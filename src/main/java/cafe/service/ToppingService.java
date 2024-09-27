@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cafe.entity.Topping;
-import cafe.entity.exception.EntityException;
+import cafe.exception.EntityException;
 import cafe.repository.ToppingRepository;
 
 @Service

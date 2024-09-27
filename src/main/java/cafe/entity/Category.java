@@ -1,7 +1,5 @@
 package cafe.entity;
 
-
-
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -26,20 +24,19 @@ import lombok.Setter;
 @Entity
 @Table(name = "category")
 public class Category {
-@Id
-@GeneratedValue(strategy = GenerationType. IDENTITY)
-@Column(name = "id", nullable = false)
-private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-@Column (name ="name", nullable = false, length = 255)
-private String name;
+	@Column(name = "name", nullable = false, length = 255)
+	private String name;
 
+	@Column(name = "active")
+	private Boolean active;
 
-@Column(name = "active")
-private Boolean active;
-
-@JsonIgnore
-@OneToMany(mappedBy = "category")
-private List<Product> products;
+	@JsonIgnore
+	@OneToMany(mappedBy = "category")
+	private List<Product> products;
 
 }

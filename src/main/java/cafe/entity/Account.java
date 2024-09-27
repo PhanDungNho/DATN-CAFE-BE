@@ -37,6 +37,9 @@ public class Account {
 
 	@Column(name = "email", nullable = false, length = 255)
 	private String email;
+	
+	@Column(name = "image", length = 255)
+	private String image;
 
 	@Column(name = "amountpaid", nullable = false)
 	private Double amountpaid;
