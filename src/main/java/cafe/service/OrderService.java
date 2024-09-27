@@ -8,16 +8,21 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import cafe.dto.OrderDto;
 import cafe.dto.OrderdetailDto;
+import cafe.dto.ToppingDto;
 import cafe.entity.Account;
 import cafe.entity.Category;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
+import cafe.entity.OrderStatus;
 import cafe.entity.ProductVariant;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
@@ -130,6 +135,7 @@ public class OrderService {
 		return orderRepository.save(savedOrder);
 	}
 	
+
 	public Order updateStatus (Long id, Order order) {
 		Optional<Order> existed = orderRepository.findById(id);
 		if (existed.isEmpty()) {
@@ -146,5 +152,27 @@ public class OrderService {
 	}
 	
  
+
+	public Page<OrderDto> getOrdersByStatus(OrderStatus status, Pageable pageable) {
+		var list = orderRepository.findByStatusContainsIgnoreCase(status, pageable);
+		
+		var newList = list.getContent().stream()
+				.map(item -> {
+					OrderDto dto = new OrderDto();
+					BeanUtils.copyProperties(item, dto, "orderdetails");
+					
+					dto.setCashier(item.getCashier());
+					dto.setCustomer(item.getCustomer());
+					dto.setPaymentmethod(item.getPaymentmethod());
+					dto.setStatus(item.getStatus());
+					
+					return dto;
+				}).collect(Collectors.toList());
+		
+		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
+		
+		return newPage;
+	}
+
 
 }
