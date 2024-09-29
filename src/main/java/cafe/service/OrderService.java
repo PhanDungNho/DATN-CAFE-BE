@@ -14,6 +14,9 @@ import cafe.entity.Category;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
+
+import cafe.enums.OrderStatus;
+
 import cafe.entity.ProductVariant;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
