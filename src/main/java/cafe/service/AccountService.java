@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-
+ 
 
 import cafe.dto.AccountDto;
 
@@ -28,16 +28,34 @@ public class AccountService {
 	@Autowired
 	private AccountRepository accountRepository;
 	
+	@Autowired
+	private FileStorageService fileStorageService;
+	
 
 public Account save(AccountDto accountDto) {
 	if(accountRepository.findByUsername(accountDto.getUsername()).isPresent()) {
 		throw new EntityException("Username " + accountDto.getUsername() + " is exist");
 	}
     Account account = new Account();
-    // Sao chép các thuộc tính từ accountDto sang account
     BeanUtils.copyProperties(accountDto, account);
-    // Lưu đối tượng Account vào cơ sở dữ liệu
     return accountRepository.save(account);
+}
+
+public Account insertAccount(AccountDto dto) {
+
+	List<?> foundedList = accountRepository.findByUsernameContainsIgnoreCase(dto.getUsername());
+	if (foundedList.size() > 0) {
+		throw new EntityException("Username is existed");
+	}
+	Account entity = new Account();
+	BeanUtils.copyProperties(dto, entity);
+
+	if (dto.getImageFile() != null) {
+		String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+		entity.setImage(filename);
+		dto.setImage(filename);
+	}
+	return accountRepository.save(entity);
 }
 	 
 	

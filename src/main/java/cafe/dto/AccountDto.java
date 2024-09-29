@@ -18,6 +18,11 @@ import lombok.Data;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountDto implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Size(max = 255, message = "Username must be less than or equal to 255 characters")
 	private String username;
 	
@@ -42,11 +47,12 @@ public class AccountDto implements Serializable{
     @Size(max = 15, message = "Phone must be less than or equal to 255 characters")
     private String phone;
     
-    
 	private String image;
 
 	@JsonIgnore
 	private MultipartFile imageFile;
+	
+	
 //    private List<AccountRoleDto> accountRoleDtos;
     
 }

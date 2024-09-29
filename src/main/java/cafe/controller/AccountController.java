@@ -8,20 +8,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+ 
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+
 import org.springframework.web.bind.annotation.RestController;
 
+import jakarta.servlet.http.HttpServletRequest;
 import cafe.dto.AccountDto;
 import cafe.entity.Account;
 import cafe.service.AccountService;
@@ -30,7 +36,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/account")
-@CrossOrigin
+@CrossOrigin(origins = "*")
 public class AccountController {
 
 	@Autowired
@@ -39,19 +45,40 @@ public class AccountController {
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
-	@PostMapping
-	public ResponseEntity<?> createAccount(@Valid @RequestBody AccountDto accountDto, BindingResult result) {
+	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> createAccount(@Valid @ModelAttribute AccountDto accountDto, BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		Account account = accountService.save(accountDto);
-		// Tạo ProductDto từ Product và trả về
-		AccountDto responseDto = new AccountDto();
-		BeanUtils.copyProperties(account, responseDto, "password");
+		Account account = accountService.insertAccount(accountDto);
+		accountDto.setPassword(null);
+		accountDto.setImage(account.getImage());
 		// trả về người dùng responseDto
-		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+		return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
 	}
+
+	
+//	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+//	        MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<?> createAccount(@Valid @ModelAttribute AccountDto accountDto, BindingResult result) {
+//	    // Xử lý các lỗi validation từ BindingResult
+//	    ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
+//	    if (responseEntity != null) {
+//	        return responseEntity;
+//	    }
+//
+//	    // Lưu tài khoản vào cơ sở dữ liệu
+//	    Account account = accountService.save(accountDto);
+//	    
+//	    // Đặt mật khẩu null trong DTO trước khi trả về để bảo mật
+//	    accountDto.setPassword(null);
+//	    accountDto.setImage(account.getImage());
+//
+//	    // Trả về đối tượng AccountDto đã được lưu
+//	    return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
+//	}
 
 	@PatchMapping("/{username}")
 	public ResponseEntity<?> updateAccount(@PathVariable String username, @RequestBody AccountDto dto) {

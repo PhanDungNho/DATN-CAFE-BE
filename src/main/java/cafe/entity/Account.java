@@ -1,5 +1,6 @@
 package cafe.entity;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -11,6 +12,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -50,4 +52,10 @@ public class Account {
     @JsonIgnore
 	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
 	private List<Authority> authorities;
+    
+    @PrePersist
+	public void prePersist() {
+    	active = true;
+    	amountpaid =0D;
+	}
 }

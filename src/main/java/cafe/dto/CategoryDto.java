@@ -18,8 +18,8 @@ public class CategoryDto {
     @Size(max = 255, message = "Category name must not exceed 255 characters")
     private String name;
     
-    @Size(max = 255, message = "Image URL must not exceed 255 characters")
-    private String image;
+//    @Size(max = 255, message = "Image URL must not exceed 255 characters")
+//    private String image;
 
     private Boolean active;
 }
