@@ -22,7 +22,6 @@ import cafe.entity.Category;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
-import cafe.entity.OrderStatus;
 import cafe.entity.ProductVariant;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
@@ -153,26 +152,26 @@ public class OrderService {
 	
  
 
-	public Page<OrderDto> getOrdersByStatus(OrderStatus status, Pageable pageable) {
-		var list = orderRepository.findByStatusContainsIgnoreCase(status, pageable);
-		
-		var newList = list.getContent().stream()
-				.map(item -> {
-					OrderDto dto = new OrderDto();
-					BeanUtils.copyProperties(item, dto, "orderdetails");
-					
-					dto.setCashier(item.getCashier());
-					dto.setCustomer(item.getCustomer());
-					dto.setPaymentmethod(item.getPaymentmethod());
-					dto.setStatus(item.getStatus());
-					
-					return dto;
-				}).collect(Collectors.toList());
-		
-		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
-		
-		return newPage;
-	}
+//	public Page<OrderDto> getOrdersByStatus(OrderStatus status, Pageable pageable) {
+//		var list = orderRepository.findByStatusContainsIgnoreCase(status, pageable);
+//		
+//		var newList = list.getContent().stream()
+//				.map(item -> {
+//					OrderDto dto = new OrderDto();
+//					BeanUtils.copyProperties(item, dto, "orderdetails");
+//					
+//					dto.setCashier(item.getCashier());
+//					dto.setCustomer(item.getCustomer());
+//					dto.setPaymentmethod(item.getPaymentmethod());
+//					dto.setStatus(item.getStatus());
+//					
+//					return dto;
+//				}).collect(Collectors.toList());
+//		
+//		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
+//		
+//		return newPage;
+//	}
 
 
 }
