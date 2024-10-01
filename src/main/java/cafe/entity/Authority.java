@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "accountrole")
-public class AccountRole {
+public class Authority {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
@@ -31,3 +31,4 @@ public class AccountRole {
 	@JoinColumn(name = "account", nullable = false)
 	private Account account;
 }
+ 	

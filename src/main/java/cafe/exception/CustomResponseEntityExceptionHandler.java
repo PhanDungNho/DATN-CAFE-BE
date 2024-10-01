@@ -1,4 +1,4 @@
-package cafe.entity.exception;
+package cafe.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

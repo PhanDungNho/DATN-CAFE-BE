@@ -14,14 +14,10 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL) // Bao gồm các trường không null
 //DTO là lớp trung gian, thường để bảo mật, này nọ
-public class AccountRoleDto implements Serializable{
+public class AuthorityDto implements Serializable{
 	
  	private Long id;
- 	@NotNull(message = "Account is required")
- 	private String account;
- 	@NotNull(message = "Role is required")
+ 	private String username;
  	private Long roleid;
- 	
-    private AccountDto accountDto;
-    private RoleDto roleDto;
+
 }

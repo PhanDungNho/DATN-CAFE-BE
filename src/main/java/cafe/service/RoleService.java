@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import cafe.entity.Product;
 import cafe.entity.Role;
 import cafe.entity.Size;
-import cafe.entity.exception.EntityException;
+import cafe.exception.EntityException;
 import cafe.repository.RoleRepository;
 
 @Service

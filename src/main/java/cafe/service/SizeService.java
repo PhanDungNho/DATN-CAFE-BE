@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import cafe.entity.Category;
 import cafe.entity.Size;
-import cafe.entity.exception.EntityException;
+import cafe.exception.EntityException;
 import cafe.repository.SizeRepository;
 
  

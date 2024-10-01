@@ -26,7 +26,6 @@ public class ProductVariant {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private Long id;
-	
 
 	@Column(name = "active")
 	private Boolean active;
@@ -34,17 +33,13 @@ public class ProductVariant {
 	@ManyToOne
 	@JoinColumn(name = "productid")
 	private Product product;
-	
-	 @Column(nullable = false)
-	    private BigDecimal price;
-	
-	 @ManyToOne
-	    @JoinColumn(name = "sizeid")
-	    private Size size;
-	
 
+	@Column(nullable = false)
+	private BigDecimal price;
 
-
+	@ManyToOne
+	@JoinColumn(name = "sizeid")
+	private Size size;
 
 	// Getters and Setters
 }

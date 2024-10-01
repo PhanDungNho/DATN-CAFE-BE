@@ -65,6 +65,7 @@ public class RoleController {
 			return new ResponseEntity<>(dto, HttpStatus.CREATED);
 		}
 	
+		//tim tat ca
 		@GetMapping()
 		public ResponseEntity<?> getRoles() {
 			return new ResponseEntity<>(roleService.findAll(), HttpStatus.OK);

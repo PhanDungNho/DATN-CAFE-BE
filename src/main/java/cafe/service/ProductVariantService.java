@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 
 import cafe.entity.Product;
 import cafe.entity.ProductVariant;
-import cafe.entity.exception.EntityException;
- 
- 
+import cafe.exception.EntityException;
 import cafe.repository.ProductVariantRepository;
 
  

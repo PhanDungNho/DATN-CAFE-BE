@@ -14,7 +14,7 @@ import cafe.entity.Account;
 import cafe.entity.Address;
 import cafe.entity.Category;
 import cafe.entity.Product;
-import cafe.entity.exception.EntityException;
+import cafe.exception.EntityException;
 import cafe.repository.AccountRepository;
 import cafe.repository.AddressRespository;
 import cafe.repository.CategoryRepository;
