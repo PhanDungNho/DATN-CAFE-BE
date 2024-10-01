@@ -56,20 +56,20 @@ public class SizeController {
 	    Map<String, String> response = new HashMap<>();
 	    response.put("message", "Đã thêm sản phẩm thành công.");
 
-	    return new ResponseEntity<>(response, HttpStatus.OK);
+	    return new ResponseEntity<>(dto, HttpStatus.OK);
  
 
 	}
 
 	//cập nhật
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<?> updateSize(@PathVariable Long id, @RequestBody SizeDto dto) {
-//		Size entity = new Size();
-//		BeanUtils.copyProperties(dto, entity);
-//		entity = sizeService.update(id, entity);
-//		dto.setId(entity.getId());
-//		return new ResponseEntity<>(dto, HttpStatus.CREATED);
-//	}
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> updateSize(@PathVariable Long id, @RequestBody SizeDto dto) {
+		Size entity = new Size();
+		BeanUtils.copyProperties(dto, entity);
+		entity = sizeService.update(id, entity);
+		dto.setId(entity.getId());
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	}
 
 	@PatchMapping("/{id}/toggle-active")
 	public ResponseEntity<Map<String, String>> updateCategoryActive(@PathVariable Long id) {
