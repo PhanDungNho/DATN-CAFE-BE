@@ -39,12 +39,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-//                		.requestMatchers("/api/v1/login").permitAll()
-//                		.requestMatchers("/api/v1/cart/**","/api/v1/categories/**","/api/v1/products/**","/api/v1/orders/**").hasAnyRole("ADMIN","STAFF")
-//                		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-//                        .requestMatchers("/home").permitAll()  
-//                        .requestMatchers("/cart/**","/order/**").hasAnyRole("ADMIN","STAFF")
-//                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                		.requestMatchers("/api/v1/login").permitAll()
+                		.requestMatchers("/api/v1/cart/**","/api/v1/categories/**","/api/v1/sizes/**","/api/v1/products/**","/api/v1/orders/**").hasAnyRole("ADMIN","STAFF")
+                		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/home").permitAll()  
+                        .requestMatchers("/cart/**","/order/**").hasAnyRole("ADMIN","STAFF")
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().permitAll()
                 )
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
