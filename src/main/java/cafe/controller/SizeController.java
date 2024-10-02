@@ -53,10 +53,11 @@ public class SizeController {
 		entity = sizeService.save(entity);
 
 		dto.setId(entity.getId());
+		
 	    Map<String, String> response = new HashMap<>();
 	    response.put("message", "Đã thêm sản phẩm thành công.");
 
-	    return new ResponseEntity<>(dto, HttpStatus.OK);
+	    return new ResponseEntity<>(dto, HttpStatus.CREATED);
  
 
 	}

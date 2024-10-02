@@ -12,7 +12,9 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cafe.dto.AccountDto;
 import cafe.dto.ToppingDto;
+import cafe.entity.Account;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.repository.ToppingRepository;
@@ -21,9 +23,25 @@ import cafe.repository.ToppingRepository;
 public class ToppingService {
 	@Autowired
 	private ToppingRepository toppingRepository;
-
+	@Autowired
+	private FileStorageService fileStorageService;
 	public Topping save(Topping entity) {
 		
+		return toppingRepository.save(entity);
+	}
+	
+	public Topping insertTopping(ToppingDto dto) {
+
+		 
+		Topping entity = new Topping();
+		BeanUtils.copyProperties(dto, entity);
+	 
+
+		if (dto.getImageFile() != null) {
+			String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+			entity.setImage(filename);
+			dto.setImage(filename);
+		}
 		return toppingRepository.save(entity);
 	}
 
