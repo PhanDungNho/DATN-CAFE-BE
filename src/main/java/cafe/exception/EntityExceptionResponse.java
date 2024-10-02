@@ -1,4 +1,4 @@
-package cafe.entity.exception;
+package cafe.exception;
 
 import lombok.Data;
 

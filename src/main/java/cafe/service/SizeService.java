@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import cafe.entity.Category;
 import cafe.entity.Size;
-import cafe.entity.exception.EntityException;
+import cafe.exception.EntityException;
 import cafe.repository.SizeRepository;
 
  
@@ -64,5 +64,19 @@ public class SizeService {
 	public void deleteById(Long id) {
 		Size existed = findById(id);
 		sizeRepository.delete(existed);
+	}
+	
+	public Size toggleActive(Long id) {
+		Optional<Size> optionalSize = sizeRepository.findById(id);
+		if (optionalSize.isEmpty()) {
+			throw new EntityException("Size with id " + id + " do not exist");
+		}
+		Size size = optionalSize.get();
+		size.setActive(!size.getActive());
+		return sizeRepository.save(size);
+	}
+	public List<Size> findSizeByName(String name){
+		List<Size> list = sizeRepository.findByNameContainsIgnoreCase(name);
+		return list;
 	}
 }

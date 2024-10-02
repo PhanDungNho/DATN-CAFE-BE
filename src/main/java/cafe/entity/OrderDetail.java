@@ -3,9 +3,11 @@ package cafe.entity;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,5 +53,18 @@ public class OrderDetail {
     @JsonIgnore
     @OneToMany(mappedBy = "orderdetail", fetch = FetchType.EAGER)
     private List<OrderDetailTopping> orderdetailtoppings;
+    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderDetail orderDetail = (OrderDetail) o;
+        return Objects.equals(id, orderDetail.getId());
+    } 
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); // Chỉ sử dụng id hoặc các thuộc tính cơ bản khác
+    }
 }
 

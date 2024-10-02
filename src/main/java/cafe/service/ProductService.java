@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import cafe.dto.ProductDto;
 import cafe.entity.Category;
 import cafe.entity.Product;
-import cafe.entity.exception.EntityException;
+import cafe.exception.EntityException;
 import cafe.repository.CategoryRepository;
 import cafe.repository.ProductRepository;
 
@@ -41,7 +41,7 @@ public class ProductService {
 
 	        // Lưu sản phẩm vào cơ sở dữ liệu
 	        return productRepository.save(product);
-	    }
+	}
 	 
 	
 	 public Product update(Long id, ProductDto dto) {

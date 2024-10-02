@@ -31,7 +31,7 @@ import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/products")
-@CrossOrigin
+@CrossOrigin // cho phép truy cập tất cả
 public class ProductController {
 
 	@Autowired
@@ -136,8 +136,8 @@ public class ProductController {
 	public ResponseEntity<?> getProducts(
 			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 		return new ResponseEntity<>(productService.findAll(pageable), HttpStatus.OK);
-	}
-
+	}  
+//
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getCategories(@PathVariable("id") Long id) {
 		return new ResponseEntity<>(productService.findById(id), HttpStatus.OK);

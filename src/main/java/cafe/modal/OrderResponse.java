@@ -7,8 +7,8 @@ import java.util.List;
 import cafe.entity.Account;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
-import cafe.entity.OrderStatus;
-import cafe.entity.PaymentMethod;
+import cafe.enums.OrderStatus;
+import cafe.enums.PaymentMethod;
 import lombok.Data;
 
 @Data

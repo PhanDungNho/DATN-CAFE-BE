@@ -9,8 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import cafe.entity.Image;
+import cafe.exception.EntityException;
 import cafe.entity.Image;
-import cafe.entity.exception.EntityException;
 import cafe.repository.ImageRepository;
  
  

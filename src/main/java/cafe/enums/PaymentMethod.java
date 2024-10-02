@@ -1,4 +1,4 @@
-package cafe.entity;
+package cafe.enums;
 
 public enum PaymentMethod {
 CASH, ONLINE

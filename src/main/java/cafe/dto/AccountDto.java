@@ -3,6 +3,10 @@ package cafe.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotBlank;
@@ -12,10 +16,20 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
+
 @JsonInclude(JsonInclude.Include.NON_NULL) // Bao gồm các trường không null
 //DTO là lớp trung gian, thường để bảo mật, này nọ
 public class AccountDto {
 	
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class AccountDto implements Serializable{
+	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
 	@Size(max = 255, message = "Username must be less than or equal to 255 characters")
 	private String username;
 	
@@ -39,4 +53,14 @@ public class AccountDto {
     @NotBlank(message = "Phone is required")
     @Size(max = 15, message = "Phone must be less than or equal to 255 characters")
     private String phone;
+    
+	private String image;
+
+	@JsonIgnore
+	private MultipartFile imageFile;
+	
+	
+//    private List<AccountRoleDto> accountRoleDtos;
+    
+
 }

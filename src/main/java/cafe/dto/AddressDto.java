@@ -31,4 +31,7 @@ public class AddressDto {
     private Integer wardcode;
 
     private AccountDto account;
+    
+    private String account;
+    private AccountDto accountDto;
 }

@@ -13,5 +13,5 @@ import cafe.entity.Size;
 
 public interface SizeRepository extends JpaRepository<Size, Long> {
 //	List<Category> findByNameStartsWith(String name, Pageable pageable);
-
+	List<Size> findByNameContainsIgnoreCase(String name);
 }
