@@ -34,17 +34,6 @@ public class AccountService {
 	private FileStorageService fileStorageService;
 	
 
-public Account save(AccountDto accountDto) {
-	if(accountRepository.findByUsername(accountDto.getUsername()).isPresent()) {
-		throw new EntityException("Username " + accountDto.getUsername() + " is exist");
-	}
-    Account account = new Account();
-    BeanUtils.copyProperties(accountDto, account);
-    System.out.println(passwordEncoder.encode(accountDto.getPassword()));
-    account.setEmail(passwordEncoder.encode(accountDto.getPassword()));
-
-    return accountRepository.save(account);
-}
 
 public Account insertAccount(AccountDto dto) {
 
@@ -64,7 +53,18 @@ public Account insertAccount(AccountDto dto) {
 	return accountRepository.save(entity);
 }
 	 
-	
+public Account save(AccountDto accountDto) {
+	if(accountRepository.findByUsername(accountDto.getUsername()).isPresent()) {
+		throw new EntityException("Username " + accountDto.getUsername() + " is exist");
+	}
+    Account account = new Account();
+    BeanUtils.copyProperties(accountDto, account);
+    System.out.println(passwordEncoder.encode(accountDto.getPassword()));
+    account.setEmail(passwordEncoder.encode(accountDto.getPassword()));
+
+    return accountRepository.save(account);
+}
+
 	 public Account update(String username, AccountDto dto) {
 		    Optional<Account> existed = accountRepository.findById(username);
 		    if (existed.isEmpty()) {

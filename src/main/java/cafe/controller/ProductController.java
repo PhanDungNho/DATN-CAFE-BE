@@ -42,7 +42,7 @@ public class ProductController {
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
-	@PostMapping
+ 	@PostMapping
 	public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDto productDto, BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
 		if (responseEntity != null) {
