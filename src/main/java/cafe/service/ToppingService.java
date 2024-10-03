@@ -15,6 +15,8 @@ import org.springframework.stereotype.Service;
 import cafe.dto.AccountDto;
 import cafe.dto.ToppingDto;
 import cafe.entity.Account;
+import cafe.entity.Category;
+import cafe.entity.Size;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.repository.ToppingRepository;
@@ -57,22 +59,22 @@ public class ToppingService {
 		return found.get();
 	}
 	
-	public Page<ToppingDto> findToppingsByName(String name, Pageable pageable){
-		var list = toppingRepository.findByNameContainsIgnoreCase(name, pageable);
-		
-		var newList = list.getContent().stream()
-				.map(item -> {
-					ToppingDto dto = new ToppingDto();
-					BeanUtils.copyProperties(item, dto, "orderdetailtopping");
-					
-					return dto;
-				}).collect(Collectors.toList());
-		
-		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
-		
-		return newPage;
-	}
-	
+//	public Page<ToppingDto> findToppingsByName(String name, Pageable pageable){
+//		var list = toppingRepository.findByNameContainsIgnoreCase(name, pageable);
+//		
+//		var newList = list.getContent().stream()
+//				.map(item -> {
+//					ToppingDto dto = new ToppingDto();
+//					BeanUtils.copyProperties(item, dto, "orderdetailtopping");
+//					
+//					return dto;
+//				}).collect(Collectors.toList());
+//		
+//		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
+//		
+//		return newPage;
+//	}
+//	
 	public Page<Topping> findAll(Pageable pageable) {
 		return toppingRepository.findAll(pageable);
 	}
@@ -87,6 +89,16 @@ public class ToppingService {
 		BeanUtils.copyProperties(topping, entity, "id");
 		
 		return toppingRepository.save(entity);
+	}
+	
+	public Topping toggleActive(Long id) {
+		Optional<Topping> optionalTopping = toppingRepository.findById(id);
+		if (optionalTopping.isEmpty()) {
+			throw new EntityException("Topping with id " + id + " do not exist");
+		}
+		Topping topping = optionalTopping.get();
+		topping.setActive(!topping.getActive());
+		return toppingRepository.save(topping);
 	}
 	
 //	public Topping delete(Long id, Topping topping) {
@@ -107,4 +119,9 @@ public class ToppingService {
 //		
 //		return toppingRepository.delete(entity);
 //	} 
+	public List<Topping> findCategoryByName(String name){
+		List<Topping> list = toppingRepository.findByNameContainsIgnoreCase(name);
+		return list;
+	}
+
 }
