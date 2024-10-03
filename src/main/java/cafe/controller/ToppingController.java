@@ -85,9 +85,8 @@ public class ToppingController {
 	}
 	
 	@GetMapping("/find")
-	public ResponseEntity<?> getToppingsByName(@RequestParam("query") String query, 
-			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
-		return new ResponseEntity<>(toppingService.findToppingsByName(query, pageable), HttpStatus.OK);
+	public ResponseEntity<?> getToppingByName(@RequestParam("query") String query){
+		return new ResponseEntity<>(toppingService.findCategoryByName(query), HttpStatus.OK);
 	}
 	
 	@GetMapping("/page")
@@ -98,7 +97,6 @@ public class ToppingController {
 	@PatchMapping("/{id}/toggle-active")
 	public ResponseEntity<Map<String, String>> updateToppingActive(@PathVariable Long id) {
 	    Topping updatedTopping = toppingService.toggleActive(id);
-	    
 	    Map<String, String> response = new HashMap<>();
 	    response.put("message", "Topping " + (updatedTopping.getActive() ? "activated" : "deactivated") + " successfully.");
 
