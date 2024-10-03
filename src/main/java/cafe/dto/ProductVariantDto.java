@@ -7,20 +7,29 @@ import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+ 
+
+import java.math.BigDecimal;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotNull;
+import lombok.Data;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 public class ProductVariantDto {
-	private Long id;
+    private Long id;
 
-	@NotNull(message = "Active status is required")
-	private Boolean active;
+    @NotNull(message = "Active status is required")
+    private Boolean active;
 
-	@NotNull(message = "Product is required")
-	private ProductDto product;
+    @JsonIgnore // Bỏ qua thuộc tính product khi tuần tự hóa
+    @NotNull(message = "Product is required")
+    private ProductDto product;
 
-	@NotNull(message = "Size is required")
-	private SizeDto size;
+    @NotNull(message = "Size is required")
+    private SizeDto size;
 
-	@NotNull(message = "Price is required")
-	@DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
-	private BigDecimal price;
+    @NotNull(message = "Price is required")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
+    private BigDecimal price;
 }

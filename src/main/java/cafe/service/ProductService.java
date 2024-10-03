@@ -1,5 +1,6 @@
 package cafe.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,9 +8,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import cafe.dto.ProductDto;
+import cafe.dto.UploadedFileInfo;
 import cafe.entity.Category;
+import cafe.entity.Image;
 import cafe.entity.Product;
 import cafe.exception.EntityException;
 import cafe.repository.CategoryRepository;
@@ -24,6 +28,9 @@ public class ProductService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
+	
+	@Autowired
+	private FileStorageService fileStorageService;
 
 
 	
@@ -42,6 +49,11 @@ public class ProductService {
 	        // Lưu sản phẩm vào cơ sở dữ liệu
 	        return productRepository.save(product);
 	}
+	
+	 
+
+	 
+
 	 
 	
 	 public Product update(Long id, ProductDto dto) {

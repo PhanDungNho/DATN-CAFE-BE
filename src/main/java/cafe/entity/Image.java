@@ -26,15 +26,20 @@ public class Image    {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
-
-    @Column(name = "name", nullable = false, length = 255)
+    @Column (name = "name", nullable = false, length = 255)
     private String name;
-    
-    @Column(name = "isdefault")
+
+    @Column (name = "isdefault")
     private Boolean isdefault;
-    
+
+    @Column (name = "filename")
+    private String filename;
+
+    @Column(name = "url" )
+    private String url;
+
     @ManyToOne
-    @JoinColumn(name = "productid")
+    @JoinColumn (name = "productid")
     private Product product;
     
 

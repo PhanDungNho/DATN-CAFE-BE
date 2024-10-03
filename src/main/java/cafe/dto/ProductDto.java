@@ -13,7 +13,7 @@ import lombok.Data;
 
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL) // Bao gồm các trường không null
-//DTO là lớp trung gian, thường để bảo mật, này nọ
+// DTO là lớp trung gian, thường để bảo mật, này nọ
 public class ProductDto implements Serializable {
 
     private long id;
@@ -34,7 +34,7 @@ public class ProductDto implements Serializable {
     // Chỉ sử dụng khi trả về thông tin sản phẩm
     private CategoryDto category;
 
-    private List<ProductVariantDto> productVariants;
+    private List<ProductVariantDto> productVariants; // Danh sách biến thể sản phẩm
 
-    private List<ImageDto> images;
+    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm
 }

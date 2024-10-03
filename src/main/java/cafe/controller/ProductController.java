@@ -22,6 +22,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import cafe.dto.CategoryDto;
 import cafe.dto.ProductDto;
+import cafe.dto.ProductVariantDto;
+import cafe.dto.SizeDto;
 import cafe.entity.Category;
 import cafe.entity.Product;
 
@@ -40,7 +42,7 @@ public class ProductController {
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
-	@PostMapping
+ 	@PostMapping
 	public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDto productDto, BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
 		if (responseEntity != null) {
@@ -110,7 +112,6 @@ public class ProductController {
 	@GetMapping()
 	public ResponseEntity<?> getProducts() {
 	    List<Product> products = productService.findAll();
-
 	    List<ProductDto> productDtos = products.stream().map(product -> {
 	        ProductDto dto = new ProductDto();
 	        dto.setId(product.getId());
@@ -118,6 +119,7 @@ public class ProductController {
 	        dto.setActive(product.getActive());
 	        dto.setDescription(product.getDescription());
 
+	        // Ánh xạ danh mục (category) nếu tồn tại
 	        if (product.getCategory() != null) {
 	            CategoryDto categoryDto = new CategoryDto();
 	            categoryDto.setId(product.getCategory().getId());
@@ -125,11 +127,39 @@ public class ProductController {
 	            dto.setCategory(categoryDto);
 	        }
 
+	        // Ánh xạ danh sách product variants
+	        List<ProductVariantDto> variantDtos = product.getProductvariants().stream().map(variant -> {
+	            ProductVariantDto variantDto = new ProductVariantDto();
+	            variantDto.setId(variant.getId());
+	            variantDto.setActive(variant.getActive());
+	            
+	            // Ánh xạ thông tin ProductDto vào ProductVariantDto
+	            ProductDto productDto = new ProductDto();
+	            productDto.setId(variant.getProduct().getId());
+	            productDto.setName(variant.getProduct().getName());
+	            variantDto.setProduct(productDto);
+
+	            // Ánh xạ thông tin SizeDto vào ProductVariantDto
+	            SizeDto sizeDto = new SizeDto();
+	            sizeDto.setId(variant.getSize().getId());
+	            sizeDto.setName(variant.getSize().getName());
+	            sizeDto.setActive(variant.getSize().getActive());
+	            variantDto.setSize(sizeDto);
+
+	            // Ánh xạ giá sản phẩm biến thể
+	            variantDto.setPrice(variant.getPrice());
+
+	            return variantDto;
+	        }).toList();
+
+	        dto.setProductVariants(variantDtos); // Thiết lập danh sách biến thể sản phẩm
+
 	        return dto;
 	    }).toList();
 
 	    return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
+
 
 	// cái này để phân trang
 	@GetMapping("/page")
@@ -139,9 +169,48 @@ public class ProductController {
 	}  
 //
 	@GetMapping("/{id}/get")
-	public ResponseEntity<?> getCategories(@PathVariable("id") Long id) {
-		return new ResponseEntity<>(productService.findById(id), HttpStatus.OK);
+	public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
+	    Product product = productService.findById(id);
+	    
+	    if (product == null) {
+	        return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
+	    }
+
+	    ProductDto productDto = new ProductDto();
+	    productDto.setId(product.getId());
+	    productDto.setName(product.getName());
+	    productDto.setActive(product.getActive());
+	    productDto.setDescription(product.getDescription());
+
+	    if (product.getCategory() != null) {
+	        CategoryDto categoryDto = new CategoryDto();
+	        categoryDto.setId(product.getCategory().getId());
+	        categoryDto.setName(product.getCategory().getName());
+	        productDto.setCategory(categoryDto);
+	    }
+
+	    if (product.getProductvariants() != null) {
+	        List<ProductVariantDto> variantDtos = product.getProductvariants().stream().map(variant -> {
+	            ProductVariantDto variantDto = new ProductVariantDto();
+	            variantDto.setId(variant.getId());
+	            variantDto.setActive(variant.getActive());
+	            variantDto.setPrice(variant.getPrice());
+
+	            SizeDto sizeDto = new SizeDto();
+	            sizeDto.setId(variant.getSize().getId());
+	            sizeDto.setName(variant.getSize().getName());
+	            sizeDto.setActive(variant.getSize().getActive());
+	            variantDto.setSize(sizeDto);
+
+	            return variantDto;
+	        }).toList();
+
+	        productDto.setProductVariants(variantDtos);
+	    }
+
+	    return new ResponseEntity<>(productDto, HttpStatus.OK);
 	}
+
 
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteCategory(@PathVariable("id") Long id) {
