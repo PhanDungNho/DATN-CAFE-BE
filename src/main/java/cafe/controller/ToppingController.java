@@ -1,6 +1,8 @@
 package cafe.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import cafe.dto.AccountDto;
 import cafe.dto.ToppingDto;
 import cafe.entity.Account;
+import cafe.entity.Size;
 import cafe.entity.Topping;
 import cafe.service.MapValidationErrorService;
 import cafe.service.ToppingService;
@@ -91,6 +94,15 @@ public class ToppingController {
 	public ResponseEntity<?> getTopping(
 			@PageableDefault(size=5,sort="name",direction = Sort.Direction.ASC) Pageable pageable) {
 		return new ResponseEntity<>(toppingService.findAll(pageable), HttpStatus.OK);
+	}
+	@PatchMapping("/{id}/toggle-active")
+	public ResponseEntity<Map<String, String>> updateToppingActive(@PathVariable Long id) {
+	    Topping updatedTopping = toppingService.toggleActive(id);
+	    
+	    Map<String, String> response = new HashMap<>();
+	    response.put("message", "Topping " + (updatedTopping.getActive() ? "activated" : "deactivated") + " successfully.");
+
+	    return new ResponseEntity<>(response, HttpStatus.OK);
 	}
 	
 	@PatchMapping("/{id}")
