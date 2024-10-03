@@ -3,6 +3,8 @@ package cafe.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import jakarta.validation.constraints.NotBlank;
@@ -31,10 +33,10 @@ public class ProductDto implements Serializable {
     // Chỉ sử dụng khi tạo mới hoặc cập nhật sản phẩm
     private Long categoryid; 
 
+    private List<ProductVariantDto> productVariants; // Danh sách biến thể sản phẩm
+    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm
+    private List<MultipartFile> imageFiles;
+    
     // Chỉ sử dụng khi trả về thông tin sản phẩm
     private CategoryDto category;
-
-    private List<ProductVariantDto> productVariants; // Danh sách biến thể sản phẩm
-
-    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm
 }

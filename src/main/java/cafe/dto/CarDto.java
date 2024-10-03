@@ -7,6 +7,8 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import cafe.entity.Imagee;
+
 @Data
 public class CarDto implements Serializable {
     private Long id;
@@ -14,4 +16,5 @@ public class CarDto implements Serializable {
     private String description;
     private List<ImageeDto> images; // Sử dụng ImageeDto ở đây
     private List<MultipartFile> imageFiles;
+    private List<Imagee> imagees;
 }
