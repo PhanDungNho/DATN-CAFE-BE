@@ -53,16 +53,16 @@ public class ImageService {
 		return imageRepository.findAll(pageable);
 	}
 
-	public Image findById(Integer id) {
-		Optional<Image> found = imageRepository.findById(id);
-		if (found.isEmpty()) {
-			throw new EntityException("Image with id " + id + " does not exist");
-		}
-		return found.get();
-	}
+//	public Image findById(Integer id) {
+//		Optional<Image> found = imageRepository.findById(id);
+//		if (found.isEmpty()) {
+//			throw new EntityException("Image with id " + id + " does not exist");
+//		}
+//		return found.get();
+//	}
 	
-	public void deleteById(Integer id) {
-		Image existed = findById(id);
-		imageRepository.delete(existed);
-	}
+//	public void deleteById(Integer id) {
+//		Image existed = findById(id);
+//		imageRepository.delete(existed);
+//	}
 }

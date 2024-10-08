@@ -30,12 +30,15 @@ public class CarController {
     private CarService carService;
 	@Autowired
 	private  FileStorageService fileStorageService;
+	
+	
     @PostMapping(consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity<CarDto> createCar(@ModelAttribute CarDto carDto) {
+    public ResponseEntity<?> createCar(@ModelAttribute CarDto carDto) {
         Car car = carService.addCar(carDto);
+        carDto.setImageFiles(null);
+        carDto.setImagees(car.getImages());
         return new ResponseEntity<>(carDto, HttpStatus.CREATED);
     }
-    
     
     
 	@GetMapping("/logo/{filename:.+}")
