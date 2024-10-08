@@ -37,7 +37,7 @@ import cafe.entity.OrderDetailTopping;
 import cafe.entity.Topping;
 import cafe.modal.OrderResponse;
 import cafe.service.MapValidationErrorService;
-import cafe.service.OrderDetailService;
+//import cafe.service.OrderDetailService;
 import cafe.service.OrderService;
 import jakarta.validation.Valid;
 
@@ -48,8 +48,8 @@ public class OrderController {
 	@Autowired
 	private OrderService orderService;
 
-	@Autowired
-	private OrderDetailService detailService;
+//	@Autowired
+//	private OrderDetailService detailService;
 
 	@Autowired
 	private MapValidationErrorService mapValidationErrorService;
@@ -86,21 +86,22 @@ public class OrderController {
 		Order order = orderService.createOrder(dto);
 		// Chuyển đổi Order thành OrderDto để trả về cho client
 		OrderDto respDto = new OrderDto();
-		respDto.setId(order.getId());
-		respDto.setActive(order.getActive());
-		respDto.setCashier(order.getCashier());
-		respDto.setOrdertype(order.getOrdertype());
-		respDto.setCreatedtime(order.getCreatedtime());
-		respDto.setCustomer(order.getCustomer());
-		respDto.setFulladdresstext(order.getFulladdresstext());
-		// Chuyển đổi OrderDetail thành OrderdetailDto
+//		respDto.setId(order.getId());
+//		respDto.setActive(order.getActive());
+//		respDto.setCashier(order.getCashier());
+//		respDto.setOrdertype(order.getOrdertype());
+//		respDto.setCreatedtime(order.getCreatedtime());
+//		respDto.setCustomer(order.getCustomer());
+//		respDto.setFulladdresstext(order.getFulladdresstext());
+//		// Chuyển đổi OrderDetail thành OrderdetailDto
 		List<OrderdetailDto> orderDetailDtos = order.getOrderdetails().stream().map(this::convertToOrderdetailDto)
 				.collect(Collectors.toList());
 		respDto.setOrderdetails(orderDetailDtos);
-		respDto.setPaymentmethod(order.getPaymentmethod());
-		respDto.setShippingfee(order.getShippingfee());
-		respDto.setStatus(order.getStatus());
-		respDto.setTotalamount(order.getTotalamount());
+//		respDto.setPaymentmethod(order.getPaymentmethod());
+//		respDto.setShippingfee(order.getShippingfee());
+//		respDto.setStatus(order.getStatus());
+//		respDto.setTotalamount(order.getTotalamount());
+		BeanUtils.copyProperties(order, respDto);
 		return new ResponseEntity<>(respDto, HttpStatus.CREATED);
 	}
 

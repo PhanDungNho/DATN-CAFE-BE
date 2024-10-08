@@ -20,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -86,5 +87,9 @@ public class Order {
     public int hashCode() {
         return Objects.hash(id); // Chỉ sử dụng id hoặc các thuộc tính cơ bản khác
     }
-
+	@PrePersist
+	public void prePdersist() {
+		createdtime = new Date();
+		active=true;
+	}
 }

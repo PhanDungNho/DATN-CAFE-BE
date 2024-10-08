@@ -17,6 +17,7 @@ import cafe.entity.OrderDetailTopping;
  
 import cafe.enums.OrderStatus;
  
+import cafe.enums.OrderStatus;
 import cafe.entity.ProductVariant;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
@@ -57,8 +58,8 @@ public class OrderService {
 
 	public Order createOrder(OrderDto dto) {
 		Order order = new Order();
-		// Chuyển đổi các thuộc tính đơn giản từ DTO sang entity Order
-		order.setCreatedtime(dto.getCreatedtime());
+	 
+//		order.setCreatedtime(dto.getCreatedtime());
 		order.setTotalamount(dto.getTotalamount());
 		order.setStatus(dto.getStatus());
 		order.setPaymentmethod(dto.getPaymentmethod());
@@ -66,17 +67,17 @@ public class OrderService {
 		order.setActive(dto.getActive());
 		order.setShippingfee(dto.getShippingfee());
 		order.setFulladdresstext(dto.getFulladdresstext());
-		// Tìm và gán đối tượng Cashier
-		Account cashier = accountRepository.findById(dto.getCashier().getUsername())
+	 
+		Account cashier = accountRepository.findById(dto.getCashierid())
 				.orElseThrow(() -> new EntityException("Cashier not found"));
 		order.setCashier(cashier);
 
-		// Tìm và gán đối tượng Customer
-		Account customer = accountRepository.findById(dto.getCustomer().getUsername())
+	 
+		Account customer = accountRepository.findById(dto.getCustomerid())
 				.orElseThrow(() -> new EntityException("Customer not found"));
 		order.setCustomer(customer);
 
-		// Lưu Order trước để có ID
+	 
 		Order savedOrder = orderRepository.save(order);
 
 		// Xử lý OrderDetail từ DTO và liên kết với Order vừa lưu
