@@ -100,6 +100,13 @@ public Account save(AccountDto accountDto) {
 		}
 		return found.get();
 	}
+	public Account findByPhone(String phone) {
+		Optional<Account> found = accountRepository.findByphone(phone);
+		if (found.isEmpty()) {
+			throw new EntityException("Account with phone " + phone + " does not exist");
+		}
+		return found.get();
+	}
 	
 	public void deleteById(String username) {
 		Account existed = findById(username);

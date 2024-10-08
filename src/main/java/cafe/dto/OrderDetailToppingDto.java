@@ -2,6 +2,8 @@ package cafe.dto;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import cafe.entity.OrderDetail;
 import cafe.entity.Topping;
 import lombok.Data;
@@ -12,5 +14,6 @@ public class OrderDetailToppingDto {
 	private BigDecimal momentprice;
 	private Integer quantity;
 	private ToppingDto topping;
+	
 	private OrderDetail orderDetail;
 }

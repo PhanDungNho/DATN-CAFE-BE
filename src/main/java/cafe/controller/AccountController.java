@@ -154,6 +154,11 @@ public class AccountController {
 	public ResponseEntity<?> getAccounts(@PathVariable("username") String username) {
 		return new ResponseEntity<>(accountService.findById(username), HttpStatus.OK);
 	}
+	
+	@GetMapping("/{phone}/getByPhone")
+	public ResponseEntity<?> getAccountByPhone(@PathVariable("phone") String phone) {
+		return new ResponseEntity<>(accountService.findByPhone(phone), HttpStatus.OK);
+	}
 
 	@DeleteMapping("/{username}")
 	public ResponseEntity<?> deleteAccounts(@PathVariable("username") String username) {
