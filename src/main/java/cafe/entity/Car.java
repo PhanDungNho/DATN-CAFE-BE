@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @Entity
 @NoArgsConstructor
@@ -24,6 +26,7 @@ public class Car {
     @Column(name = "description", length = 500)
     private String description;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "car", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Imagee> images; // Sử dụng Imagee ở đây
 }
