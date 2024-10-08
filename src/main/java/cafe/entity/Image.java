@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -16,12 +17,15 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-@SuppressWarnings("serial")
 @Entity
 @Data
 @Table(name = "image")
+@NoArgsConstructor
+@AllArgsConstructor
 public class Image {
 
 	@Id
@@ -38,26 +42,10 @@ public class Image {
 	@Column(name = "url")
 	private String url;
 
-	@ManyToOne
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "productid")
 	private Product product;
 
-	@Override
-	public boolean equals(Object o) {
-		if (this == o)
-			return true;
 
-		if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o))
-			return false;
-
-		Image that = (Image) o;
-
-		return getId() != null && Objects.equals(getId(), that.getId());
-	}
-
-	@Override
-	public int hashCode() {
-		return getClass().hashCode();
-	}
 	// Getters and Setters
 }
