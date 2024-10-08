@@ -62,10 +62,11 @@ public class CategoryController {
 		Category entity = new Category();
 		BeanUtils.copyProperties(dto, entity);
 		entity = categoryService.update(id, entity);
+		
 		 Map<String, String> response = new HashMap<>();
 		    response.put("message", "Size " + entity.getId() + " đã được update.");
 
-		    return new ResponseEntity<>(response, HttpStatus.OK);
+		    return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
 	}
 	
