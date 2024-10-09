@@ -12,7 +12,11 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cafe.dto.AccountDto;
 import cafe.dto.ToppingDto;
+import cafe.entity.Account;
+import cafe.entity.Category;
+import cafe.entity.Size;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.repository.ToppingRepository;
@@ -21,9 +25,25 @@ import cafe.repository.ToppingRepository;
 public class ToppingService {
 	@Autowired
 	private ToppingRepository toppingRepository;
-
+	@Autowired
+	private FileStorageService fileStorageService;
 	public Topping save(Topping entity) {
 		
+		return toppingRepository.save(entity);
+	}
+	
+	public Topping insertTopping(ToppingDto dto) {
+
+		 
+		Topping entity = new Topping();
+		BeanUtils.copyProperties(dto, entity);
+	 
+
+		if (dto.getImageFile() != null) {
+			String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+			entity.setImage(filename);
+			dto.setImage(filename);
+		}
 		return toppingRepository.save(entity);
 	}
 
@@ -39,20 +59,46 @@ public class ToppingService {
 		return found.get();
 	}
 	
-	public Page<ToppingDto> findToppingsByName(String name, Pageable pageable){
-		var list = toppingRepository.findByNameContainsIgnoreCase(name, pageable);
+//	public Page<ToppingDto> findToppingsByName(String name, Pageable pageable){
+//		var list = toppingRepository.findByNameContainsIgnoreCase(name, pageable);
+//		
+//		var newList = list.getContent().stream()
+//				.map(item -> {
+//					ToppingDto dto = new ToppingDto();
+//					BeanUtils.copyProperties(item, dto, "orderdetailtopping");
+//					
+//					return dto;
+//				}).collect(Collectors.toList());
+//		
+//		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
+//		
+//		return newPage;
+//	}
+//	
+	
+	public Topping updateTopping(Long id, ToppingDto dto) {
+		var found = toppingRepository.findById(id);
 		
-		var newList = list.getContent().stream()
-				.map(item -> {
-					ToppingDto dto = new ToppingDto();
-					BeanUtils.copyProperties(item, dto, "orderdetailtopping");
-					
-					return dto;
-				}).collect(Collectors.toList());
+		if (found.isEmpty()) {
+			throw new EntityException("Topping not found");
+		}
 		
-		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
+		var prevImage = found.get().getImage();
+		Topping entity = new Topping();
+		BeanUtils.copyProperties(dto, entity);
 		
-		return newPage;
+		if(dto.getImageFile() != null) {
+			String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+			
+			entity.setImage(filename);
+			dto.setImageFile(null);
+		}
+		
+		if(entity.getImage() == null) {
+			entity.setImage(prevImage);
+		}
+		
+		return toppingRepository.save(entity);
 	}
 	
 	public Page<Topping> findAll(Pageable pageable) {
@@ -69,6 +115,16 @@ public class ToppingService {
 		BeanUtils.copyProperties(topping, entity, "id");
 		
 		return toppingRepository.save(entity);
+	}
+	
+	public Topping toggleActive(Long id) {
+		Optional<Topping> optionalTopping = toppingRepository.findById(id);
+		if (optionalTopping.isEmpty()) {
+			throw new EntityException("Topping with id " + id + " do not exist");
+		}
+		Topping topping = optionalTopping.get();
+		topping.setActive(!topping.getActive());
+		return toppingRepository.save(topping);
 	}
 	
 //	public Topping delete(Long id, Topping topping) {
@@ -89,4 +145,9 @@ public class ToppingService {
 //		
 //		return toppingRepository.delete(entity);
 //	} 
+	public List<Topping> findCategoryByName(String name){
+		List<Topping> list = toppingRepository.findByNameContainsIgnoreCase(name);
+		return list;
+	}
+
 }

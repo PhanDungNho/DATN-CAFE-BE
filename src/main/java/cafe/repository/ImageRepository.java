@@ -10,7 +10,8 @@ import cafe.entity.Category;
 import cafe.entity.Image;
  
 
-public interface ImageRepository extends JpaRepository<Image, Integer> {
-//	List<Category> findByNameStartsWith(String name, Pageable pageable);
+public interface ImageRepository extends JpaRepository<Image, Long> {
 
+	List<Image> findByProductId(Long productId);
+	void deleteByFilename(String filename);
 }

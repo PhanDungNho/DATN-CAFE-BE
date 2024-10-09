@@ -47,9 +47,6 @@ public class CategoryController {
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		//		if(true) {
-//			throw new CategoryException("Category is error");
-//		}
 		Category entity = new Category();
 		BeanUtils.copyProperties(dto, entity);
 		entity = categoryService.save(entity);
@@ -65,29 +62,21 @@ public class CategoryController {
 		Category entity = new Category();
 		BeanUtils.copyProperties(dto, entity);
 		entity = categoryService.update(id, entity);
-		dto.setId(entity.getId());
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+		
+		 Map<String, String> response = new HashMap<>();
+		    response.put("message", "Size " + entity.getId() + " đã được update.");
+
+		    return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
 	}
 	
-//	@PatchMapping("/{id}/toggle-active")
-//    public ResponseEntity<?> updateCategoryActive(@PathVariable Long id) {
-//		Category updatedCate = categoryService.toggleActive(id);
-//		
-//		CategoryDto responseDto = new CategoryDto();
-//		responseDto.setId(updatedCate.getId());
-//		responseDto.setName(updatedCate.getName());
-//		responseDto.setActive(updatedCate.getActive());
-//		
-//      return new ResponseEntity<>(responseDto, HttpStatus.OK);
-//    }
 	
 	@PatchMapping("/{id}/toggle-active")
 	public ResponseEntity<Map<String, String>> updateCategoryActive(@PathVariable Long id) {
 	    Category updatedCate = categoryService.toggleActive(id);
 	    
 	    Map<String, String> response = new HashMap<>();
-	    response.put("message", "Category " + (updatedCate.getActive() ? "activated" : "deactivated") + " successfully.");
+	    response.put("message", "Size " + (updatedCate.getActive() ? "activated" : "deactivated") + " successfully.");
 
 	    return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -105,11 +94,7 @@ public class CategoryController {
 		return new ResponseEntity<>(categoryService.findAll(pageable), HttpStatus.OK);
 	}
 	
-//	@GetMapping("/find")
-//	public ResponseEntity<?> getCategoryByName(@RequestParam("query") String query,
-//			@PageableDefault(size = 10, sort = "name", direction = Sort.Direction.ASC) Pageable pageable){
-//		return new ResponseEntity<>(categoryService.findCategoryByName(query, pageable), HttpStatus.OK);
-//	}
+ 
 	
 	@GetMapping("/find")
 	public ResponseEntity<?> getCategoryByName(@RequestParam("query") String query){

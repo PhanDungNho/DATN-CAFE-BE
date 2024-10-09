@@ -3,17 +3,24 @@ package cafe.dto;
 import java.io.Serializable;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import cafe.entity.Image;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@JsonInclude(JsonInclude.Include.NON_NULL) // Bao gồm các trường không null
-//DTO là lớp trung gian, thường để bảo mật, này nọ
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@NoArgsConstructor
+@AllArgsConstructor// Bao gồm các trường không null
+// DTO là lớp trung gian, thường để bảo mật, này nọ
 public class ProductDto implements Serializable {
 
     private long id;
@@ -31,10 +38,11 @@ public class ProductDto implements Serializable {
     // Chỉ sử dụng khi tạo mới hoặc cập nhật sản phẩm
     private Long categoryid; 
 
+    private List<ProductVariantDto> productVariants; // Danh sách biến thể sản phẩm
+//    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm
+    private List<MultipartFile> imageFiles;
+    private List<Image> images;
+    
     // Chỉ sử dụng khi trả về thông tin sản phẩm
     private CategoryDto category;
-
-    private List<ProductVariantDto> productVariants;
-
-    private List<ImageDto> images;
 }
