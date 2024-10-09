@@ -13,4 +13,5 @@ import cafe.entity.Image;
 public interface ImageRepository extends JpaRepository<Image, Long> {
 
 	List<Image> findByProductId(Long productId);
+	void deleteByFilename(String filename);
 }

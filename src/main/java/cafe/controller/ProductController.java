@@ -39,9 +39,11 @@ import cafe.exception.FileStorageException;
 import cafe.modal.OrderResponse;
 import cafe.modal.ProductResponse;
 import cafe.service.FileStorageService;
+import cafe.service.ImageService;
 import cafe.service.MapValidationErrorService;
 import cafe.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 
 @RestController
@@ -58,6 +60,8 @@ public class ProductController {
 	@Autowired
 	FileStorageService fileStorageService;
 
+	@Autowired
+	ImageService imageService ;
 // 	@PostMapping
 //	public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDto productDto, BindingResult result) {
 //		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
@@ -284,6 +288,15 @@ public class ProductController {
 		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
+	}
+	
+	@Transactional
+	@DeleteMapping("/images/{filename}")
+	public ResponseEntity<?> deleteImageByFilename(@PathVariable String filename) {
+		imageService.deleteImageByFilename(filename);
+		fileStorageService.deleteLogoFile(filename);
+		
+	return  new ResponseEntity<>("removed", HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/images/one", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE,

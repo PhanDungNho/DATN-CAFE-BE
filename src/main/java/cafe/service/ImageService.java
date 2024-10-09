@@ -24,6 +24,9 @@ public class ImageService {
 		return imageRepository.save(entity);
 	}
 
+	public void deleteImageByFilename(String filename) {
+		imageRepository.deleteByFilename(filename);
+	}
 //	public Image update(int id, Image entity) {
 //		Optional<Image> existed = imageRepository.findById(id);
 //		if (existed.isEmpty()) {
