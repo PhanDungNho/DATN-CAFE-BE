@@ -75,6 +75,32 @@ public class ToppingService {
 //		return newPage;
 //	}
 //	
+	
+	public Topping updateTopping(Long id, ToppingDto dto) {
+		var found = toppingRepository.findById(id);
+		
+		if (found.isEmpty()) {
+			throw new EntityException("Topping not found");
+		}
+		
+		var prevImage = found.get().getImage();
+		Topping entity = new Topping();
+		BeanUtils.copyProperties(dto, entity);
+		
+		if(dto.getImageFile() != null) {
+			String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+			
+			entity.setImage(filename);
+			dto.setImageFile(null);
+		}
+		
+		if(entity.getImage() == null) {
+			entity.setImage(prevImage);
+		}
+		
+		return toppingRepository.save(entity);
+	}
+	
 	public Page<Topping> findAll(Pageable pageable) {
 		return toppingRepository.findAll(pageable);
 	}
