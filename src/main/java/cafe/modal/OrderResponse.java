@@ -8,6 +8,7 @@ import cafe.entity.Account;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.enums.OrderStatus;
+import cafe.enums.OrderType;
 import cafe.enums.PaymentMethod;
 import lombok.Data;
 
@@ -22,7 +23,9 @@ public class OrderResponse {
 	private BigDecimal shippingfee;
 	private String fulladdresstext;
 	private Account customer;
+	private OrderType ordertype;
 	private List<OrderDetailResponse> orderdetails;
+	private Boolean active;
 	
 	public static OrderResponse convert(Order entity) {
 		OrderResponse response = new OrderResponse();
@@ -35,6 +38,8 @@ public class OrderResponse {
 		response.setShippingfee(entity.getShippingfee());
 		response.setFulladdresstext(entity.getFulladdresstext());
 		response.setCustomer(entity.getCustomer());
+		response.setActive(entity.getActive());
+		response.setOrdertype(entity.getOrdertype());
 		response.setOrderdetails(entity.getOrderdetails().stream().map(OrderDetailResponse::convert).toList());
 		return response;
 	}
