@@ -39,8 +39,8 @@ public class AccountDto implements Serializable{
     @Size(max = 255, message = "Fullname must be less than or equal to 255 characters")
 	private String fullname;
 
-    @NotBlank(message = "Password is required")
-    @Size(max = 255, message = "Password must be less than or equal to 255 characters")
+   
+    
 	private String password;
     
     @NotBlank(message = "Phone is required")

@@ -18,6 +18,7 @@ import cafe.entity.Account;
 
 import cafe.entity.Product;
 import cafe.entity.Role;
+import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.repository.AccountRepository;
 
@@ -65,15 +66,15 @@ public Account save(AccountDto accountDto) {
     return accountRepository.save(account);
 }
 
-	 public Account update(String username, AccountDto dto) {
-		    Optional<Account> existed = accountRepository.findById(username);
-		    if (existed.isEmpty()) {
-		        throw new EntityException("Username " + username + " does not exist");
-		    }
-		    Account existedAccount = existed.get();
-		BeanUtils.copyProperties(existed, existedAccount);
-		    return accountRepository.save(existedAccount);
-		}
+//	 public Account update(String username, AccountDto dto) {
+//		    Optional<Account> existed = accountRepository.findById(username);
+//		    if (existed.isEmpty()) {
+//		        throw new EntityException("Username " + username + " does not exist");
+//		    }
+//		    Account existedAccount = existed.get();
+//		BeanUtils.copyProperties(existed, existedAccount);
+//		    return accountRepository.save(existedAccount);
+//		}
 	// để bật tắt active
 	   public Account toggleActive(String username) {
 	        Optional<Account> optionalAccount = accountRepository.findById(username);
@@ -100,6 +101,61 @@ public Account save(AccountDto accountDto) {
 		}
 		return found.get();
 	}
+	
+	
+	public void deleteById(String username) {
+		Account existed = findById(username);
+		accountRepository.delete(existed);
+	}
+	
+	public Account update(String username, AccountDto dto) {
+		var found = accountRepository.findById(username);
+
+		if (found.isEmpty()) {
+			throw new EntityException("Account not found");
+		}
+		
+		var prevImage = found.get().getImage();
+		Account entity =found.get();
+		if(dto.getPassword().isBlank()||dto.getPassword()==null) {
+			entity.setPassword(entity.getPassword());
+			BeanUtils.copyProperties(dto, entity,"password");
+		}else {
+			BeanUtils.copyProperties(dto, entity);
+	
+			entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+		}
+	
+		
+		if(dto.getImageFile() != null) {
+			String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+			
+			entity.setImage(filename);
+			dto.setImageFile(null);
+		}	
+		
+		if(entity.getImage() == null) {
+			entity.setImage(prevImage);
+		}
+		
+	
+	
+		return accountRepository.save(entity);
+	}
+		
+	 
+	public List<Account> getAdministrators() {
+		return accountRepository.getAdministrators();
+	}
+ 
+	public List<Account> findAccountByName(String name){
+		List<Account> list = accountRepository.findByUsernameContainsIgnoreCase(name);
+		return list;
+	}
+	public List<Account> findAccountByPhone(String phone){
+		List<Account> list = accountRepository.findByPhoneContainsIgnoreCase(phone);
+		return list;
+	}
 	public Account findByPhone(String phone) {
 		Optional<Account> found = accountRepository.findByphone(phone);
 		if (found.isEmpty()) {
@@ -107,28 +163,4 @@ public Account save(AccountDto accountDto) {
 		}
 		return found.get();
 	}
-	
-	public void deleteById(String username) {
-		Account existed = findById(username);
-		accountRepository.delete(existed);
-	}
-	
-	public Account update(Account existingAccount) {
-	    // Assuming you have a JPA repository
-	    return accountRepository.save(existingAccount);
-	}
-	
-/////////////////////
-	
- 
-	
- 
-	 
-	 
-	public List<Account> getAdministrators() {
-		return accountRepository.getAdministrators();
-	}
- 
-
-	
 }
