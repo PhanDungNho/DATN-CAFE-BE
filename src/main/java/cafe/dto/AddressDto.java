@@ -29,8 +29,6 @@ public class AddressDto {
     private String street;
     @NotNull(message = "Wardcode is required")
     private Integer wardcode;
-
-    private AccountDto account;
     
     private String account;
     private AccountDto accountDto;
