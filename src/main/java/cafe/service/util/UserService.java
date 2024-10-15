@@ -33,5 +33,18 @@ public class UserService implements UserDetailsService{
 		return new User(username, password, authorities);
 		
 	}
+	
+	
+	public UserDetails loadUserByEmail(String email) throws UsernameNotFoundException {
+		// TODO Auto-generated method stub
+		Account account = accountRepository.findByEmail(email).get();
+		String password = account.getPassword();
+		Set<GrantedAuthority> authorities = account.getAuthorities().stream()
+	                .map((au) -> new SimpleGrantedAuthority("ROLE_" +au.getRole().getRolename()))
+	                .collect(Collectors.toSet());
+
+		return new User(account.getUsername(), password, authorities);
+		
+	}
 
 }

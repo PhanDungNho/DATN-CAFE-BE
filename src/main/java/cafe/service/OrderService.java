@@ -145,7 +145,9 @@ public class OrderService {
 			throw new EntityException("Order is updated failed");
 		}
 	}
-
+	public Order save (Order order) {
+		return orderRepository.save(order);
+	}
 //	public Page<OrderDto> getOrdersByStatus(OrderStatus status, Pageable pageable) {
 //		var list = orderRepository.findByStatusContainsIgnoreCase(status, pageable);
 //		

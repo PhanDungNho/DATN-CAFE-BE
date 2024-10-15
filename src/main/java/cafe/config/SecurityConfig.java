@@ -14,8 +14,11 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.google.api.client.util.Value;
 
 import cafe.service.util.UserService;
 
@@ -26,6 +29,7 @@ import cafe.service.util.UserService;
 public class SecurityConfig {
 	@Autowired
 	JwtAuthFilter jwtAuthFilter;
+ 
 	@Bean
 	// authentication
 	public UserDetailsService userDetailsService(PasswordEncoder encoder) {
@@ -39,10 +43,9 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
- 
-                		.requestMatchers("/api/v1/login").permitAll()
+                		.requestMatchers("/api/v1/login", "/api/v1/auth/google").permitAll()
+                		.requestMatchers( "/api/v1/products/images/**").permitAll()
                 		.requestMatchers("/api/v1/cart/**","/api/v1/categories/**","/api/v1/sizes/**","/api/v1/products/**","/api/v1/orders/**","/api/v1/toppings/**","/api/v1/account/**").hasAnyRole("ADMIN","STAFF")
-	.requestMatchers( "/api/v1/products/images/**").permitAll()
                 		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/home").permitAll()  
                         .requestMatchers("/cart/**","/order/**").hasAnyRole("ADMIN","STAFF")
@@ -58,6 +61,7 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/home")
                         .permitAll()
                     )
+                
                 .httpBasic(Customizer.withDefaults())
                 .build();
     }

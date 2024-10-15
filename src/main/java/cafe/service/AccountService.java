@@ -108,6 +108,14 @@ public Account save(AccountDto accountDto) {
 		return found.get();
 	}
 	
+	public Account findByEmail(String email) {
+		Optional<Account> found = accountRepository.findByEmail(email);
+		if (found.isEmpty()) {
+			throw new EntityException("Account with email " + email + " does not exist");
+		}
+		return found.get();
+	}
+	
 	public void deleteById(String username) {
 		Account existed = findById(username);
 		accountRepository.delete(existed);

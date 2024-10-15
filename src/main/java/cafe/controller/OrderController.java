@@ -142,7 +142,7 @@ public class OrderController {
 		entity.setStatus(dto.getStatus());
 		entity = orderService.updateStatus(id, entity);
 		dto.setId(entity.getId());
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 
 	}
 

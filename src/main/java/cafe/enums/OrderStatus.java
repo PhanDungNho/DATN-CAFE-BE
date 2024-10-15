@@ -1,5 +1,9 @@
 package cafe.enums;
 
 public enum OrderStatus {
-ORDER, PAID, COMPLETE
+	  PENDING_PAYMENT, 
+	    ORDERED,        
+	    IN_DELIVERY,     
+	    COMPLETED,      
+	    CANCELED  
 }
