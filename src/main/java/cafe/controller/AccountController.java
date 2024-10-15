@@ -1,8 +1,6 @@
 package cafe.controller;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
@@ -11,7 +9,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
- 
+
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -33,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import cafe.dto.AccountDto;
 import cafe.entity.Account;
-import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.service.AccountService;
 import cafe.service.FileStorageService;
@@ -47,12 +44,12 @@ public class AccountController {
 
 	@Autowired
 	AccountService accountService;
+	
+	@Autowired
+	FileStorageService fileStorageService;
 
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
-	
-	@Autowired
-	private FileStorageService fileStorageService;
 
 	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -64,15 +61,35 @@ public class AccountController {
 		Account account = accountService.insertAccount(accountDto);
 		accountDto.setPassword(null);
 		accountDto.setImage(account.getImage());
-		accountDto.setUsername(account.getUsername());
 		// trả về người dùng responseDto
 		return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
 	}
 
-	@PatchMapping(value ="/{username}",consumes = { MediaType.APPLICATION_JSON_VALUE,
+//	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+//	        MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+//	public ResponseEntity<?> createAccount(@Valid @ModelAttribute AccountDto accountDto, BindingResult result) {
+//	    // Xử lý các lỗi validation từ BindingResult
+//	    ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
+//	    if (responseEntity != null) {
+//	        return responseEntity;
+//	    }
+//
+//	    // Lưu tài khoản vào cơ sở dữ liệu
+//	    Account account = accountService.save(accountDto);
+//	    
+//	    // Đặt mật khẩu null trong DTO trước khi trả về để bảo mật
+//	    accountDto.setPassword(null);
+//	    accountDto.setImage(account.getImage());
+//
+//	    // Trả về đối tượng AccountDto đã được lưu
+//	    return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
+//	}
+
+	@PatchMapping(value = "/{username}", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> updateAccount(@PathVariable String username,@Valid @ModelAttribute AccountDto dto,BindingResult result) {
+	public ResponseEntity<?> updateAccount(@PathVariable String username, @Valid @ModelAttribute AccountDto dto,
+			BindingResult result) {
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
 		if (responseEntity != null) {
 			return responseEntity;
@@ -81,34 +98,61 @@ public class AccountController {
 		dto.setPassword(null);
 		dto.setImage(account.getImage());
 		dto.setUsername(account.getUsername());
-		
+
 		return new ResponseEntity<>(account, HttpStatus.OK);
 	}
 
 	@PatchMapping("/{username}/toggle-active")
-	public ResponseEntity<Map<String, String>> updateAccountActive(@PathVariable String username) {
+	public ResponseEntity<?> toggleActive(@PathVariable String username) {
+		// Call the service to toggle the account's active status
 		Account updatedAccount = accountService.toggleActive(username);
-		Map<String, String> response = new HashMap<>();
-		response.put("message",
-				"Account " + (updatedAccount.getActive() ? "activated" : "deactivated") + " successfully.");
-		return new ResponseEntity<>(response, HttpStatus.OK);
+		// Check if the account was found
+		if (updatedAccount == null) {
+			return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+		}
+		// Create AccountDto to return updated account information
+		AccountDto responseDto = new AccountDto();
+		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
+
+		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+	}
+	
+	@GetMapping("/find/phone")
+	public ResponseEntity<?> getAccountByPhone(@RequestParam("query") String query) {
+		return new ResponseEntity<>(accountService.findAccountByPhone(query), HttpStatus.OK);
 	}
 
 	@GetMapping()
 	public ResponseEntity<?> getAccounts() {
+		List<Account> accounts = accountService.findAll();
 
-		return new ResponseEntity<>(accountService.findAll(), HttpStatus.OK);
+		List<AccountDto> accountDtos = accounts.stream().map(account -> {
+			AccountDto dto = new AccountDto();
+			BeanUtils.copyProperties(account, dto, "password");
+//	        dto.setUsername(account.getUsername());
+//	        dto.setActive(account.getActive());
+//	        dto.setAmountpaid(account.getAmountpaid());
+//	        dto.setEmail(account.getEmail());
+//	        dto.setPassword(account.getPassword());
+//	        dto.setFullname(account.getFullname());
+//	        dto.setPhone(account.getPhone());
+
+			return dto;
+		}).toList();
+		return new ResponseEntity<>(accountDtos, HttpStatus.OK);
+	}
+
+	// cái này để phân trang
+	@GetMapping("/page")
+	public ResponseEntity<?> getAccounts(
+			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
+		return new ResponseEntity<>(accountService.findAll(pageable), HttpStatus.OK);
 	}
 
 	@GetMapping("/{username}/get")
 	public ResponseEntity<?> getAccounts(@PathVariable("username") String username) {
 		return new ResponseEntity<>(accountService.findById(username), HttpStatus.OK);
 	}
-	
-//	@GetMapping("/{phone}/getByPhone")
-//	public ResponseEntity<?> getAccountByPhone(@PathVariable("phone") String phone) {
-//		return new ResponseEntity<>(accountService.findByPhone(phone), HttpStatus.OK);
-//	}
 
 	@DeleteMapping("/{username}")
 	public ResponseEntity<?> deleteAccounts(@PathVariable("username") String username) {
@@ -124,15 +168,10 @@ public class AccountController {
 		}
 		return accountService.findAll();
 	}
-	
+
 	@GetMapping("/find")
 	public ResponseEntity<?> getAccountByName(@RequestParam("query") String query) {
 		return new ResponseEntity<>(accountService.findAccountByName(query), HttpStatus.OK);
-	}
-	
-	@GetMapping("/find/phone")
-	public ResponseEntity<?> getAccountByPhone(@RequestParam("query") String query) {
-		return new ResponseEntity<>(accountService.findAccountByPhone(query), HttpStatus.OK);
 	}
 	
 	@GetMapping("/image/{filename:.+}")

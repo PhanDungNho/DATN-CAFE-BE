@@ -1,5 +1,6 @@
 package cafe.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -144,6 +145,20 @@ public class OrderService {
 		} catch (Exception ex) {
 			throw new EntityException("Order is updated failed");
 		}
+	}
+	
+	public List<Order> getOrdersBetweenDates(Date startDate, Date endDate){
+		return orderRepository.findBycreatedtimeBetween(startDate, endDate);
+	}
+	
+	public Order toggleActive(Long id) {
+		Optional<Order> optionalOrder = orderRepository.findById(id);
+		if(optionalOrder.isEmpty()) {
+			throw new EntityException("Order with id " + id + " do not exits");
+		}
+		Order order = optionalOrder.get();
+		order.setActive(!order.getActive());
+		return orderRepository.save(order);
 	}
 
 //	public Page<OrderDto> getOrdersByStatus(OrderStatus status, Pageable pageable) {
