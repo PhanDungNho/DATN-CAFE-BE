@@ -20,9 +20,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
+import cafe.dto.AddressDto;
+import cafe.dto.CategoryDto;
+import cafe.entity.Address;
+import cafe.entity.Category;
 import cafe.dto.AccountDto;
 import cafe.dto.AddressDto;
 import cafe.entity.Address;
+
 import cafe.service.AddressService;
 import cafe.service.CategoryService;
 import cafe.service.MapValidationErrorService;
@@ -39,11 +45,60 @@ public class AddressController {
 	MapValidationErrorService mapValidationErrorService;
 
 	@PostMapping
+
+	public ResponseEntity<?> createAddress(@Valid @RequestBody AddressDto dto, BindingResult result) {
+
 	public ResponseEntity<?> createProduct(@Valid @RequestBody AddressDto addressDto, BindingResult result) {
+
 		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
 		if (responseEntity != null) {
 			return responseEntity;
 		}
+
+		//		if(true) {
+//			throw new CategoryException("Category is error");
+//		}
+		Address entity = new Address();
+		BeanUtils.copyProperties(dto, entity);
+		entity = addressService.save(entity);
+
+		dto.setId(entity.getId());
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+
+	}
+
+	//cập nhật
+	@PatchMapping("/{id}")
+	public ResponseEntity<?> updateAddress(@PathVariable Long id, @RequestBody AddressDto dto) {
+		Address entity = new Address();
+		BeanUtils.copyProperties(dto, entity);
+		entity = addressService.update(id, entity);
+		dto.setId(entity.getId());
+		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+
+	}
+
+	@GetMapping()
+	public ResponseEntity<?> getAddress() {
+		return new ResponseEntity<>(addressService.findAll(), HttpStatus.OK);
+	}
+	
+	//cái này để phân trang
+	@GetMapping("/page")
+	public ResponseEntity<?> getAddress(
+			@PageableDefault(size=5,sort="name",direction = Sort.Direction.ASC) Pageable pageable) {
+		return new ResponseEntity<>(addressService.findAll(pageable), HttpStatus.OK);
+	}
+	
+	@GetMapping("/{id}/get")
+	public ResponseEntity<?> getAddress(@PathVariable("id") Long id){
+		return new ResponseEntity<>(addressService.findById(id),HttpStatus.OK);
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteAddress(@PathVariable("id") Long id){
+		addressService.deleteById(id);
+		return new ResponseEntity<>("Address with Id: "+id+ " was deleted",HttpStatus.OK);
 		Address address = addressService.save(addressDto);
 
 		AddressDto responseDto = new AddressDto();
@@ -149,7 +204,7 @@ public class AddressController {
 	        dto.setWardcode(address.getWardcode());
 
 	        if (address.getAccount() != null) {
-	        	 AccountDto accountDto = new AccountDto();
+	        	AccountDto accountDto = new AccountDto();
 		            accountDto.setUsername(address.getAccount().getUsername());
 		            accountDto.setPassword(address.getAccount().getPassword());
 		            accountDto.setFullname(address.getAccount().getFullname());
@@ -180,5 +235,8 @@ public class AddressController {
 	public ResponseEntity<?> deleteAddress(@PathVariable("id") Long id) {
 		addressService.deleteById(id);
 		return new ResponseEntity<>("Address with Id: " + id + " was deleted", HttpStatus.OK);
+
 	}
+}
+
 }

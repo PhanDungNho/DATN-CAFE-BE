@@ -3,6 +3,52 @@ package cafe.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+
+import cafe.entity.Account;
+import cafe.entity.exception.EntityException;
+import cafe.repository.AccountRepository;
+
+@Service
+public class AccountService {
+	
+	@Autowired
+	private AccountRepository accountRepository;
+	
+	public Account save(Account entity) {
+		return accountRepository.save(entity);
+	}
+	
+	
+	public Account update(String username, Account entity) {
+		Optional<Account> existed = accountRepository.findById(username);
+		if (existed.isEmpty()) {
+			// neu k tim thay thi tra ve ngoai le
+			throw new EntityException("Account id " + username + " does not exist");
+
+		}
+		try {
+			Account existedAccount = existed.get();
+			existedAccount.setActive(entity.getActive());
+			existedAccount.setAmountpaid(entity.getAmountpaid());
+			existedAccount.setEmail(entity.getEmail());
+			existedAccount.setFullname(entity.getFullname());
+			existedAccount.setPassword(entity.getPassword());
+			existedAccount.setPhone(entity.getPhone());
+
+			return accountRepository.save(existedAccount);
+			// thì tiến hành cập nhật thủ công bth
+		} catch (Exception ex) {
+			// nếu có lỗi sẽ ném ra ngoại lệ
+			throw new EntityException("Account is updated failed");
+		}
+
+	}
+	
+	
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -10,7 +56,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
- 
+
 
 import cafe.dto.AccountDto;
 
@@ -97,6 +143,7 @@ public Account save(AccountDto accountDto) {
 	public Account findById(String username) {
 		Optional<Account> found = accountRepository.findById(username);
 		if (found.isEmpty()) {
+			throw new EntityException("Role with id " + username + " does not exist");
 			throw new EntityException("Account with username " + username + " does not exist");
 		}
 		return found.get();
