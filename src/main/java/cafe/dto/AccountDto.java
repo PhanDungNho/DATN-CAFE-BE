@@ -22,8 +22,8 @@ import lombok.Data;
 public class AccountDto {
 	
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class AccountDto implements Serializable{
-	
+public class AccountDto implements Serializable {
+
 	/**
 	 * 
 	 */
@@ -32,35 +32,31 @@ public class AccountDto implements Serializable{
 
 	@Size(max = 255, message = "Username must be less than or equal to 255 characters")
 	private String username;
-	
-    @NotNull(message = "Account active status is required")
+
+	@NotNull(message = "Account active status is required")
 	private Boolean active;
-	
-    @NotNull(message = "Amountpaid is required")
+
+	@NotNull(message = "Amountpaid is required")
 	private Double amountpaid;
-	
+
 	@NotBlank(message = "Email is required")
-    @Size(max = 255, message = "Email must be less than or equal to 255 characters")
+	@Size(max = 255, message = "Email must be less than or equal to 255 characters")
 	private String email;
-	
-    @Size(max = 255, message = "Fullname must be less than or equal to 255 characters")
+
+	@Size(max = 255, message = "Fullname must be less than or equal to 255 characters")
 	private String fullname;
 
-   
-    
 	private String password;
-    
-    @NotBlank(message = "Phone is required")
-    @Size(max = 15, message = "Phone must be less than or equal to 255 characters")
-    private String phone;
-    
+
+	@NotBlank(message = "Phone is required")
+	@Size(max = 15, message = "Phone must be less than or equal to 255 characters")
+	private String phone;
+
 	private String image;
 
 	@JsonIgnore
 	private MultipartFile imageFile;
-	
-	
+
 //    private List<AccountRoleDto> accountRoleDtos;
-    
 
 }
