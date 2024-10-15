@@ -2,7 +2,6 @@ package cafe.controller;
 
 import java.util.List;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -24,7 +23,6 @@ import cafe.dto.AccountDto;
 import cafe.dto.AddressDto;
 import cafe.entity.Address;
 import cafe.service.AddressService;
-import cafe.service.CategoryService;
 import cafe.service.MapValidationErrorService;
 import jakarta.validation.Valid;
 

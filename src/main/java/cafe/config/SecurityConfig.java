@@ -22,30 +22,31 @@ import com.google.api.client.util.Value;
 
 import cafe.service.util.UserService;
 
- 
-
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 	@Autowired
 	JwtAuthFilter jwtAuthFilter;
- 
+
 	@Bean
 	// authentication
 	public UserDetailsService userDetailsService(PasswordEncoder encoder) {
 		return new UserService();
 	}
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-	    return new BCryptPasswordEncoder();
+		return new BCryptPasswordEncoder();
 	}
 	 @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+
                 		.requestMatchers("/api/v1/login", "/api/v1/auth/google").permitAll()
                 		.requestMatchers( "/api/v1/products/images/**").permitAll()
                 		.requestMatchers("/api/v1/cart/**","/api/v1/categories/**","/api/v1/sizes/**","/api/v1/products/**","/api/v1/orders/**","/api/v1/toppings/**","/api/v1/account/**").hasAnyRole("ADMIN","STAFF")
+
                 		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/home").permitAll()  
                         .requestMatchers("/cart/**","/order/**").hasAnyRole("ADMIN","STAFF")

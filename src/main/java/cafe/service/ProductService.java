@@ -116,17 +116,6 @@ public class ProductService {
 	        product.setCategory(cate);
 	    }
 
-	    // Xóa tất cả hình ảnh hiện tại của sản phẩm theo productId
-	    List<Image> existingImages = imageRepository.findByProductId(product.getId());
-	    if (existingImages != null && !existingImages.isEmpty()) {
-	        for (Image image : existingImages) {
-	            // Xóa file thực tế khỏi hệ thống lưu trữ
-	            fileStorageService.deleteLogoFile(image.getFilename());
-	            // Xóa hình ảnh khỏi cơ sở dữ liệu
-	            imageRepository.deleteById(image.getId()); 
-	        }
-	    } 
-
 	    if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
 			List<Image> images = dto.getImageFiles().stream().map(file -> {
 				String filename = fileStorageService.storeLogoFile(file);

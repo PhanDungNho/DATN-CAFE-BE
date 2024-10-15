@@ -5,10 +5,11 @@ import java.util.Optional;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
- 
+
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -30,7 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import cafe.dto.AccountDto;
 import cafe.entity.Account;
+import cafe.exception.EntityException;
 import cafe.service.AccountService;
+import cafe.service.FileStorageService;
 import cafe.service.MapValidationErrorService;
 import jakarta.validation.Valid;
 
@@ -41,6 +44,9 @@ public class AccountController {
 
 	@Autowired
 	AccountService accountService;
+	
+	@Autowired
+	FileStorageService fileStorageService;
 
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
@@ -59,7 +65,6 @@ public class AccountController {
 		return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
 	}
 
-	
 //	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 //	        MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 //	public ResponseEntity<?> createAccount(@Valid @ModelAttribute AccountDto accountDto, BindingResult result) {
@@ -80,32 +85,21 @@ public class AccountController {
 //	    return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
 //	}
 
-	@PatchMapping("/{username}")
-	public ResponseEntity<?> updateAccount(@PathVariable String username, @RequestBody AccountDto dto) {
-		// Fetch the existing account from the service
-		Account existingAccount = accountService.findById(username);
-
-		// Check if the account exists
-		if (existingAccount == null) {
-			return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
+	@PatchMapping(value = "/{username}", consumes = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<?> updateAccount(@PathVariable String username, @Valid @ModelAttribute AccountDto dto,
+			BindingResult result) {
+		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
+		if (responseEntity != null) {
+			return responseEntity;
 		}
+		Account account = accountService.update(username, dto);
+		dto.setPassword(null);
+		dto.setImage(account.getImage());
+		dto.setUsername(account.getUsername());
 
-		// Update the fields of the existing account
-//	    existingAccount.setActive(dto.getActive());
-//	    existingAccount.setEmail(dto.getEmail());
-//	    existingAccount.setFullname(dto.getFullname());
-//	    existingAccount.setPassword(dto.getPassword());
-//	    existingAccount.setPhone(dto.getPhone());
-//	    existingAccount.setAmountpaid(dto.getAmountpaid());
-		BeanUtils.copyProperties(dto, existingAccount);
-
-		// Persist the changes
-		Account updatedAccount = accountService.update(existingAccount);
-
-		// Prepare the response DTO
-		AccountDto responseDto = new AccountDto();
-		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
-		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+		return new ResponseEntity<>(account, HttpStatus.OK);
 	}
 
 	@PatchMapping("/{username}/toggle-active")
@@ -121,6 +115,11 @@ public class AccountController {
 		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
 
 		return new ResponseEntity<>(responseDto, HttpStatus.OK);
+	}
+	
+	@GetMapping("/find/phone")
+	public ResponseEntity<?> getAccountByPhone(@RequestParam("query") String query) {
+		return new ResponseEntity<>(accountService.findAccountByPhone(query), HttpStatus.OK);
 	}
 
 	@GetMapping()
@@ -154,11 +153,6 @@ public class AccountController {
 	public ResponseEntity<?> getAccounts(@PathVariable("username") String username) {
 		return new ResponseEntity<>(accountService.findById(username), HttpStatus.OK);
 	}
-	
-	@GetMapping("/{phone}/getByPhone")
-	public ResponseEntity<?> getAccountByPhone(@PathVariable("phone") String phone) {
-		return new ResponseEntity<>(accountService.findByPhone(phone), HttpStatus.OK);
-	}
 
 	@DeleteMapping("/{username}")
 	public ResponseEntity<?> deleteAccounts(@PathVariable("username") String username) {
@@ -173,5 +167,27 @@ public class AccountController {
 			return accountService.getAdministrators();
 		}
 		return accountService.findAll();
+	}
+
+	@GetMapping("/find")
+	public ResponseEntity<?> getAccountByName(@RequestParam("query") String query) {
+		return new ResponseEntity<>(accountService.findAccountByName(query), HttpStatus.OK);
+	}
+	
+	@GetMapping("/image/{filename:.+}")
+	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {
+		Resource resource = fileStorageService.loadLogoFileResource(filename);
+		String contentType = null;
+		try {
+			contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
+		} catch (Exception e) {
+			throw new EntityException("Could not determine file type");
+		}
+		if (contentType == null) {
+			contentType = "application/octet-stream";
+		}
+		return ResponseEntity.ok().contentType(MediaType.parseMediaType(contentType))
+				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + resource.getFilename() + "\"")
+				.body(resource);
 	}
 }

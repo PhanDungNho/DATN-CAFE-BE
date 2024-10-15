@@ -17,6 +17,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 	List<Account> getAdministrators();
 	//1 là admin, 2 là staff, 3 là customer
 	List<Account> findByUsernameContainsIgnoreCase(String username);
+	List<Account> findByPhoneContainsIgnoreCase(String phone);
 	Optional<Account> findByphone(String phone);
 	Optional<Account> findByEmail(String email);
 
