@@ -11,15 +11,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import cafe.dto.AccountDto;
-
 import cafe.entity.Account;
-
-import cafe.entity.Product;
-import cafe.entity.Role;
 import cafe.exception.EntityException;
 import cafe.repository.AccountRepository;
-
-import cafe.repository.RoleRepository;
 
 @Service
 public class AccountService {
@@ -155,4 +149,22 @@ public class AccountService {
 		}
 		return found.get();
 	}
+
+	
+	public Account findByEmail(String email) {
+		Optional<Account> found = accountRepository.findByEmail(email);
+		if (found.isEmpty()) {
+			throw new EntityException("Account with email " + email + " does not exist");
+		}
+		return found.get();
+	}
+	
+ 
+	
+	public Account update(Account existingAccount) {
+	    // Assuming you have a JPA repository
+	    return accountRepository.save(existingAccount);
+	}
+	
+
 }
