@@ -1,5 +1,6 @@
 package cafe.controller;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -33,6 +34,7 @@ import cafe.dto.ProductDto;
 import cafe.dto.ProductVariantDto;
 import cafe.dto.SizeDto;
 import cafe.entity.Category;
+import cafe.entity.Image;
 import cafe.entity.Product;
 import cafe.exception.EntityException;
 import cafe.exception.FileStorageException;
@@ -62,27 +64,7 @@ public class ProductController {
 
 	@Autowired
 	ImageService imageService ;
-// 	@PostMapping
-//	public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDto productDto, BindingResult result) {
-//		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
-//		if (responseEntity != null) {
-//			return responseEntity;
-//		}
-//		Product product = productService.save(productDto);
-//		// Tạo ProductDto từ Product và trả về
-//		ProductDto responseDto = new ProductDto();
-//		responseDto.setId(product.getId());
-//		responseDto.setName(product.getName());
-//		responseDto.setActive(product.getActive());
-//		responseDto.setDescription(product.getDescription());
-//		// Map Category entity sang CategoryDto
-//		CategoryDto categoryDto = new CategoryDto();
-//		categoryDto.setId(product.getCategory().getId());
-//		categoryDto.setName(product.getCategory().getName());
-//		responseDto.setCategory(categoryDto);
-//		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-//	}
-
+	
 	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createProduct(@ModelAttribute ProductDto dto,
@@ -94,29 +76,6 @@ public class ProductController {
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
 
-	// cập nhật
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductDto dto) {
-//		// Gọi service để cập nhật sản phẩm với ProductDto
-//		Product updatedProduct = productService.update(id, dto);
-//
-//		// Tạo ProductDto để trả về thông tin sản phẩm đã cập nhật
-//		ProductDto responseDto = new ProductDto();
-//		responseDto.setId(updatedProduct.getId());
-//		responseDto.setName(updatedProduct.getName());
-//		responseDto.setActive(updatedProduct.getActive());
-//		responseDto.setDescription(updatedProduct.getDescription());
-//
-//		// Map Category entity sang CategoryDto
-//		if (updatedProduct.getCategory() != null) {
-//			CategoryDto categoryDto = new CategoryDto();
-//			categoryDto.setId(updatedProduct.getCategory().getId());
-//			categoryDto.setName(updatedProduct.getCategory().getName());
-//			responseDto.setCategory(categoryDto);
-//		}
-//
-//		return new ResponseEntity<>(responseDto, HttpStatus.OK);
-//	}
 
 	@PatchMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 	        MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -196,14 +155,29 @@ public class ProductController {
 
 				return variantDto;
 			}).toList();
+			
+			List<Image> imageDtos = product.getImages().stream().map(images -> {
+				Image imageDto = new Image();
+				imageDto.setId(images.getId());
+				imageDto.setName(images.getName());
+				imageDto.setFilename(images.getFilename());
+				imageDto.setUrl(images.getUrl());
+				imageDto.setProduct(images.getProduct());
+				
+				return imageDto;
+			}).toList();
 
-			dto.setProductVariants(variantDtos); // Thiết lập danh sách biến thể sản phẩm
+			dto.setProductVariants(variantDtos);
+			dto.setImages(imageDtos);
 
 			return dto;
-		}).toList();
+		})
+		.sorted(Comparator.comparing(ProductDto::getId).reversed())	
+		.toList();
 
 		return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
+	
 
 	// cái này để phân trang
 	@GetMapping("/page")
@@ -212,49 +186,6 @@ public class ProductController {
 		return new ResponseEntity<>(productService.findAll(pageable), HttpStatus.OK);
 	}
 
-//
-//	@GetMapping("/{id}/get")
-//	public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
-//		Product product = productService.findById(id);
-//
-//		if (product == null) {
-//			return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
-//		}
-//
-//		ProductDto productDto = new ProductDto();
-//		productDto.setId(product.getId());
-//		productDto.setName(product.getName());
-//		productDto.setActive(product.getActive());
-//		productDto.setDescription(product.getDescription());
-//
-//		if (product.getCategory() != null) {
-//			CategoryDto categoryDto = new CategoryDto();
-//			categoryDto.setId(product.getCategory().getId());
-//			categoryDto.setName(product.getCategory().getName());
-//			productDto.setCategory(categoryDto);
-//		}
-//
-//		if (product.getProductvariants() != null) {
-//			List<ProductVariantDto> variantDtos = product.getProductvariants().stream().map(variant -> {
-//				ProductVariantDto variantDto = new ProductVariantDto();
-//				variantDto.setId(variant.getId());
-//				variantDto.setActive(variant.getActive());
-//				variantDto.setPrice(variant.getPrice());
-//
-//				SizeDto sizeDto = new SizeDto();
-//				sizeDto.setId(variant.getSize().getId());
-//				sizeDto.setName(variant.getSize().getName());
-//				sizeDto.setActive(variant.getSize().getActive());
-//				variantDto.setSize(sizeDto);
-//
-//				return variantDto;
-//			}).toList();
-//
-//			productDto.setProductVariants(variantDtos);
-//		}
-//
-//		return new ResponseEntity<>(productDto, HttpStatus.OK);
-//	}
 
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getProduct(@PathVariable("id") Long id) {
@@ -266,12 +197,6 @@ public class ProductController {
 	public ResponseEntity<?> getProductByName(@RequestParam("query") String query) {
 		return new ResponseEntity<>(productService.findProductByName(query), HttpStatus.OK);
 	}
-
-//	@DeleteMapping("/{id}")
-//	public ResponseEntity<?> deleteCategory(@PathVariable("id") Long id) {
-//		productService.deleteById(id);
-//		return new ResponseEntity<>("Product with Id: " + id + " was deleted", HttpStatus.OK);
-//	}
 
 	@GetMapping("/images/{filename:.+}")
 	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {
