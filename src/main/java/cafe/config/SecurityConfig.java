@@ -42,7 +42,10 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                		.requestMatchers("/api/v1/login", "/api/v1/auth/google", "/api/v1/account/image/**").permitAll()
+
+
+                		.requestMatchers("/api/v1/login", "/api/v1/auth/google","/api/v1/account/image/**","/api/v1/toppings/image/**").permitAll()
+
                 		.requestMatchers( "/api/v1/products/images/**").permitAll()
                 		.requestMatchers("/api/v1/cart/**","/api/v1/categories/**","/api/v1/sizes/**","/api/v1/products/**","/api/v1/orders/**","/api/v1/toppings/**","/api/v1/account/**", "/api/v1/transactions/**").hasAnyRole("ADMIN","STAFF")
 

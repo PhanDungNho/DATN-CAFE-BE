@@ -14,5 +14,6 @@ import java.util.Set;
 public class JwtResponseDTO {
     private String accessToken;
     private String username;
-    private Set<String> roles;  // Thêm roles vào DTO
+    private Set<String> roles;  
+    private String image;
 }
