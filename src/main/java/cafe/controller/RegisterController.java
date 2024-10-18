@@ -15,7 +15,7 @@ import jakarta.mail.MessagingException;
 
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:3000") // Allow requests from React app (localhost:3000)
+@CrossOrigin(origins = "*")
 public class RegisterController {
 
     @Autowired
