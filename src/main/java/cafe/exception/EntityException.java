@@ -8,5 +8,10 @@ public class EntityException extends RuntimeException {
 public EntityException(String message) {
 	super(message);
 }
+
+//hieunguyen 
+public EntityException(String message, Throwable cause) {
+    super(message, cause);
+}
 	
 }

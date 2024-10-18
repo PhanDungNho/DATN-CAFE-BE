@@ -149,4 +149,28 @@ public class AccountService {
 		}
 		return found.get();
 	}
+
+	
+	public Account findByEmail(String email) {
+		Optional<Account> found = accountRepository.findByEmail(email);
+		if (found.isEmpty()) {
+			throw new EntityException("Account with email " + email + " does not exist");
+		}
+		return found.get();
+	}
+	
+ 
+	
+	public Account update(Account existingAccount) {
+	    // Assuming you have a JPA repository
+	    return accountRepository.save(existingAccount);
+	}
+	
+	//hieunguyen
+	public boolean usernameExists(String username) {
+        return accountRepository.existsByUsername(username);
+    }
+	
+	
+
 }
