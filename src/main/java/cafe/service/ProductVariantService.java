@@ -3,15 +3,21 @@ package cafe.service;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import cafe.dto.ProductVariantDto;
+import cafe.entity.Account;
 import cafe.entity.Product;
 import cafe.entity.ProductVariant;
+import cafe.entity.Size;
 import cafe.exception.EntityException;
+import cafe.repository.ProductRepository;
 import cafe.repository.ProductVariantRepository;
+import cafe.repository.SizeRepository;
 
  
 
@@ -19,9 +25,28 @@ import cafe.repository.ProductVariantRepository;
 public class ProductVariantService {
 	@Autowired
 	private ProductVariantRepository productVariantRepository;
+	
+	@Autowired
+	private ProductRepository productRepository;
+	
+	@Autowired
+	private SizeRepository sizeRepository;
 
-	public ProductVariant save(ProductVariant entity) {
-		return productVariantRepository.save(entity);
+	public ProductVariant save(ProductVariantDto dto) {
+	    ProductVariant entity = new ProductVariant();
+	    BeanUtils.copyProperties(dto, entity, "size");
+
+	    // Lấy thông tin product từ database
+	    Product product = productRepository.findById(dto.getProductid())
+	            .orElseThrow(() -> new EntityException("Product not found"));
+	    entity.setProduct(product);
+
+	    // Lấy thông tin size từ database
+	    Size size = sizeRepository.findById(dto.getSizeid())
+	            .orElseThrow(() -> new EntityException("Size not found"));
+	    entity.setSize(size);
+
+	    return productVariantRepository.save(entity);
 	}
 
 	public ProductVariant update(Long id, ProductVariant entity) {

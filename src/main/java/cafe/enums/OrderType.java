@@ -1,5 +1,6 @@
 package cafe.enums;
 
 public enum OrderType {
-OFFLINE, ONLINE
+	IN_STORE,   
+    DELIVERY
 }

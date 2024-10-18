@@ -7,6 +7,7 @@ import java.util.List;
 import cafe.entity.Account;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
+import cafe.entity.Transactions;
 import cafe.enums.OrderStatus;
 import cafe.enums.OrderType;
 import cafe.enums.PaymentMethod;
@@ -26,6 +27,7 @@ public class OrderResponse {
 	private OrderType ordertype;
 	private List<OrderDetailResponse> orderdetails;
 	private Boolean active;
+	private List<Transactions> transactions; 
 	
 	public static OrderResponse convert(Order entity) {
 		OrderResponse response = new OrderResponse();
@@ -40,6 +42,7 @@ public class OrderResponse {
 		response.setCustomer(entity.getCustomer());
 		response.setActive(entity.getActive());
 		response.setOrdertype(entity.getOrdertype());
+		response.setTransactions(entity.getTransactions());
 		response.setOrderdetails(entity.getOrderdetails().stream().map(OrderDetailResponse::convert).toList());
 		return response;
 	}
