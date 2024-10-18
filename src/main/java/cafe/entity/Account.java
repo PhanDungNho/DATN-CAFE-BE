@@ -65,7 +65,7 @@ public class Account {
     private String otp;
 
     // Thêm trường enabled để lưu trạng thái xác thực của tài khoản
-    @Column(name = "enabled", nullable = false)
+    @Column(name = "enabled", nullable = true)
     private Boolean enabled;
     
    

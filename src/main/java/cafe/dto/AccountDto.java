@@ -56,8 +56,7 @@ public class AccountDto implements Serializable {
     private String otp;
     
 
-    // Trường trạng thái xác nhận tài khoản
-    @NotNull(message = "Account enabled status is required")
+    
     private Boolean enabled;
 
 //    private List<AccountRoleDto> accountRoleDtos;
