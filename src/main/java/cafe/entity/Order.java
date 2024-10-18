@@ -74,6 +74,10 @@ public class Order {
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
     private List<OrderDetail> orderdetails; 
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    private List<Transactions> transactions;
 
     @Override
     public boolean equals(Object o) {

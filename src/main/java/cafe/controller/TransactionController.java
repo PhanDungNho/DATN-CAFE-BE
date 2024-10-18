@@ -95,7 +95,7 @@ public class TransactionController {
 			transaction.setPayUrl(found.getPayUrl());
 			transactionsService.save(transaction);
 			
-			if (found.getOrder().getStatus() == OrderStatus.PENDING_PAYMENT
+			if (found.getOrder().getStatus() == OrderStatus.PENDING
 					&& (transaction.getResultCode() == 0 || transaction.getResultCode() == 900)) {
 				found.getOrder().setStatus(OrderStatus.ORDERED);
 				orderService.save(found.getOrder());
@@ -105,6 +105,6 @@ public class TransactionController {
 			e.printStackTrace();
 		}
 
-		return new ResponseEntity<>("a", HttpStatus.OK);
+		return  ResponseEntity.ok("a");
 	}
 }

@@ -1,5 +1,6 @@
 package cafe.controller;
 
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
@@ -33,6 +34,7 @@ import cafe.dto.ProductDto;
 import cafe.dto.ProductVariantDto;
 import cafe.dto.SizeDto;
 import cafe.entity.Category;
+import cafe.entity.Image;
 import cafe.entity.Product;
 import cafe.exception.EntityException;
 import cafe.exception.FileStorageException;
@@ -196,11 +198,25 @@ public class ProductController {
 
 				return variantDto;
 			}).toList();
+			
+			List<Image> imageDtos = product.getImages().stream().map(images -> {
+				Image imageDto = new Image();
+				imageDto.setId(images.getId());
+				imageDto.setName(images.getName());
+				imageDto.setFilename(images.getFilename());
+				imageDto.setUrl(images.getUrl());
+				imageDto.setProduct(images.getProduct());
+				
+				return imageDto;
+			}).toList();
 
-			dto.setProductVariants(variantDtos); // Thiết lập danh sách biến thể sản phẩm
+			dto.setProductVariants(variantDtos);
+			dto.setImages(imageDtos);
 
 			return dto;
-		}).toList();
+		})
+		.sorted(Comparator.comparing(ProductDto::getId).reversed())	
+		.toList();
 
 		return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
@@ -211,50 +227,6 @@ public class ProductController {
 			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 		return new ResponseEntity<>(productService.findAll(pageable), HttpStatus.OK);
 	}
-
-//
-//	@GetMapping("/{id}/get")
-//	public ResponseEntity<?> getProductById(@PathVariable("id") Long id) {
-//		Product product = productService.findById(id);
-//
-//		if (product == null) {
-//			return new ResponseEntity<>("Product not found", HttpStatus.NOT_FOUND);
-//		}
-//
-//		ProductDto productDto = new ProductDto();
-//		productDto.setId(product.getId());
-//		productDto.setName(product.getName());
-//		productDto.setActive(product.getActive());
-//		productDto.setDescription(product.getDescription());
-//
-//		if (product.getCategory() != null) {
-//			CategoryDto categoryDto = new CategoryDto();
-//			categoryDto.setId(product.getCategory().getId());
-//			categoryDto.setName(product.getCategory().getName());
-//			productDto.setCategory(categoryDto);
-//		}
-//
-//		if (product.getProductvariants() != null) {
-//			List<ProductVariantDto> variantDtos = product.getProductvariants().stream().map(variant -> {
-//				ProductVariantDto variantDto = new ProductVariantDto();
-//				variantDto.setId(variant.getId());
-//				variantDto.setActive(variant.getActive());
-//				variantDto.setPrice(variant.getPrice());
-//
-//				SizeDto sizeDto = new SizeDto();
-//				sizeDto.setId(variant.getSize().getId());
-//				sizeDto.setName(variant.getSize().getName());
-//				sizeDto.setActive(variant.getSize().getActive());
-//				variantDto.setSize(sizeDto);
-//
-//				return variantDto;
-//			}).toList();
-//
-//			productDto.setProductVariants(variantDtos);
-//		}
-//
-//		return new ResponseEntity<>(productDto, HttpStatus.OK);
-//	}
 
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getProduct(@PathVariable("id") Long id) {

@@ -46,15 +46,16 @@ public class ProductVariantController {
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		//		if(true) {
-//			throw new CategoryException("Category is error");
-//		}
+		
 		ProductVariant entity = new ProductVariant();
-		BeanUtils.copyProperties(dto, entity);
-		entity = productVariantService.save(entity);
+		
+		ProductVariantDto variantDto = new ProductVariantDto();
+		BeanUtils.copyProperties(entity, variantDto, "size");
+		
+		entity = productVariantService.save(dto);
 
 		dto.setId(entity.getId());
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 
 	}
 //Test code

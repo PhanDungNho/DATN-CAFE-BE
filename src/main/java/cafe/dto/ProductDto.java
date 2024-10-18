@@ -42,6 +42,7 @@ public class ProductDto implements Serializable {
 //    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm
     private List<MultipartFile> imageFiles;
     private List<Image> images;
+    private List<ImageDto> imagesDto;
     
     // Chỉ sử dụng khi trả về thông tin sản phẩm
     private CategoryDto category;
