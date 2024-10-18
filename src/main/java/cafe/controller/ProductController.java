@@ -177,7 +177,6 @@ public class ProductController {
 
 		return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
-	
 
 	// cái này để phân trang
 	@GetMapping("/page")
@@ -185,7 +184,6 @@ public class ProductController {
 			@PageableDefault(size = 5, sort = "name", direction = Sort.Direction.ASC) Pageable pageable) {
 		return new ResponseEntity<>(productService.findAll(pageable), HttpStatus.OK);
 	}
-
 
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getProduct(@PathVariable("id") Long id) {
