@@ -34,7 +34,7 @@ public class Account {
 	@Column(name = "fullname", nullable = false, length = 255)
 	private String fullname;
 
-	@Column(name = "phone", nullable = false, length = 15)
+	@Column(name = "phone", nullable = true, length = 15)
 	private String phone;
 
 	@Column(name = "email", nullable = false, length = 255)

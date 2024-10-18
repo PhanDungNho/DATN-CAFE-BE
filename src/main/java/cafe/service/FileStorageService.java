@@ -1,6 +1,8 @@
 package cafe.service;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -128,5 +130,31 @@ public class FileStorageService {
             throw new FileNotFoundException("File not found " + filename, e);
         }
     }
+    
+    
+    public String storeFileFromUrl(String imageUrl, Path location) {
+        UUID uuid = UUID.randomUUID(); 
+        String ext = "jpg"; 
+        String filename = uuid.toString() + "." + ext; 
+        try {
+      
+            URL url = new URL(imageUrl);
+            InputStream inputStream = url.openStream();
+
+       
+            Path targetLocation = location.resolve(filename);
+
+     
+            Files.copy(inputStream, targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            return filename; 
+        } catch (Exception e) {
+            throw new FileStorageException("Could not store file from URL " + imageUrl + ". Please try again!", e);
+        }
+    }
+    
+    public String storeLogoFileFromUrl(String imageUrl) {
+        return storeFileFromUrl(imageUrl, fileLogoStorageLocation); // Lưu ảnh logo từ URL
+    }
+    
 }
 

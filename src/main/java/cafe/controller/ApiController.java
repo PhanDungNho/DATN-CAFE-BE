@@ -1,6 +1,8 @@
 package cafe.controller;
 
+import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,12 +33,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.google.api.client.util.Value;
 
+import cafe.dto.AccountDto;
 import cafe.dto.AuthRequestDTO;
 import cafe.dto.JwtResponseDTO;
 import cafe.entity.Account;
+import cafe.exception.EntityException;
+import cafe.repository.AccountRepository;
 import cafe.service.AccountService;
+import cafe.service.FileStorageService;
 import cafe.service.util.JwtService;
-
 
 @Configuration
 @RestController
@@ -48,77 +53,100 @@ public class ApiController {
 	AuthenticationManager authenticationManager;
 	@Autowired
 	AccountService accountService;
- 
-    @Autowired
-    private JwtDecoder jwtDecoder;
- 
-    
-	
+	@Autowired
+	AccountRepository accountRepository;
+	@Autowired
+	private JwtDecoder jwtDecoder;
+	@Autowired
+	FileStorageService fileStorageService;
+
 	@PostMapping("/api/v1/login")
 	public JwtResponseDTO AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO) {
-	    Authentication authentication = authenticationManager.authenticate(
-	        new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword())
-	    );
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
 
-	    if (authentication.isAuthenticated()) {
-	        // Lấy thông tin từ UserDetails
-	        UserDetails userDetails = (UserDetails) authentication.getPrincipal();  // Sử dụng UserDetails
-	        Set<String> roles = userDetails.getAuthorities().stream()
-	                .map(GrantedAuthority::getAuthority)
-	                .collect(Collectors.toSet());
+		if (authentication.isAuthenticated()) {
+			// Lấy thông tin từ UserDetails
+			UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // Sử dụng UserDetails
+			Set<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+					.collect(Collectors.toSet());
 
-	        // Tạo token và trả về cả token, username và roles
-	        String token = jwtService.GenerateToken(authRequestDTO.getUsername());
+			// Tạo token và trả về cả token, username và roles
+			String token = jwtService.GenerateToken(authRequestDTO.getUsername());
 
-	        return JwtResponseDTO.builder()
-	                .accessToken(token)
-	                .username(authRequestDTO.getUsername())
-	                .roles(roles)  // Thêm danh sách roles vào response
-	                .build();
-	    } else {
-	        throw new UsernameNotFoundException("Invalid user request..!!");
-	    }
+			return JwtResponseDTO.builder().accessToken(token).username(authRequestDTO.getUsername()).roles(roles) // Thêm
+																													// danh
+																													// sách
+																													// roles
+																													// vào
+																													// response
+					.build();
+		} else {
+			throw new UsernameNotFoundException("Invalid user request..!!");
+		}
 	}
 
-	  @PostMapping("/api/v1/auth/google")
-	    public JwtResponseDTO authenticateWithGoogle(@RequestBody Map<String, String> token) {
-	        try {
-	        	   for (Map.Entry<String, String> entry : token.entrySet()) {
-	                   System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-	               }
-	        	   System.out.println(token.get("credential"));
-	        	   System.out.println("dsds");
-	            // Giải mã token từ Google
-	        	   Jwt jwt = jwtDecoder.decode(token.get("credential"));
-	               String email = jwt.getClaimAsString("email");
-	            // Kiểm tra xem người dùng có tồn tại trong hệ thống không
-	               System.out.println(email);
-	            UserDetails userDetails = toDetails(email); // Tạo một phương thức để lấy thông tin người dùng
-	            // Lấy roles từ UserDetails
-	            Set<String> roles = userDetails.getAuthorities().stream()
-	                .map(GrantedAuthority::getAuthority)
-	                .collect(Collectors.toSet());
-	            // Tạo token JWT cho người dùng
-	            String jwtToken = jwtService.GenerateToken(userDetails.getUsername());
-	            return JwtResponseDTO.builder()
-	                .accessToken(jwtToken)
-	                .username(userDetails.getUsername())
-	                .roles(roles)
-	                .build();
+	@PostMapping("/api/v1/auth/google")
+	public JwtResponseDTO authenticateWithGoogle(@RequestBody Map<String, String> token) {
+		try {
+			// In ra các giá trị của token
+			for (Map.Entry<String, String> entry : token.entrySet()) {
+				System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
+			}
+			System.out.println(token.get("credential"));
 
-	        } catch (Exception e) {
-	            throw new RuntimeException("Google authentication failed: " + e.getMessage());
-	        }
-	    }
-	
-	   private UserDetails toDetails(String email) {
-	        Account account = accountService.findByEmail(email);
-	        String username= account.getUsername();
-	    	String password = account.getPassword();
-	    	Set<GrantedAuthority> authorities = account.getAuthorities().stream()
-	                .map((au) -> new SimpleGrantedAuthority("ROLE_" +au.getRole().getRolename()))
-	                .collect(Collectors.toSet());
-	    	return new User(username, password, authorities);
-	    }
-	  
+			// Giải mã token từ Google
+			Jwt jwt = jwtDecoder.decode(token.get("credential"));
+			String email = jwt.getClaimAsString("email");
+			String picture = jwt.getClaimAsString("picture");
+			String name = jwt.getClaimAsString("name");
+			System.out.println(email);
+			System.out.println(picture);
+			System.out.println(fileStorageService.storeLogoFileFromUrl(picture));
+
+			Optional<Account> accountOptional = accountRepository.findByEmail(email);
+Account account = new Account();
+			if (accountOptional.isEmpty()) {
+				String[] parts = email.split("@");
+				AccountDto newAccountDto = new AccountDto();
+				newAccountDto.setUsername(parts[0]);
+				newAccountDto.setFullname(name);
+				newAccountDto.setEmail(email);
+				newAccountDto.setPhone("+84");
+				newAccountDto.setAmountpaid(0D);
+				newAccountDto.setEmail(email);
+				String image = fileStorageService.storeLogoFileFromUrl(picture);
+				newAccountDto.setImage(image);
+				account = accountService.insertAccountWithGoogle(newAccountDto);
+			}else {
+				account = 	accountOptional.get();
+			}
+
+			   Set<String> authorities = account.getAuthorities() != null 
+			            ? account.getAuthorities().stream()
+			                .map((au) -> "ROLE_" + au.getRole().getRolename()).collect(Collectors.toSet())
+			            : Collections.emptySet();
+//			Set<String> authorities = account.getAuthorities().stream()
+//					.map((au) -> "ROLE_" + au.getRole().getRolename()).collect(Collectors.toSet());
+
+			String jwtToken = jwtService.GenerateToken(account.getUsername());
+			return JwtResponseDTO.builder().accessToken(jwtToken).username(account.getUsername())
+					.image(account.getImage()).roles(authorities).build();
+
+		} catch (Exception e) {
+			throw new RuntimeException("Google authentication failed: " + e.getMessage());
+		}
+	}
+
+	private Account toDetails(String email) {
+		Account account = accountService.findByEmail(email);
+//	        String username= account.getUsername();
+//	        String image= account.getImage();
+//	    	String password = account.getPassword();
+//	    	Set<GrantedAuthority> authorities = account.getAuthorities().stream()
+//	                .map((au) -> new SimpleGrantedAuthority("ROLE_" +au.getRole().getRolename()))
+//	                .collect(Collectors.toSet());
+		return account;
+	}
+
 }

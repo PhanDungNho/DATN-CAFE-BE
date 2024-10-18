@@ -13,6 +13,7 @@ import cafe.entity.OrderDetail;
 import cafe.enums.OrderStatus;
 import cafe.enums.OrderType;
 import cafe.enums.PaymentMethod;
+import cafe.enums.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -34,6 +35,7 @@ public class OrderDto {
     private Date createdtime;
     private BigDecimal totalamount;
     private OrderStatus status;
+    private PaymentStatus paymentstatus;
     private PaymentMethod paymentmethod;
     private OrderType ordertype;
     private Boolean active;
