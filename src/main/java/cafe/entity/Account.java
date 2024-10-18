@@ -1,5 +1,6 @@
 package cafe.entity;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -57,5 +58,17 @@ public class Account {
 	public void prePersist() {
     	active = true;
     	amountpaid =0D;
+    	enabled = false; // Mặc định tài khoản chưa được kích hoạt
 	}
+    // Thêm trường OTP để lưu mã OTP
+    @Column(name = "otp", length = 6)
+    private String otp;
+
+    // Thêm trường enabled để lưu trạng thái xác thực của tài khoản
+    @Column(name = "enabled", nullable = false)
+    private Boolean enabled;
+    
+   
+
+ 
 }
