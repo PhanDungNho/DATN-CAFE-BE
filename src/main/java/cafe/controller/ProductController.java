@@ -177,7 +177,6 @@ public class ProductController {
 
 		return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
-	
 
 	// cái này để phân trang
 	@GetMapping("/page")

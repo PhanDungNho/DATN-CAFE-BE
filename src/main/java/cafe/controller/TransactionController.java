@@ -94,6 +94,7 @@ public class TransactionController {
 			transaction.setOrder(found.getOrder());
 			transaction.setPayUrl(found.getPayUrl());
 			transactionsService.save(transaction);
+			
 			if (found.getOrder().getStatus() == OrderStatus.PENDING
 					&& (transaction.getResultCode() == 0 || transaction.getResultCode() == 900)) {
 				found.getOrder().setStatus(OrderStatus.PROCESSING);
