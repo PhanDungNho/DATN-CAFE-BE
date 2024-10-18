@@ -64,27 +64,7 @@ public class ProductController {
 
 	@Autowired
 	ImageService imageService ;
-// 	@PostMapping
-//	public ResponseEntity<?> createProduct(@Valid @RequestBody ProductDto productDto, BindingResult result) {
-//		ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
-//		if (responseEntity != null) {
-//			return responseEntity;
-//		}
-//		Product product = productService.save(productDto);
-//		// Tạo ProductDto từ Product và trả về
-//		ProductDto responseDto = new ProductDto();
-//		responseDto.setId(product.getId());
-//		responseDto.setName(product.getName());
-//		responseDto.setActive(product.getActive());
-//		responseDto.setDescription(product.getDescription());
-//		// Map Category entity sang CategoryDto
-//		CategoryDto categoryDto = new CategoryDto();
-//		categoryDto.setId(product.getCategory().getId());
-//		categoryDto.setName(product.getCategory().getName());
-//		responseDto.setCategory(categoryDto);
-//		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-//	}
-
+	
 	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createProduct(@ModelAttribute ProductDto dto,
@@ -96,29 +76,6 @@ public class ProductController {
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
 
-	// cập nhật
-//	@PatchMapping("/{id}")
-//	public ResponseEntity<?> updateProduct(@PathVariable Long id, @RequestBody ProductDto dto) {
-//		// Gọi service để cập nhật sản phẩm với ProductDto
-//		Product updatedProduct = productService.update(id, dto);
-//
-//		// Tạo ProductDto để trả về thông tin sản phẩm đã cập nhật
-//		ProductDto responseDto = new ProductDto();
-//		responseDto.setId(updatedProduct.getId());
-//		responseDto.setName(updatedProduct.getName());
-//		responseDto.setActive(updatedProduct.getActive());
-//		responseDto.setDescription(updatedProduct.getDescription());
-//
-//		// Map Category entity sang CategoryDto
-//		if (updatedProduct.getCategory() != null) {
-//			CategoryDto categoryDto = new CategoryDto();
-//			categoryDto.setId(updatedProduct.getCategory().getId());
-//			categoryDto.setName(updatedProduct.getCategory().getName());
-//			responseDto.setCategory(categoryDto);
-//		}
-//
-//		return new ResponseEntity<>(responseDto, HttpStatus.OK);
-//	}
 
 	@PatchMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 	        MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -220,6 +177,7 @@ public class ProductController {
 
 		return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
+	
 
 	// cái này để phân trang
 	@GetMapping("/page")
@@ -238,12 +196,6 @@ public class ProductController {
 	public ResponseEntity<?> getProductByName(@RequestParam("query") String query) {
 		return new ResponseEntity<>(productService.findProductByName(query), HttpStatus.OK);
 	}
-
-//	@DeleteMapping("/{id}")
-//	public ResponseEntity<?> deleteCategory(@PathVariable("id") Long id) {
-//		productService.deleteById(id);
-//		return new ResponseEntity<>("Product with Id: " + id + " was deleted", HttpStatus.OK);
-//	}
 
 	@GetMapping("/images/{filename:.+}")
 	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {

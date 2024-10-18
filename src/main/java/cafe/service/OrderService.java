@@ -63,6 +63,7 @@ public class OrderService {
 //		order.setCreatedtime(dto.getCreatedtime());
 		order.setTotalamount(dto.getTotalamount());
 		order.setStatus(dto.getStatus());
+		order.setPaymentstatus(dto.getPaymentstatus());
 		order.setPaymentmethod(dto.getPaymentmethod());
 		order.setOrdertype(dto.getOrdertype());
 		order.setActive(dto.getActive());

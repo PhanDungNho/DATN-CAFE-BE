@@ -1,6 +1,7 @@
 package cafe.dto;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -49,6 +50,15 @@ public class AccountDto implements Serializable {
 
 	@JsonIgnore
 	private MultipartFile imageFile;
+	
+	  // Trường OTP để lưu trữ mã OTP gửi qua email
+    @Size(max = 6, message = "OTP must be a 6-character code")
+    private String otp;
+    
+
+    // Trường trạng thái xác nhận tài khoản
+    @NotNull(message = "Account enabled status is required")
+    private Boolean enabled;
 
 //    private List<AccountRoleDto> accountRoleDtos;
 
