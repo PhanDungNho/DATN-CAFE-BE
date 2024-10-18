@@ -166,5 +166,11 @@ public class AccountService {
 	    return accountRepository.save(existingAccount);
 	}
 	
+	//hieunguyen
+	public boolean usernameExists(String username) {
+        return accountRepository.existsByUsername(username);
+    }
+	
+	
 
 }
