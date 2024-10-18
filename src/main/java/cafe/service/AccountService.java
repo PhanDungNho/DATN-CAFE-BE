@@ -2,6 +2,7 @@ package cafe.service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,6 +41,24 @@ public class AccountService {
 			entity.setImage(filename);
 			dto.setImage(filename);
 		}
+		return accountRepository.save(entity);
+	}
+	
+	public Account insertAccountWithGoogle(AccountDto dto) {
+		  Account entity = new Account();
+		    String baseUsername = dto.getUsername();
+		    entity.setUsername(baseUsername);
+	    int count = 0;
+	    while (accountRepository.findByUsernameContainsIgnoreCase(entity.getUsername()).size() > 0) {
+	        count++;
+	        entity.setUsername(baseUsername + count);   
+	    }
+	    entity.setFullname(dto.getFullname());
+	    entity.setEmail(dto.getEmail());
+	    entity.setImage(dto.getImage());
+	    String uuid = UUID.randomUUID().toString().replace("-", "").substring(0,14);
+		entity.setPassword(uuid);
+ 
 		return accountRepository.save(entity);
 	}
 
@@ -158,13 +177,18 @@ public class AccountService {
 		}
 		return found.get();
 	}
-	
- 
+
 	
 	public Account update(Account existingAccount) {
 	    // Assuming you have a JPA repository
 	    return accountRepository.save(existingAccount);
 	}
+	
+	//hieunguyen
+	public boolean usernameExists(String username) {
+        return accountRepository.existsByUsername(username);
+    }
+	
 	
 
 }

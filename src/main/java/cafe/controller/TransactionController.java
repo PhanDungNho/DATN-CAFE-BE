@@ -97,7 +97,7 @@ public class TransactionController {
 			
 			if (found.getOrder().getStatus() == OrderStatus.PENDING
 					&& (transaction.getResultCode() == 0 || transaction.getResultCode() == 900)) {
-				found.getOrder().setStatus(OrderStatus.ORDERED);
+				found.getOrder().setStatus(OrderStatus.PROCESSING);
 				orderService.save(found.getOrder());
 			}
 

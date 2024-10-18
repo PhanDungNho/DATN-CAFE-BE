@@ -11,6 +11,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import cafe.enums.OrderStatus;
 import cafe.enums.OrderType;
 import cafe.enums.PaymentMethod;
+import cafe.enums.PaymentStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -50,6 +51,10 @@ public class Order {
 	@Column(name = "status", nullable = true)
 	private OrderStatus status;
 	
+	@Column(name = "paymentstatus", nullable = true)
+	private PaymentStatus paymentstatus; 
+ 
+	
 	@Column(name = "ordertype", nullable = true)
 	private OrderType ordertype;
 	
@@ -57,13 +62,13 @@ public class Order {
 	@Column(name = "paymentmethod", nullable = false)
 	private PaymentMethod paymentmethod; 
 	
+	
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 	
 	@Column(name = "shippingfee", nullable = true)
 	private BigDecimal shippingfee; 
-	
- 
+
     @Column(name = "fulladdresstext", columnDefinition = "nvarchar(max)")
 	private String fulladdresstext;
 	
