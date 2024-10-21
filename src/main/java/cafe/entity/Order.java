@@ -37,7 +37,9 @@ public class Order {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
-	
+    @Column(name = "slug", nullable = false, length = 255)
+    private String slug;
+    
 	@ManyToOne
     @JoinColumn(name = "cashier_id", nullable = true)
     private Account cashier;

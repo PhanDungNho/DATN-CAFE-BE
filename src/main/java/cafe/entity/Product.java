@@ -31,7 +31,8 @@ public class Product    {
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
-    
+    @Column(name = "slug", nullable = false, length = 255)
+    private String slug;
     @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
