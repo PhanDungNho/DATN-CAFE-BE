@@ -19,53 +19,50 @@ import cafe.repository.ProductRepository;
 import cafe.repository.ProductVariantRepository;
 import cafe.repository.SizeRepository;
 
- 
-
 @Service
 public class ProductVariantService {
 	@Autowired
 	private ProductVariantRepository productVariantRepository;
-	
+
 	@Autowired
 	private ProductRepository productRepository;
-	
+
 	@Autowired
 	private SizeRepository sizeRepository;
 
 	public ProductVariant save(ProductVariantDto dto) {
-	    ProductVariant entity = new ProductVariant();
-	    BeanUtils.copyProperties(dto, entity, "size");
+		ProductVariant entity = new ProductVariant();
+		BeanUtils.copyProperties(dto, entity, "size");
 
-	    // Lấy thông tin product từ database
-	    Product product = productRepository.findById(dto.getProductid())
-	            .orElseThrow(() -> new EntityException("Product not found"));
-	    entity.setProduct(product);
+		Product product = productRepository.findById(dto.getProductid())
+				.orElseThrow(() -> new EntityException("Product not found"));
+		entity.setProduct(product);
 
-	    // Lấy thông tin size từ database
-	    Size size = sizeRepository.findById(dto.getSizeid())
-	            .orElseThrow(() -> new EntityException("Size not found"));
-	    entity.setSize(size);
+		Size size = sizeRepository.findById(dto.getSizeid()).orElseThrow(() -> new EntityException("Size not found"));
+		entity.setSize(size);
 
-	    return productVariantRepository.save(entity);
+		return productVariantRepository.save(entity);
 	}
 
-	public ProductVariant update(Long id, ProductVariant entity) {
+	public ProductVariant update(Long id, ProductVariantDto dto) {
 		Optional<ProductVariant> existed = productVariantRepository.findById(id);
 		if (existed.isEmpty()) {
-			// neu k tim thay thi tra ve ngoai le
 			throw new EntityException("ProductVariant id " + id + " does not exist");
 		}
 		try {
-			// neu tìm thấy trong csdl thì sẽ truy cập tới đối tượng Catrgory
 			ProductVariant existedProductVariant = existed.get();
-			existedProductVariant.setProduct(entity.getProduct());
-			existedProductVariant.setPrice(entity.getPrice());
-			existedProductVariant.setSize(entity.getSize());
-			existedProductVariant.setActive(entity.getActive());
+			BeanUtils.copyProperties(dto, existedProductVariant);
+			
+			Product product = productRepository.findById(dto.getProductid())
+					.orElseThrow(() -> new EntityException("Product not found"));
+			existedProductVariant.setProduct(product);
+
+			Size size = sizeRepository.findById(dto.getSizeid())
+					.orElseThrow(() -> new EntityException("Size not found"));
+			existedProductVariant.setSize(size);
+			
 			return productVariantRepository.save(existedProductVariant);
-			// thì tiến hành cập nhật thủ công bth
 		} catch (Exception ex) {
-			// nếu có lỗi sẽ ném ra ngoại lệ
 			throw new EntityException("Product is updated failed");
 		}
 
@@ -86,9 +83,27 @@ public class ProductVariantService {
 		}
 		return found.get();
 	}
-	
+
 	public void deleteById(Long id) {
 		ProductVariant existed = findById(id);
 		productVariantRepository.delete(existed);
 	}
+	
+	public List<ProductVariant> searchProductVariantsByProductName(String productName) {
+		List<ProductVariant> list = productVariantRepository.findByProductNameContainsIgnoreCase(productName);
+        return list;
+    }
+
+	public ProductVariant toggleActive(Long id) {
+		Optional<ProductVariant> variant = productVariantRepository.findById(id);
+		if (variant.isEmpty()) {
+			throw new EntityException("Product Variant with id: " + id + "does not exist");
+		}
+
+		ProductVariant productVariant = variant.get();
+		productVariant.setActive(!productVariant.getActive());
+
+		return productVariantRepository.save(productVariant);
+	}
+
 }

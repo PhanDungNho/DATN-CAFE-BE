@@ -40,6 +40,7 @@ public class ProductDto implements Serializable {
 
     private List<ProductVariantDto> productVariants; // Danh sách biến thể sản phẩm
 //    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm
+    @NotEmpty(message = "At least one image is required")
     private List<MultipartFile> imageFiles;
     private List<Image> images;
 
