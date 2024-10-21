@@ -36,7 +36,7 @@ public class ProductDto implements Serializable {
     private String description;
 
     // Chỉ sử dụng khi tạo mới hoặc cập nhật sản phẩm
-    private Long categoryid; 
+    private Long categoryId; 
 
     private List<ProductVariantDto> productVariants; // Danh sách biến thể sản phẩm
 //    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm

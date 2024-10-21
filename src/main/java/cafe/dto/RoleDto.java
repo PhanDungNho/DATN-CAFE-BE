@@ -16,7 +16,7 @@ public class RoleDto implements Serializable{
     
     @NotBlank(message = "Role name is required")
     @Size(max = 255, message = "Role name must be less than or equal to 255 characters")
-    private String rolename;
+    private String roleName;
     
     @NotNull(message = "Active status is required")
     private Boolean active;

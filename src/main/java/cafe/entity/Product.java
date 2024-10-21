@@ -20,7 +20,7 @@ import lombok.Data;
 @SuppressWarnings("serial")
 @Entity
 @Data
-@Table(name = "product")
+@Table(name = "Products")
 public class Product    {
 
 
@@ -31,21 +31,22 @@ public class Product    {
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
-    
+    @Column(name = "slug", nullable = false, length = 255)
+    private String slug;
     @ManyToOne
-    @JoinColumn(name = "categoryid")
+    @JoinColumn(name = "category_id")
     private Category category;
     
     @Column(name = "active")
     private Boolean active;
 
     @Column(name = "description", columnDefinition = "nvarchar(max)")
-    private String description ;
+    private String description;
     
 
     @JsonIgnore
     @OneToMany(mappedBy = "product")
-    private List<ProductVariant> productvariants;
+    private List<ProductVariant> productVariants;
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

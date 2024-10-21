@@ -31,14 +31,14 @@ public class AccountDto implements Serializable {
 	private Boolean active;
 
 	@NotNull(message = "Amountpaid is required")
-	private Double amountpaid;
+	private Double amountPaid;
 
 	@NotBlank(message = "Email is required")
 	@Size(max = 255, message = "Email must be less than or equal to 255 characters")
 	private String email;
 
 	@Size(max = 255, message = "Fullname must be less than or equal to 255 characters")
-	private String fullname;
+	private String fullName;
 
 	private String password;
 

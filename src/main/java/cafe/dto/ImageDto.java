@@ -17,7 +17,7 @@ public class ImageDto implements Serializable {
     @Size(max = 255, message = "Image name must be less than or equal to 255 characters")
     private String name;
     
-    private String filename;
+    private String fileName;
     private String url;
     private String status;
     private String response = "{\"status:\" \"sucess\"}";

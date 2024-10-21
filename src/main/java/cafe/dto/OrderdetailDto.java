@@ -10,10 +10,10 @@ import lombok.Data;
 @Data
 public class OrderdetailDto {
     private Long productVariantId;
-    private ProductVariant productvariant;
+    private ProductVariant productVariant;
     private Integer quantity;
-    private BigDecimal momentprice;
+    private BigDecimal momentPrice;
     private String note;
-    List<OrderDetailToppingDto> orderdetailtoppings = new ArrayList<>(); 
+    List<OrderDetailToppingDto> orderDetailToppings = new ArrayList<>(); 
     
 }

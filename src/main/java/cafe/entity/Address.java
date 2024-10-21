@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "address")
+@Table(name = "Addresses")
 public class Address {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,21 +26,21 @@ public class Address {
 	@Column(name = "street", nullable = false, length = 255)
 	private String street;
 	
-	@Column(name = "wardcode", nullable = false)
-	private int wardcode;
+	@Column(name = "ward_code", nullable = false)
+	private int wardCode;
 	
-	@Column(name = "districtcode", nullable = false)
-	private int districtcode;
+	@Column(name = "district_code", nullable = false)
+	private int districtCode;
 	
-	@Column(name = "citycode", nullable = false)
-	private int citycode;
+	@Column(name = "city_code", nullable = false)
+	private int cityCode;
 	
  
-	 @Column(name = "fulladdresstext", columnDefinition = "nvarchar(max)")
-	private String fulladdresstext;
+	 @Column(name = "full_address", columnDefinition = "nvarchar(max)")
+	private String fullAddress;
 	
-	@Column(name = "isdefault", nullable = false)
-	private Boolean isdefault;
+	@Column(name = "is_default", nullable = false)
+	private Boolean isDefault;
 	
 	@Column(name = "active", nullable = false)
 	private Boolean active;

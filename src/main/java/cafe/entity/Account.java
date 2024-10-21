@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "account")
+@Table(name = "Accounts")
 public class Account {
 	@Id
 	@Column(name = "username", nullable = false, length = 255)
@@ -32,8 +32,8 @@ public class Account {
 	@Column(name = "password", nullable = false, length = 255)
 	private String password;
 
-	@Column(name = "fullname", nullable = false, length = 255)
-	private String fullname;
+	@Column(name = "full_name", nullable = false, length = 255)
+	private String fullName;
 
 	@Column(name = "phone", nullable = true, length = 15)
 	private String phone;
@@ -44,8 +44,8 @@ public class Account {
 	@Column(name = "image", length = 255)
 	private String image;
 
-	@Column(name = "amountpaid", nullable = false)
-	private Double amountpaid;
+	@Column(name = "amount_paid", nullable = false)
+	private Double amountPaid;
 
 	@Column(name = "active", nullable = false, length = 255)
 	private Boolean active;
@@ -57,7 +57,7 @@ public class Account {
     @PrePersist
 	public void prePersist() {
     	active = true;
-    	amountpaid =0D;
+    	amountPaid =0D;
     	enabled = false; // Mặc định tài khoản chưa được kích hoạt
 	}
     // Thêm trường OTP để lưu mã OTP

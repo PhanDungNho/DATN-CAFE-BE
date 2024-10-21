@@ -1,9 +1,7 @@
 package cafe.entity;
 
+import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-
-import org.hibernate.Hibernate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -21,31 +19,35 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Entity
 @Data
-@Table(name = "Images")
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Image {
-
+@Table(name = "CartDetails")
+public class CartDetail {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "id")
+	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@Column(name = "name", nullable = false, length = 255)
-	private String name;
+	@ManyToOne
+	@JoinColumn(name = "account", nullable = true)
+	private Account account;
 
-	@Column(name = "file_name")
-	private String fileName;
+	@ManyToOne
+	@JoinColumn(name = "productvariantid", nullable = true)
+	private ProductVariant productvariant;
 
-	@Column(name = "url")
-	private String url;
+	@Column(name = "quantity")
+	private Integer quantity;
+	
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "product_id")
-	private Product product;
+    @Column(columnDefinition = "TEXT")
+    private String note;
+	
+	   @JsonIgnore
+	    @OneToMany(mappedBy = "cartDetail", fetch = FetchType.EAGER)
+	    private List<CartDetailTopping> cartDetailToppings;
+	    
 
-
-	// Getters and Setters
 }

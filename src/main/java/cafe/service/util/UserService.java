@@ -23,11 +23,10 @@ public class UserService implements UserDetailsService{
 	AccountRepository accountRepository;
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-		// TODO Auto-generated method stub
 		Account account = accountRepository.findByUsername(username).get();
 		String password = account.getPassword();
 		Set<GrantedAuthority> authorities = account.getAuthorities().stream()
-	                .map((au) -> new SimpleGrantedAuthority("ROLE_" +au.getRole().getRolename()))
+	                .map((au) -> new SimpleGrantedAuthority("ROLE_" +au.getRole().getRoleName()))
 	                .collect(Collectors.toSet());
 
 		return new User(username, password, authorities);
@@ -40,7 +39,7 @@ public class UserService implements UserDetailsService{
 		Account account = accountRepository.findByEmail(email).get();
 		String password = account.getPassword();
 		Set<GrantedAuthority> authorities = account.getAuthorities().stream()
-	                .map((au) -> new SimpleGrantedAuthority("ROLE_" +au.getRole().getRolename()))
+	                .map((au) -> new SimpleGrantedAuthority("ROLE_" +au.getRole().getRoleName()))
 	                .collect(Collectors.toSet());
 
 		return new User(account.getUsername(), password, authorities);

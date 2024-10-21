@@ -33,7 +33,7 @@ public class RoleService {
 		}
 		try {
 			Role existedRole = existed.get();
-			existedRole.setRolename(entity.getRolename());
+			existedRole.setRoleName(entity.getRoleName());
 			existedRole.setActive(entity.getActive());
 			return roleRepository.save(existedRole);
 			// thì tiến hành cập nhật thủ công bth

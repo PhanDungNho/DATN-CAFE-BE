@@ -60,7 +60,7 @@ public class AuthorityController {
 		 authorityService.create(dto);
 		 AuthorityDto responseDto = new AuthorityDto();
 		 responseDto.setId(dto.getId());
-		 responseDto.setRoleid(dto.getRoleid());
+		 responseDto.setRoleId(dto.getRoleId());
 		 responseDto.setUsername(dto.getUsername());
 		return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
 		

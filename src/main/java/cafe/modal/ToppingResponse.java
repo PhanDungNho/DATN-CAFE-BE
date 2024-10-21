@@ -22,7 +22,7 @@ public class ToppingResponse {
 		response.setPrice(entity.getPrice());
 		response.setActive(entity.getActive());
 		response.setImage(entity.getImage());
-		response.setOrderDetailToppingResponse(entity.getOrderdetailtopping().stream().map(OrderDetailToppingResponse::convert).toList());
+		response.setOrderDetailToppingResponse(entity.getOrderDetailToppings().stream().map(OrderDetailToppingResponse::convert).toList());
 		return response;
 	}
 }

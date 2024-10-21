@@ -132,7 +132,7 @@ public class ProductController {
 			}
 
 			// Ánh xạ danh sách product variants
-			List<ProductVariantDto> variantDtos = product.getProductvariants().stream().map(variant -> {
+			List<ProductVariantDto> variantDtos = product.getProductVariants().stream().map(variant -> {
 				ProductVariantDto variantDto = new ProductVariantDto();
 				variantDto.setId(variant.getId());
 				variantDto.setActive(variant.getActive());
@@ -160,7 +160,7 @@ public class ProductController {
 				Image imageDto = new Image();
 				imageDto.setId(images.getId());
 				imageDto.setName(images.getName());
-				imageDto.setFilename(images.getFilename());
+				imageDto.setFileName(images.getFileName());
 				imageDto.setUrl(images.getUrl());
 				imageDto.setProduct(images.getProduct());
 				

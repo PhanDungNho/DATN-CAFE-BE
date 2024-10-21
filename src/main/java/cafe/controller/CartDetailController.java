@@ -18,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import cafe.dto.CartDto;
+import cafe.dto.CartDetailDto;
 import cafe.entity.Account;
-import cafe.entity.Cart;
+import cafe.entity.CartDetail;
 import cafe.entity.ProductVariant;
 import cafe.service.AccountService;
 import cafe.service.CartService;
@@ -32,7 +32,7 @@ import jakarta.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/carts")
 @CrossOrigin
-public class CartController {
+public class CartDetailController {
 
 	@Autowired
 	CartService cartService;
@@ -47,11 +47,11 @@ public class CartController {
 	MapValidationErrorService mapValidationErrorService;
 
 	@PostMapping
-	public ResponseEntity<?> CreateCartDetail(@Valid @RequestBody CartDto dto) {
-		Cart entity = new Cart();
+	public ResponseEntity<?> CreateCartDetail(@Valid @RequestBody CartDetailDto dto) {
+		CartDetail entity = new CartDetail();
 		Account account = accountService.findById(dto.getUsername());
 		entity.setAccount(account);
-		ProductVariant productvariant = productVariantService.findById(dto.getProductvariantid());
+		ProductVariant productvariant = productVariantService.findById(dto.getProductVariantId());
 		entity.setProductvariant(productvariant);
 		entity.setQuantity(dto.getQuantity());
 		entity = cartService.save(entity);
@@ -61,8 +61,8 @@ public class CartController {
 	}
 
 	@PatchMapping("/{id}")
-	public ResponseEntity<String> updateQuantityCart(@PathVariable Long id, @RequestBody CartDto dto) {
-	    Cart entity = new Cart();
+	public ResponseEntity<String> updateQuantityCart(@PathVariable Long id, @RequestBody CartDetailDto dto) {
+		CartDetail entity = new CartDetail();
 	    BeanUtils.copyProperties(dto, entity);
 	    entity = cartService.updateQuantity(id, entity);
 	    dto.setId(entity.getId());

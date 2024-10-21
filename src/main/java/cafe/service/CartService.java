@@ -7,8 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import cafe.entity.Cart;
+import cafe.entity.CartDetail;
 import cafe.entity.Category;
 import cafe.exception.EntityException;
 import cafe.repository.CartRepository;
@@ -18,18 +17,18 @@ public class CartService {
 	@Autowired
 	private CartRepository cartRepository;
 
-	public Cart save(Cart entity) {
+	public CartDetail save(CartDetail entity) {
 		return cartRepository.save(entity);
 	}
 	
 	 
-	public Cart updateQuantity(Long id, Cart entity) {
-		Optional<Cart> existed = cartRepository.findById(id);
+	public CartDetail updateQuantity(Long id, CartDetail entity) {
+		Optional<CartDetail> existed = cartRepository.findById(id);
 		if (existed.isEmpty()) {
 			throw new EntityException("Category id " + id + " does not exist");
 		}
 		try {
-			Cart existedCart = existed.get();
+			CartDetail existedCart = existed.get();
 			existedCart.setQuantity(entity.getQuantity());
 			return cartRepository.save(existedCart);
 		} catch (Exception ex) {
@@ -38,25 +37,25 @@ public class CartService {
 
 	}
 
-	public List<Cart> getCartsByUsername(String username) {
+	public List<CartDetail> getCartsByUsername(String username) {
 		return cartRepository.findByAccountUsername(username);
 	}
 
-	public Page<Cart> findAll(Pageable pageable) {
+	public Page<CartDetail> findAll(Pageable pageable) {
 		return cartRepository.findAll(pageable);
 	}
 
 	public void deleteById(Long id) {
-		Cart existed = findById(id);
+		CartDetail existed = findById(id);
 		cartRepository.delete(existed);
 	}
 
-	public List<Cart> findAll() {
+	public List<CartDetail> findAll() {
 		return cartRepository.findAll();
 	}
 
-	public Cart findById(Long id) {
-		Optional<Cart> found = cartRepository.findById(id);
+	public CartDetail findById(Long id) {
+		Optional<CartDetail> found = cartRepository.findById(id);
 		if (found.isEmpty()) {
 			throw new EntityException("Cart with id " + id + " does not exist");
 		}

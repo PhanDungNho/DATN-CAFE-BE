@@ -30,12 +30,12 @@ public class AddressService {
         // Tạo mới một Product entity từ ProductDto
 		Address address = new Address();
         address.setActive(addressDto.getActive());
-        address.setCitycode(addressDto.getCitycode());
-        address.setDistrictcode(addressDto.getDistrictcode());
-        address.setFulladdresstext(addressDto.getFulladdresstext());
-        address.setIsdefault(addressDto.getIsdefault());
+        address.setCityCode(addressDto.getCityCode());
+        address.setDistrictCode(addressDto.getDistrictCode());
+        address.setFullAddress(addressDto.getFullAddress());
+        address.setIsDefault(addressDto.getIsDefault());
         address.setStreet(addressDto.getStreet());
-        address.setWardcode(addressDto.getWardcode());
+        address.setWardCode(addressDto.getWardCode());
         
         // Tìm Category từ categoryId và set vào Product
         Account account = accountRepository.findById(addressDto.getAccount())
@@ -55,12 +55,12 @@ public class AddressService {
 
 	    Address existedAddress = existed.get();
 	    existedAddress.setActive(dto.getActive());
-	    existedAddress.setCitycode(dto.getCitycode());
-	    existedAddress.setDistrictcode(dto.getDistrictcode());
-	    existedAddress.setFulladdresstext(dto.getFulladdresstext());
-	    existedAddress.setIsdefault(dto.getIsdefault());
+	    existedAddress.setCityCode(dto.getCityCode());
+	    existedAddress.setDistrictCode(dto.getDistrictCode());
+	    existedAddress.setFullAddress(dto.getFullAddress());
+	    existedAddress.setIsDefault(dto.getIsDefault());
 	    existedAddress.setStreet(dto.getStreet());
-	    existedAddress.setWardcode(dto.getWardcode());
+	    existedAddress.setWardCode(dto.getWardCode());
 
 	    // Chỉ gán Category nếu có categoryid
 	    if (dto.getAccount() != null) {

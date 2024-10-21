@@ -110,10 +110,10 @@ Account account = new Account();
 				String[] parts = email.split("@");
 				AccountDto newAccountDto = new AccountDto();
 				newAccountDto.setUsername(parts[0]);
-				newAccountDto.setFullname(name);
+				newAccountDto.setFullName(name);
 				newAccountDto.setEmail(email);
 				newAccountDto.setPhone("+84");
-				newAccountDto.setAmountpaid(0D);
+				newAccountDto.setAmountPaid(0D);
 				newAccountDto.setEmail(email);
 				String image = fileStorageService.storeLogoFileFromUrl(picture);
 				newAccountDto.setImage(image);
@@ -124,7 +124,7 @@ Account account = new Account();
 
 			   Set<String> authorities = account.getAuthorities() != null 
 			            ? account.getAuthorities().stream()
-			                .map((au) -> "ROLE_" + au.getRole().getRolename()).collect(Collectors.toSet())
+			                .map((au) -> "ROLE_" + au.getRole().getRoleName()).collect(Collectors.toSet())
 			            : Collections.emptySet();
 //			Set<String> authorities = account.getAuthorities().stream()
 //					.map((au) -> "ROLE_" + au.getRole().getRolename()).collect(Collectors.toSet());

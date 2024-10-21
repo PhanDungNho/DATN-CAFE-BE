@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "accountrole")
+@Table(name = "Authorities")
 public class Authority {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,11 +24,11 @@ public class Authority {
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "roleid", nullable = false)
+	@JoinColumn(name = "role_id", nullable = false)
 	private Role role;
 	
 	@ManyToOne
-	@JoinColumn(name = "account", nullable = false)
+	@JoinColumn(name = "username", nullable = false)
 	private Account account;
 }
  	

@@ -19,14 +19,14 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 	List<Account> findByUsernameContainsIgnoreCase(String username);
 	List<Account> findByPhoneContainsIgnoreCase(String phone);
 	
-	Optional<Account> findByphone(String phone);
+	Optional<Account> findByPhone(String phone);
 	Optional<Account> findByEmail(String email);
 
 	
 	    boolean existsByUsername(String username);
 	    
 	    
-	    Optional<Account> findByPhone(String phone);
+	   
 	
 
 }

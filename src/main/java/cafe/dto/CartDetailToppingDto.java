@@ -9,7 +9,7 @@ import cafe.entity.Topping;
 import lombok.Data;
 
 @Data
-public class OrderDetailToppingDto {
+public class CartDetailToppingDto {
 	private Long id;
 	private BigDecimal momentPrice;
 	private Integer quantity;

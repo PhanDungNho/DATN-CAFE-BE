@@ -61,21 +61,22 @@ public class OrderService {
 		Order order = new Order();
 	 
 //		order.setCreatedtime(dto.getCreatedtime());
-		order.setTotalamount(dto.getTotalamount());
-		order.setStatus(dto.getStatus());
-		order.setPaymentstatus(dto.getPaymentstatus());
-		order.setPaymentmethod(dto.getPaymentmethod());
-		order.setOrdertype(dto.getOrdertype());
+		order.setTotalAmount(dto.getTotalAmount());
+		order.setOrderStatus(dto.getOrderStatus());
+		order.setPaymentStatus(dto.getPaymentStatus());
+		order.setPaymentMethod(dto.getPaymentMethod());
+		order.setOrderType(dto.getOrderType());
+		order.setOrdering(dto.getOrdering());
 		order.setActive(dto.getActive());
-		order.setShippingfee(dto.getShippingfee());
-		order.setFulladdresstext(dto.getFulladdresstext());
+		order.setShippingFee(dto.getShippingFee());
+		order.setFullAddress(dto.getFullAddress());
 	 
-		Account cashier = accountRepository.findById(dto.getCashierid())
+		Account cashier = accountRepository.findById(dto.getCashierId())
 				.orElseThrow(() -> new EntityException("Cashier not found"));
 		order.setCashier(cashier);
 
 	 
-		Account customer = accountRepository.findById(dto.getCustomerid())
+		Account customer = accountRepository.findById(dto.getCustomerId())
 				.orElseThrow(() -> new EntityException("Customer not found"));
 		order.setCustomer(customer);
 
@@ -83,16 +84,16 @@ public class OrderService {
 		Order savedOrder = orderRepository.save(order);
 
 		// Xử lý OrderDetail từ DTO và liên kết với Order vừa lưu
-		List<OrderDetail> orderDetails = dto.getOrderdetails().stream().map(detailDto -> {
+		List<OrderDetail> orderDetails = dto.getOrderDetails().stream().map(detailDto -> {
 			OrderDetail detail = new OrderDetail();
 
 			// Tìm và gán ProductVariant
-			ProductVariant productVariant = productVariantRepository.findById(detailDto.getProductvariant().getId())
+			ProductVariant productVariant = productVariantRepository.findById(detailDto.getProductVariant().getId())
 					.orElseThrow(() -> new EntityException("ProductVariant not found"));
-			detail.setProductvariant(productVariant);
+			detail.setProductVariant(productVariant);
 
 			detail.setQuantity(detailDto.getQuantity());
-			detail.setMomentprice(detailDto.getMomentprice());
+			detail.setMomentPrice(detailDto.getMomentPrice());
 			detail.setNote(detailDto.getNote());
 
 			// Gán Order cho OrderDetail
@@ -100,7 +101,7 @@ public class OrderService {
 
 			OrderDetail saveOrderDetail = orderDetailRepository.save(detail);
 			// Xử lý các Topping nếu có
-			List<OrderDetailTopping> orderDetailToppings = detailDto.getOrderdetailtoppings().stream()
+			List<OrderDetailTopping> orderDetailToppings = detailDto.getOrderDetailToppings().stream()
 					.map(toppingDto -> {
 						OrderDetailTopping orderDetailTopping = new OrderDetailTopping();
 						// Tìm và gán Topping
@@ -109,15 +110,15 @@ public class OrderService {
 						orderDetailTopping.setTopping(topping);
 
 						orderDetailTopping.setQuantity(toppingDto.getQuantity());
-						orderDetailTopping.setMomentprice(toppingDto.getMomentprice());
+						orderDetailTopping.setMomentPrice(toppingDto.getMomentPrice());
 
-						orderDetailTopping.setOrderdetail(saveOrderDetail);
+						orderDetailTopping.setOrderDetail(saveOrderDetail);
 						
 						return orderDetailTopping;
 					}).collect(Collectors.toList());
 
 			// Lưu danh sách OrderDetailTopping vào OrderDetail
-			detail.setOrderdetailtoppings(orderDetailToppings);
+			detail.setOrderDetailToppings(orderDetailToppings);
 			orderDetailToppingRepository.saveAll(orderDetailToppings);
 
 			return detail;
@@ -128,7 +129,7 @@ public class OrderService {
 		
 
 		// Cập nhật danh sách OrderDetail vào Order và lưu lại
-		savedOrder.setOrderdetails(orderDetails);
+		savedOrder.setOrderDetails(orderDetails);
 		return orderRepository.save(savedOrder);
 	}
 	
@@ -140,7 +141,7 @@ public class OrderService {
 		}
 		try {
 			Order existedOrder = existed.get();
-			existedOrder.setStatus(order.getStatus());
+			existedOrder.setOrderStatus(order.getOrderStatus());
 		 
 			return orderRepository.save(existedOrder);
 		} catch (Exception ex) {
@@ -154,7 +155,7 @@ public class OrderService {
  
 	
 	public List<Order> getOrdersBetweenDates(Date startDate, Date endDate){
-		return orderRepository.findBycreatedtimeBetween(startDate, endDate);
+		return orderRepository.findByCreatedTimeBetween(startDate, endDate);
 	}
 	
 	public Order toggleActive(Long id) {

@@ -11,13 +11,13 @@ import jakarta.persistence.ManyToOne;
 import lombok.Data;
 
 @Data
-public class CartDto {
+public class CartDetailDto {
 
 	private Long id;
 	private String username;
-	private Long productvariantid;
+	private Long productVariantId;
 	private Integer quantity;
 	private Account account;
-	private ProductVariant productvariant;
+	private ProductVariant productVariant;
 
 }
