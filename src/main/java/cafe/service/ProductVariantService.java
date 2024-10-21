@@ -37,12 +37,12 @@ public class ProductVariantService {
 	    BeanUtils.copyProperties(dto, entity, "size");
 
 	    // Lấy thông tin product từ database
-	    Product product = productRepository.findById(dto.getProductid())
+	    Product product = productRepository.findById(dto.getProductId())
 	            .orElseThrow(() -> new EntityException("Product not found"));
 	    entity.setProduct(product);
 
 	    // Lấy thông tin size từ database
-	    Size size = sizeRepository.findById(dto.getSizeid())
+	    Size size = sizeRepository.findById(dto.getSizeId())
 	            .orElseThrow(() -> new EntityException("Size not found"));
 	    entity.setSize(size);
 

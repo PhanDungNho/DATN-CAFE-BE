@@ -19,7 +19,7 @@ import lombok.Data;
 @SuppressWarnings("serial")
 @Entity
 @Data
-@Table(name = "productvariant")
+@Table(name = "ProductVariants")
 public class ProductVariant {
 
 	@Id
@@ -31,14 +31,14 @@ public class ProductVariant {
 	private Boolean active;
 
 	@ManyToOne
-	@JoinColumn(name = "productid")
+	@JoinColumn(name = "product_id")
 	private Product product;
 
 	@Column(nullable = false)
 	private BigDecimal price;
 
 	@ManyToOne
-	@JoinColumn(name = "sizeid")
+	@JoinColumn(name = "size_id")
 	private Size size;
 
 	// Getters and Setters

@@ -21,10 +21,10 @@ public class OrderDetailToppingResponse {
 	public static OrderDetailToppingResponse convert(OrderDetailTopping entity) {
 		OrderDetailToppingResponse response = new OrderDetailToppingResponse();
 		response.setId(entity.getId());
-		response.setOrderDetail(entity.getOrderdetail());
+		response.setOrderDetail(entity.getOrderDetail());
 		response.setTopping(entity.getTopping());
 		response.setQuantity(entity.getQuantity());
-		response.setMomentprice(entity.getMomentprice());
+		response.setMomentprice(entity.getMomentPrice());
 		return response;
 	}
 }

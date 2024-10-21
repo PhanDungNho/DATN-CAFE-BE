@@ -104,7 +104,7 @@ public class RoleController {
 		    RoleDto responseDto = new RoleDto();
 		    responseDto.setId(updatedRole.getId());
 		    responseDto.setActive(updatedRole.getActive());
-		    responseDto.setRolename(updatedRole.getRolename());
+		    responseDto.setRoleName(updatedRole.getRoleName());
 		    // Note: Remove the password from the response for security reasons
 
 		    return new ResponseEntity<>(responseDto, HttpStatus.OK);

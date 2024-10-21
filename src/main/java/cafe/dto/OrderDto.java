@@ -31,18 +31,19 @@ public class OrderDto {
 	private Long id;
 	
 	private Account cashier;
-	private String cashierid;
-    private Date createdtime;
-    private BigDecimal totalamount;
-    private OrderStatus status;
-    private PaymentStatus paymentstatus;
-    private PaymentMethod paymentmethod;
-    private OrderType ordertype;
+	private String cashierId;
+    private Date createdTime;
+    private BigDecimal totalAmount;
+    private OrderStatus orderStatus;
+    private PaymentStatus paymentStatus;
+    private PaymentMethod paymentMethod;
+    private Integer ordering;
+    private OrderType orderType;
     private Boolean active;
-    private BigDecimal shippingfee;
-    private String fulladdresstext; 
+    private BigDecimal shippingFee;
+    private String fullAddress; 
     private Account customer;
-    private String customerid;
-    private List<OrderdetailDto> orderdetails = new ArrayList<>();
+    private String customerId;
+    private List<OrderdetailDto> orderDetails = new ArrayList<>();
 }
 

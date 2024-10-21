@@ -31,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "orders")
+@Table(name = "Orders")
 public class Order {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,46 +39,49 @@ public class Order {
 	private Long id;
 	
 	@ManyToOne
-    @JoinColumn(name = "cashier", nullable = true)
+    @JoinColumn(name = "cashier_id", nullable = true)
     private Account cashier;
 
-	@Column(name = "createdtime", nullable = true)
-	private Date createdtime;
+	@Column(name = "created_time", nullable = true)
+	private Date createdTime;
 	
-	@Column(name = "totalamount", nullable = true)
-	private BigDecimal totalamount;
+	@Column(name = "total_amount", nullable = true)
+	private BigDecimal totalAmount;
 	
-	@Column(name = "status", nullable = true)
-	private OrderStatus status;
+	@Column(name = "order_status", nullable = true)
+	private OrderStatus orderStatus;
 	
-	@Column(name = "paymentstatus", nullable = true)
-	private PaymentStatus paymentstatus; 
+	@Column(name = "payment_status", nullable = true)
+	private PaymentStatus paymentStatus; 
+	
+	@Column(name = "ordering", nullable = true)
+	private Integer ordering; 
  
 	
-	@Column(name = "ordertype", nullable = true)
-	private OrderType ordertype;
+	@Column(name = "order_type", nullable = true)
+	private OrderType orderType;
 	
 	
-	@Column(name = "paymentmethod", nullable = false)
-	private PaymentMethod paymentmethod; 
+	@Column(name = "payment_method", nullable = false)
+	private PaymentMethod paymentMethod; 
 	
 	
 	@Column(name = "active", nullable = false)
 	private Boolean active;
 	
-	@Column(name = "shippingfee", nullable = true)
-	private BigDecimal shippingfee; 
+	@Column(name = "shipping_fee", nullable = true)
+	private BigDecimal shippingFee; 
 
-    @Column(name = "fulladdresstext", columnDefinition = "nvarchar(max)")
-	private String fulladdresstext;
+    @Column(name = "full_address", columnDefinition = "nvarchar(max)")
+	private String fullAddress;
 	
     @ManyToOne
-    @JoinColumn(name = "customer", nullable = true)
+    @JoinColumn(name = "customer_id", nullable = true)
     private Account customer;
 	
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
-    private List<OrderDetail> orderdetails; 
+    private List<OrderDetail> orderDetails; 
     
     @JsonIgnore
     @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
@@ -98,7 +101,7 @@ public class Order {
     }
 	@PrePersist
 	public void prePdersist() {
-		createdtime = new Date();
+		createdTime = new Date();
 		active=true;
 	}
 }

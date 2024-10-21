@@ -17,7 +17,7 @@ public class ImageResponse {
 		
 		response.setId(entity.getId());
 		response.setName(entity.getName());
-		response.setFilename(entity.getFilename());
+		response.setFilename(entity.getFileName());
 		response.setUrl(entity.getUrl());
 		response.setProduct(entity.getProduct());
 		

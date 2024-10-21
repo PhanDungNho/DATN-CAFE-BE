@@ -18,10 +18,8 @@ import lombok.Data;
 @SuppressWarnings("serial")
 @Entity
 @Data
-@Table(name = "size")
-public class Size    {
-
-
+@Table(name = "Sizes")
+public class Size {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
@@ -35,7 +33,7 @@ public class Size    {
     
     @JsonIgnore
     @OneToMany(mappedBy = "size")
-    private List<ProductVariant> productvariants;
+    private List<ProductVariant> productVariants;
     
 
     // Getters and Setters

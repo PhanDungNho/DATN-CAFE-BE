@@ -15,8 +15,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
- 
-
 import cafe.dto.CarDto;
 import cafe.entity.Car;
 import cafe.exception.EntityException;

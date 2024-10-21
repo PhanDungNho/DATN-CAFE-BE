@@ -47,19 +47,19 @@ public class AddressController {
 		AddressDto responseDto = new AddressDto();
 		responseDto.setId(address.getId());
 		responseDto.setActive(address.getActive());
-		responseDto.setCitycode(address.getCitycode());
-		responseDto.setDistrictcode(address.getDistrictcode());
-		responseDto.setFulladdresstext(address.getFulladdresstext());
-		responseDto.setIsdefault(address.getIsdefault());
+		responseDto.setCityCode(address.getCityCode());
+		responseDto.setDistrictCode(address.getDistrictCode());
+		responseDto.setFullAddress(address.getFullAddress());
+		responseDto.setIsDefault(address.getIsDefault());
 		responseDto.setStreet(address.getStreet());
-		responseDto.setWardcode(address.getWardcode());
+		responseDto.setWardCode(address.getWardCode());
 		// Map Category entity sang CategoryDto
 		AccountDto accountDto = new AccountDto();
 		accountDto.setUsername(address.getAccount().getUsername());
 		accountDto.setPassword(address.getAccount().getPassword());
-		accountDto.setAmountpaid(address.getAccount().getAmountpaid());
+		accountDto.setAmountPaid(address.getAccount().getAmountPaid());
 		accountDto.setEmail(address.getAccount().getEmail());
-		accountDto.setFullname(address.getAccount().getFullname());
+		accountDto.setFullName(address.getAccount().getFullName());
 		accountDto.setPhone(address.getAccount().getPhone());
 		accountDto.setActive(address.getAccount().getActive());
 		
@@ -77,21 +77,21 @@ public class AddressController {
 	    AddressDto responseDto = new AddressDto();
 		responseDto.setId(updatedAddress.getId());
 		responseDto.setActive(updatedAddress.getActive());
-		responseDto.setCitycode(updatedAddress.getCitycode());
-		responseDto.setDistrictcode(updatedAddress.getDistrictcode());
-		responseDto.setFulladdresstext(updatedAddress.getFulladdresstext());
-		responseDto.setIsdefault(updatedAddress.getIsdefault());
+		responseDto.setCityCode(updatedAddress.getCityCode());
+		responseDto.setDistrictCode(updatedAddress.getDistrictCode());
+		responseDto.setFullAddress(updatedAddress.getFullAddress());
+		responseDto.setIsDefault(updatedAddress.getIsDefault());
 		responseDto.setStreet(updatedAddress.getStreet());
-		responseDto.setWardcode(updatedAddress.getWardcode());
+		responseDto.setWardCode(updatedAddress.getWardCode());
 
 	    // Map Category entity sang CategoryDto
 	    if (updatedAddress.getAccount() != null) {
 	    	AccountDto accountDto = new AccountDto();
 			accountDto.setUsername(updatedAddress.getAccount().getUsername());
 			accountDto.setPassword(updatedAddress.getAccount().getPassword());
-			accountDto.setAmountpaid(updatedAddress.getAccount().getAmountpaid());
+			accountDto.setAmountPaid(updatedAddress.getAccount().getAmountPaid());
 			accountDto.setEmail(updatedAddress.getAccount().getEmail());
-			accountDto.setFullname(updatedAddress.getAccount().getFullname());
+			accountDto.setFullName(updatedAddress.getAccount().getFullName());
 			accountDto.setPhone(updatedAddress.getAccount().getPhone());
 			accountDto.setActive(updatedAddress.getAccount().getActive());
 			responseDto.setAccount(accountDto.getUsername());
@@ -109,21 +109,21 @@ public class AddressController {
 	    AddressDto responseDto = new AddressDto();
 		responseDto.setId(updatedAddress.getId());
 		responseDto.setActive(updatedAddress.getActive());
-		responseDto.setCitycode(updatedAddress.getCitycode());
-		responseDto.setDistrictcode(updatedAddress.getDistrictcode());
-		responseDto.setFulladdresstext(updatedAddress.getFulladdresstext());
-		responseDto.setIsdefault(updatedAddress.getIsdefault());
+		responseDto.setCityCode(updatedAddress.getCityCode());
+		responseDto.setDistrictCode(updatedAddress.getDistrictCode());
+		responseDto.setFullAddress(updatedAddress.getFullAddress());
+		responseDto.setIsDefault(updatedAddress.getIsDefault());
 		responseDto.setStreet(updatedAddress.getStreet());
-		responseDto.setWardcode(updatedAddress.getWardcode());
+		responseDto.setWardCode(updatedAddress.getWardCode());
 
 	    // Map Category entity sang CategoryDto
 		if (updatedAddress.getAccount() != null) {
 	    	AccountDto accountDto = new AccountDto();
 			accountDto.setUsername(updatedAddress.getAccount().getUsername());
 			accountDto.setPassword(updatedAddress.getAccount().getPassword());
-			accountDto.setAmountpaid(updatedAddress.getAccount().getAmountpaid());
+			accountDto.setAmountPaid(updatedAddress.getAccount().getAmountPaid());
 			accountDto.setEmail(updatedAddress.getAccount().getEmail());
-			accountDto.setFullname(updatedAddress.getAccount().getFullname());
+			accountDto.setFullName(updatedAddress.getAccount().getFullName());
 			accountDto.setPhone(updatedAddress.getAccount().getPhone());
 			accountDto.setActive(updatedAddress.getAccount().getActive());
 			responseDto.setAccount(accountDto.getUsername());
@@ -139,20 +139,20 @@ public class AddressController {
 	    	AddressDto dto = new AddressDto();
 	        dto.setId(address.getId());
 	        dto.setActive(address.getActive());
-	        dto.setCitycode(address.getCitycode());
-	        dto.setDistrictcode(address.getDistrictcode());
-	        dto.setFulladdresstext(address.getFulladdresstext());
-	        dto.setIsdefault(address.getIsdefault());
+	        dto.setCityCode(address.getCityCode());
+	        dto.setDistrictCode(address.getDistrictCode());
+	        dto.setFullAddress(address.getFullAddress());
+	        dto.setIsDefault(address.getIsDefault());
 	        dto.setStreet(address.getStreet());
-	        dto.setWardcode(address.getWardcode());
+	        dto.setWardCode(address.getWardCode());
 
 	        if (address.getAccount() != null) {
 	        	 AccountDto accountDto = new AccountDto();
 		            accountDto.setUsername(address.getAccount().getUsername());
 		            accountDto.setPassword(address.getAccount().getPassword());
-		            accountDto.setFullname(address.getAccount().getFullname());
+		            accountDto.setFullName(address.getAccount().getFullName());
 		            accountDto.setActive(address.getAccount().getActive());
-		            accountDto.setAmountpaid(address.getAccount().getAmountpaid());
+		            accountDto.setAmountPaid(address.getAccount().getAmountPaid());
 		            accountDto.setPhone(address.getAccount().getPhone());
 		            accountDto.setEmail(address.getAccount().getEmail());
 		            dto.setAccount(accountDto.getUsername());
