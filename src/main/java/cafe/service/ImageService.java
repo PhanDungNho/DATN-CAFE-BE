@@ -25,7 +25,7 @@ public class ImageService {
 	}
 
 	public void deleteImageByFilename(String filename) {
-		imageRepository.deleteByFilename(filename);
+		imageRepository.deleteByFileName(filename);
 	}
 //	public Image update(int id, Image entity) {
 //		Optional<Image> existed = imageRepository.findById(id);

@@ -41,7 +41,7 @@ public class AuthorityService {
 	// cấp quyền
 	public Authority create(AuthorityDto authDto) {
 		Authority auth = new Authority();
-		Role role = roleRepository.findById(authDto.getRoleid()).orElseThrow(() -> new EntityException("Role id " + authDto.getRoleid()+ " does not exist"));
+		Role role = roleRepository.findById(authDto.getRoleId()).orElseThrow(() -> new EntityException("Role id " + authDto.getRoleId()+ " does not exist"));
 		auth.setRole(role);
 		
 		Account account = accountRepository.findById(authDto.getUsername()).orElseThrow(() -> new EntityException("Username " + authDto.getUsername() + " does not exist"));

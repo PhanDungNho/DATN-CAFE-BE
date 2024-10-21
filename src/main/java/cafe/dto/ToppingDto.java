@@ -23,5 +23,5 @@ public class ToppingDto implements Serializable {
 	@JsonIgnore
 	private MultipartFile imageFile;
 	@JsonIgnore
-	private List<OrderDetailTopping> orderdetailtopping;
+	private List<OrderDetailTopping> orderDetailTopping;
 }

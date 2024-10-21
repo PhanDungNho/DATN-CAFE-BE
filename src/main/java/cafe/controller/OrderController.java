@@ -85,8 +85,8 @@ public class OrderController {
 			return responseEntity;
 		}
 		// Kiểm tra và khởi tạo danh sách rỗng nếu cần
-		if (dto.getOrderdetails() == null) {
-			dto.setOrderdetails(new ArrayList<>());
+		if (dto.getOrderDetails() == null) {
+			dto.setOrderDetails(new ArrayList<>());
 		}
 		// Tạo Order từ OrderDto
 		Order order = orderService.createOrder(dto);
@@ -100,9 +100,9 @@ public class OrderController {
 //		respDto.setCustomer(order.getCustomer());
 //		respDto.setFulladdresstext(order.getFulladdresstext());
 //		// Chuyển đổi OrderDetail thành OrderdetailDto
-		List<OrderdetailDto> orderDetailDtos = order.getOrderdetails().stream().map(this::convertToOrderdetailDto)
+		List<OrderdetailDto> orderDetailDtos = order.getOrderDetails().stream().map(this::convertToOrderdetailDto)
 				.collect(Collectors.toList());
-		respDto.setOrderdetails(orderDetailDtos);
+		respDto.setOrderDetails(orderDetailDtos);
 //		respDto.setPaymentmethod(order.getPaymentmethod());
 //		respDto.setShippingfee(order.getShippingfee());
 //		respDto.setStatus(order.getStatus());
@@ -113,14 +113,14 @@ public class OrderController {
 
 	private OrderdetailDto convertToOrderdetailDto(OrderDetail orderDetail) {
 		OrderdetailDto dto = new OrderdetailDto();
-		dto.setProductvariant(orderDetail.getProductvariant());
+		dto.setProductVariant(orderDetail.getProductVariant());
 		dto.setQuantity(orderDetail.getQuantity());
-		dto.setMomentprice(orderDetail.getMomentprice());
+		dto.setMomentPrice(orderDetail.getMomentPrice());
 		dto.setNote(orderDetail.getNote());
 		// Chuyển đổi danh sách orderdetailtopping sang DTO
-		List<OrderDetailToppingDto> toppingDtos = orderDetail.getOrderdetailtoppings().stream()
+		List<OrderDetailToppingDto> toppingDtos = orderDetail.getOrderDetailToppings().stream()
 				.map(this::convertToOrderDetailToppingDto).collect(Collectors.toList());
-		dto.setOrderdetailtoppings(toppingDtos);
+		dto.setOrderDetailToppings(toppingDtos);
 
 		return dto;
 	}
@@ -129,7 +129,7 @@ public class OrderController {
 		OrderDetailToppingDto dto = new OrderDetailToppingDto();
 		dto.setId(orderDetailTopping.getId());
 		dto.setQuantity(orderDetailTopping.getQuantity());
-		dto.setMomentprice(orderDetailTopping.getMomentprice());
+		dto.setMomentPrice(orderDetailTopping.getMomentPrice());
 
 		// Chuyển đổi thông tin topping
 		ToppingDto toppingDto = new ToppingDto();
@@ -144,7 +144,7 @@ public class OrderController {
 	public ResponseEntity<?> updateStatusOrder(@PathVariable Long id, @RequestBody OrderDto dto) {
 		// chỉ quan tâm đến status thôi hà
 		Order entity = new Order();
-		entity.setStatus(dto.getStatus());
+		entity.setOrderStatus(dto.getOrderStatus());
 		entity = orderService.updateStatus(id, entity);
 		dto.setId(entity.getId());
 		return new ResponseEntity<>(entity, HttpStatus.CREATED);

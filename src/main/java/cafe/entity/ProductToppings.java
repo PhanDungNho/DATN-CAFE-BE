@@ -16,19 +16,19 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "toppingproduct")
-public class ToppingProduct {
+@Table(name = "ProductToppings")
+public class ProductToppings {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", nullable = false)
 	private Long id;
 
 	@ManyToOne
-	@JoinColumn(name = "toppingid", nullable = false)
+	@JoinColumn(name = "topping_id", nullable = false)
 	private Topping topping;
 	
 	@ManyToOne
-	@JoinColumn(name = "productid", nullable = false)
+	@JoinColumn(name = "product_id", nullable = false)
 	private Product product;
 }
  	

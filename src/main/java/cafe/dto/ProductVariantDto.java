@@ -30,8 +30,8 @@ public class ProductVariantDto {
 
     private SizeDto size;
     
-    private Long productid;
-    private Long sizeid;
+    private Long productId;
+    private Long sizeId;
 
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")

@@ -53,7 +53,7 @@ public class AccountService {
 	        count++;
 	        entity.setUsername(baseUsername + count);   
 	    }
-	    entity.setFullname(dto.getFullname());
+	    entity.setFullName(dto.getFullName());
 	    entity.setEmail(dto.getEmail());
 	    entity.setImage(dto.getImage());
 	    String uuid = UUID.randomUUID().toString().replace("-", "").substring(0,14);
@@ -162,7 +162,7 @@ public class AccountService {
 	}
 
 	public Account findByPhone(String phone) {
-		Optional<Account> found = accountRepository.findByphone(phone);
+		Optional<Account> found = accountRepository.findByPhone(phone);
 		if (found.isEmpty()) {
 			throw new EntityException("Account with phone " + phone + " does not exist");
 		}

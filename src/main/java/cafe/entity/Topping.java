@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "topping")
+@Table(name = "Toppings")
 public class Topping {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -45,5 +45,5 @@ public class Topping {
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "topping", fetch = FetchType.LAZY)
-	private List<OrderDetailTopping> orderdetailtopping;
+	private List<OrderDetailTopping> orderDetailToppings;
 }

@@ -22,11 +22,11 @@ public class OrderDetailResponse {
 		OrderDetailResponse response = new OrderDetailResponse();
 		response.setId(entity.getId());
 		response.setOrder(entity.getOrder());
-		response.setProductVariant(entity.getProductvariant());
+		response.setProductVariant(entity.getProductVariant());
 		response.setQuantity(entity.getQuantity());
-		response.setMomentprice(entity.getMomentprice());
+		response.setMomentprice(entity.getMomentPrice());
 		response.setNote(entity.getNote());
-		response.setOrderdetailtoppings(entity.getOrderdetailtoppings().stream().map(OrderDetailToppingResponse::convert).toList());
+		response.setOrderdetailtoppings(entity.getOrderDetailToppings().stream().map(OrderDetailToppingResponse::convert).toList());
 		return response;
 	}
 }

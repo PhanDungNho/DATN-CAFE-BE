@@ -18,6 +18,6 @@ public class AuthorityDto implements Serializable{
 	
  	private Long id;
  	private String username;
- 	private Long roleid;
+ 	private Long roleId;
 
 }

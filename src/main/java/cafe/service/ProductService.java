@@ -57,7 +57,7 @@ public class ProductService {
 		product.setDescription(dto.getDescription());
 		product.setActive(dto.getActive());
 
-		Category cate = categoryRepository.findById(dto.getCategoryid())
+		Category cate = categoryRepository.findById(dto.getCategoryId())
 				.orElseThrow(() -> new EntityException("Category not found"));
 		product.setCategory(cate);
 
@@ -65,7 +65,7 @@ public class ProductService {
 			List<Image> images = dto.getImageFiles().stream().map(file -> {
 				String filename = fileStorageService.storeLogoFile(file);
 				Image image = new Image();
-				image.setFilename(filename);
+				image.setFileName(filename);
 				image.setUrl(filename);
 				image.setName(file.getName());
 				image.setProduct(product);
@@ -110,8 +110,8 @@ public class ProductService {
 	    product.setDescription(dto.getDescription());
 	    product.setActive(dto.getActive());
 
-	    if (dto.getCategoryid() != null) {
-	        Category cate = categoryRepository.findById(dto.getCategoryid())
+	    if (dto.getCategoryId() != null) {
+	        Category cate = categoryRepository.findById(dto.getCategoryId())
 	                .orElseThrow(() -> new EntityException("Category not found"));
 	        product.setCategory(cate);
 	    }
@@ -120,7 +120,7 @@ public class ProductService {
 			List<Image> images = dto.getImageFiles().stream().map(file -> {
 				String filename = fileStorageService.storeLogoFile(file);
 				Image image = new Image();
-				image.setFilename(filename);
+				image.setFileName(filename);
 				image.setUrl(filename);
 				image.setName(file.getName());
 				image.setProduct(product);

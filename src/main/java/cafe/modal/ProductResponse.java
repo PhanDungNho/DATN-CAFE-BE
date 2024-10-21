@@ -24,7 +24,7 @@ public class ProductResponse {
 		response.setDescription(entity.getDescription());
 		response.setActive(entity.getActive());
 		response.setCategory(entity.getCategory());
-		response.setProductVariant(entity.getProductvariants().stream().map(ProductVariantResponse::convert).toList());
+		response.setProductVariant(entity.getProductVariants().stream().map(ProductVariantResponse::convert).toList());
 		response.setImages(entity.getImages().stream().map(ImageResponse::convert).toList());
 
 		return response;

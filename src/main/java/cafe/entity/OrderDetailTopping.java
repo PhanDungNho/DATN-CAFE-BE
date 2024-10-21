@@ -23,7 +23,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "orderdetailtopping")
+@Table(name = "OrderDetailToppings")
 public class OrderDetailTopping {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,16 +31,16 @@ public class OrderDetailTopping {
 	private Long id;
 	
 	@ManyToOne
-	@JoinColumn(name = "orderdetailid")
-	private OrderDetail orderdetail;
+	@JoinColumn(name = "order_detail")
+	private OrderDetail orderDetail;
 
 	@ManyToOne
-	@JoinColumn(name = "toppingid")
+	@JoinColumn(name = "topping_id")
 	private Topping topping;
 
 	@Column(nullable = false)
 	private Integer quantity;
 
-	@Column(nullable = false)
-	private BigDecimal momentprice;
+	@Column(name="moment_price",nullable = false)
+	private BigDecimal momentPrice;
 }

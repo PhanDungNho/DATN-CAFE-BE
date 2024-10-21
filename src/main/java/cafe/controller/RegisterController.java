@@ -54,24 +54,9 @@ public class RegisterController {
         try {
         	String subject = "Xác nhận đăng ký";
 
-        	String htmlContent = "<div style='font-family:Arial,sans-serif; font-size:14px; color:#333; background-color:#f4f7fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;'>"
-        	                   + "<div style='text-align:center; margin-bottom:20px;'>"+
-"<img src='https://img.upanh.tv/2024/10/18/logo2.png' width='200' height='76'>"+
-        	                    "</div>"
-        	                   + "<h2 style='color:#2e6c80; text-align:center;'>Xác Nhận Đăng Ký</h2>"
-        	                   + "<p>Chào bạn,</p>"
-        	                   + "<p>Cảm ơn bạn đã đăng ký tài khoản với WalaCafé!</p>"
-        	                   + "<p>Mã OTP của bạn là:</p>"
-        	                   + "<h3 style='color:#2e6c80; text-align:center; font-weight:bold; font-size:24px; border: 2px dashed #2e6c80; padding: 10px; border-radius: 5px; display:inline-block; margin: 20px auto;'>" + otp + "</h3>"
-        	                   + "<p style='text-align:center;'>Vui lòng nhập mã OTP để hoàn tất quá trình đăng ký.</p>"
-        	                   + "<p>Chúc bạn một ngày tốt lành!</p>"
-        	                   + "<p style='margin-top:40px;'>Trân trọng,<br/>Đội ngũ hỗ trợ WalaCafé</p>"
-        	                   + "<div style='text-align:center; margin-top:40px;'>"
-        	                   + "<a href='https://www.walacafe.com' style='color:#2e6c80; text-decoration:none; font-weight:bold;'>Truy cập WalaCaFé</a>"
-        	                   + "</div>"
-        	                   + "</div>";
+        	String htmlContent = "a";
 
-            emailService.sendEmail(account.getEmail(), subject, htmlContent);
+            emailService.sendEmail(account.getEmail().toString(), subject, htmlContent);
             return ResponseEntity.ok(Map.of("message", "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận."));
         } catch (MessagingException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(Map.of("message", "Lỗi khi gửi email."));

@@ -17,12 +17,12 @@ import lombok.Data;
 public class OrderResponse {
 	private Long id;
 	private Account cashier;
-	private Date createtime;
-	private BigDecimal totalalount;
-	private OrderStatus status;
-	private PaymentMethod paymentmethod;
-	private BigDecimal shippingfee;
-	private String fulladdresstext;
+	private Date createdTime;
+	private BigDecimal totalAmount;
+	private OrderStatus orderStatus;
+	private PaymentMethod paymentMethod;
+	private BigDecimal shippingFee;
+	private String fullAddress;
 	private Account customer;
 	private OrderType ordertype;
 	private List<OrderDetailResponse> orderdetails;
@@ -33,17 +33,17 @@ public class OrderResponse {
 		OrderResponse response = new OrderResponse();
 		response.setId(entity.getId());
 		response.setCashier(entity.getCashier());
-		response.setCreatetime(entity.getCreatedtime());
-		response.setTotalalount(entity.getTotalamount());
-		response.setStatus(entity.getStatus());
-		response.setPaymentmethod(entity.getPaymentmethod());
-		response.setShippingfee(entity.getShippingfee());
-		response.setFulladdresstext(entity.getFulladdresstext());
+		response.setCreatedTime(entity.getCreatedTime());
+		response.setTotalAmount(entity.getTotalAmount());
+		response.setOrderStatus(entity.getOrderStatus());
+		response.setPaymentMethod(entity.getPaymentMethod());
+		response.setShippingFee(entity.getShippingFee());
+		response.setFullAddress(entity.getFullAddress());
 		response.setCustomer(entity.getCustomer());
 		response.setActive(entity.getActive());
-		response.setOrdertype(entity.getOrdertype());
+		response.setOrdertype(entity.getOrderType());
 		response.setTransactions(entity.getTransactions());
-		response.setOrderdetails(entity.getOrderdetails().stream().map(OrderDetailResponse::convert).toList());
+		response.setOrderdetails(entity.getOrderDetails().stream().map(OrderDetailResponse::convert).toList());
 		return response;
 	}
 }
