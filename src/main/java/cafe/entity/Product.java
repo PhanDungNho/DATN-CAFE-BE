@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -48,11 +49,14 @@ public class Product    {
     @OneToMany(mappedBy = "product")
     private List<ProductVariant> productVariants;
     
-    @JsonIgnore
+//    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<ProductToppings> productToppings;
+    
+    
+    
 
-    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Image> images;
     
