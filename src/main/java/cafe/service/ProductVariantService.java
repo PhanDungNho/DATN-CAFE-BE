@@ -56,11 +56,11 @@ public class ProductVariantService {
 			ProductVariant existedProductVariant = existed.get();
 			BeanUtils.copyProperties(dto, existedProductVariant);
 			
-			Product product = productRepository.findById(dto.getProductid())
+			Product product = productRepository.findById(dto.getProductId())
 					.orElseThrow(() -> new EntityException("Product not found"));
 			existedProductVariant.setProduct(product);
 
-			Size size = sizeRepository.findById(dto.getSizeid())
+			Size size = sizeRepository.findById(dto.getSizeId())
 					.orElseThrow(() -> new EntityException("Size not found"));
 			existedProductVariant.setSize(size);
 			

@@ -2,6 +2,7 @@ package cafe.dto;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Objects;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -34,11 +35,19 @@ public class ProductDto implements Serializable {
 
     @Size(max = 65535, message = "Description must be less than or equal to 65535 characters")
     private String description;
+    
+    @Size(max = 65535, message = "Description must be less than or equal to 65535 characters")
+    private String slug;
 
     // Chỉ sử dụng khi tạo mới hoặc cập nhật sản phẩm
     private Long categoryId; 
 
-    private List<ProductVariantDto> productVariants; // Danh sách biến thể sản phẩm
+    private List<ProductVariantDto> productVariants;
+    private List<ProductToppingDto> productToppings;	
+    
+//    private Long productVariantId;
+//    private Long ProductToppingId;
+    
 //    private List<ImageDto> images; // Danh sách hình ảnh sản phẩm
     @NotEmpty(message = "At least one image is required")
     private List<MultipartFile> imageFiles;
@@ -48,4 +57,9 @@ public class ProductDto implements Serializable {
 
     // Chỉ sử dụng khi trả về thông tin sản phẩm
     private CategoryDto category;
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);  // Chỉ sử dụng id hoặc trường duy nhất, không sử dụng các quan hệ để tránh vòng lặp
+    }
 }
