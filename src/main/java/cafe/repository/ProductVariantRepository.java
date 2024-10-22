@@ -13,4 +13,5 @@ import cafe.entity.ProductVariant;
 
 public interface ProductVariantRepository extends JpaRepository<ProductVariant, Long> {
 //	List<Category> findByNameStartsWith(String name, Pageable pageable);
+	List<ProductVariant> findByProductNameContainsIgnoreCase(String name);
 } 

@@ -1,7 +1,9 @@
 package cafe.controller;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,11 +33,15 @@ import org.springframework.web.multipart.MultipartFile;
 import cafe.dto.CategoryDto;
 import cafe.dto.ImageDto;
 import cafe.dto.ProductDto;
+import cafe.dto.ProductToppingDto;
 import cafe.dto.ProductVariantDto;
 import cafe.dto.SizeDto;
+import cafe.dto.ToppingDto;
 import cafe.entity.Category;
 import cafe.entity.Image;
 import cafe.entity.Product;
+import cafe.entity.ProductToppings;
+import cafe.entity.ProductVariant;
 import cafe.exception.EntityException;
 import cafe.exception.FileStorageException;
 import cafe.modal.OrderResponse;
@@ -63,34 +69,94 @@ public class ProductController {
 	FileStorageService fileStorageService;
 
 	@Autowired
-	ImageService imageService ;
-	
+	ImageService imageService;
+
 	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<?> createProduct(@ModelAttribute ProductDto dto,
+	public ResponseEntity<?> createProduct(@ModelAttribute ProductDto dto, BindingResult result,
 			@RequestPart List<MultipartFile> imageFiles) {
-		Product product = productService.insertProduct(dto);
-		dto.setImageFiles(null);
-		dto.setImages(product.getImages());
+//		Product product = productService.insertProduct(dto);
+//		dto.setImageFiles(null);
+//		dto.setImages(product.getImages());
+		
+		ResponseEntity<?> response = mapValidationErrorService.mapValidationField(result);
+	    if (response != null) {
+	        return response;
+	    }
 
-		return new ResponseEntity<>(dto, HttpStatus.CREATED);
+	    if (dto.getProductToppings() == null) {
+	        dto.setProductToppings(new ArrayList<>());
+	    }
+
+	    if (dto.getProductVariants() == null) {
+	        dto.setProductVariants(new ArrayList<>());
+	    }
+
+	    try {
+	        Product product = productService.insertProduct(dto);
+	        ProductDto respDto = new ProductDto();
+	        respDto.setSlug(null);
+	        
+	        List<ProductToppingDto> productToppingDto = product.getProductToppings().stream()
+	        		.map(this::convertProductTopingDto)	  
+	        		.collect(Collectors.toList());
+	        respDto.setProductToppings(productToppingDto);
+	        
+	        List<ProductVariantDto> productVariantDto = product.getProductVariants().stream()
+	        		.map(this::convertProductVariantDto)
+	        		.collect(Collectors.toList());
+	        respDto.setProductVariants(productVariantDto);
+	        
+	        BeanUtils.copyProperties(product, respDto);
+
+	        return new ResponseEntity<>(respDto, HttpStatus.CREATED);
+	    } catch (EntityException e) {
+	        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+	    }
 	}
+	
+	private ProductToppingDto convertProductTopingDto(ProductToppings productTopping) {
+	    if (productTopping == null) {
+	        return null; // Hoặc có thể ném một exception tùy theo yêu cầu
+	    }
 
+	    ProductToppingDto dto = new ProductToppingDto();
+	    dto.setId(productTopping.getId());
+	    dto.setProductId(productTopping.getProduct().getId());
+	    dto.setToppingId(productTopping.getTopping().getId());
 
-	@PatchMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-	        MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
+	    return dto;
+	}
+	
+	private ProductVariantDto convertProductVariantDto(ProductVariant productVariant) {
+	    if (productVariant == null) {
+	        return null; // Hoặc ném một exception tùy theo yêu cầu
+	    }
+
+	    ProductVariantDto dto = new ProductVariantDto();
+	    dto.setId(productVariant.getId());
+	    dto.setActive(productVariant.getActive());
+	    dto.setProductId(productVariant.getProduct().getId());
+	    dto.setSizeId(productVariant.getSize().getId());
+	    dto.setPrice(productVariant.getPrice());
+	   
+	    return dto;
+	}
+	
+	@PatchMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
+			MediaType.APPLICATION_FORM_URLENCODED_VALUE,
+			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> updateProduct(@PathVariable Long id, @ModelAttribute ProductDto dto,
-	        @RequestPart(required = false) List<MultipartFile> imageFiles) {
-	    
-	    Product updatedProduct = productService.updateProduct(id, dto);
-	    
-	    // Cập nhật lại thông tin DTO sau khi cập nhật sản phẩm
-	    dto.setImageFiles(null); 
-	    dto.setImages(updatedProduct.getImages());
+			@RequestPart(required = false) List<MultipartFile> imageFiles) {
 
-	    return new ResponseEntity<>(dto, HttpStatus.OK);
+		Product updatedProduct = productService.updateProduct(id, dto);
+
+		// Cập nhật lại thông tin DTO sau khi cập nhật sản phẩm
+		dto.setImageFiles(null);
+		dto.setImages(updatedProduct.getImages());
+
+		return new ResponseEntity<>(dto, HttpStatus.OK);
 	}
-
 
 	@PatchMapping("/{id}/toggle-active")
 	public ResponseEntity<?> toggleActive(@PathVariable Long id) {
@@ -155,7 +221,7 @@ public class ProductController {
 
 				return variantDto;
 			}).toList();
-			
+
 			List<Image> imageDtos = product.getImages().stream().map(images -> {
 				Image imageDto = new Image();
 				imageDto.setId(images.getId());
@@ -163,7 +229,7 @@ public class ProductController {
 				imageDto.setFileName(images.getFileName());
 				imageDto.setUrl(images.getUrl());
 				imageDto.setProduct(images.getProduct());
-				
+
 				return imageDto;
 			}).toList();
 
@@ -171,9 +237,7 @@ public class ProductController {
 			dto.setImages(imageDtos);
 
 			return dto;
-		})
-		.sorted(Comparator.comparing(ProductDto::getId).reversed())	
-		.toList();
+		}).sorted(Comparator.comparing(ProductDto::getId).reversed()).toList();
 
 		return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
@@ -212,14 +276,14 @@ public class ProductController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
 	}
-	
+
 	@Transactional
 	@DeleteMapping("/images/{filename}")
 	public ResponseEntity<?> deleteImageByFilename(@PathVariable String filename) {
 		imageService.deleteImageByFilename(filename);
 		fileStorageService.deleteLogoFile(filename);
-		
-	return  new ResponseEntity<>("removed", HttpStatus.OK);
+
+		return new ResponseEntity<>("removed", HttpStatus.OK);
 	}
 
 	@PostMapping(value = "/images/one", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE,

@@ -1,4 +1,4 @@
-package cafe.config;
+	package cafe.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -42,7 +42,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.cors().and().csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                		.requestMatchers("/api/v1/login","/api/v1/transactions/ipn", "/api/v1/auth/google", "/api/v1/account/image/**").permitAll()
+                		.requestMatchers("/api/v1/login", "/api/v1/toppings/image/**", "/api/v1/transactions/ipn", "/api/v1/auth/google", "/api/v1/account/image/**").permitAll()
                 		.requestMatchers( "/api/v1/products/images/**").permitAll()
                 		.requestMatchers("/api/v1/cart/**","/api/v1/categories/**","/api/v1/sizes/**","/api/v1/products/**","/api/v1/orders/**","/api/v1/toppings/**","/api/v1/account/**", "/api/v1/transactions/**").hasAnyRole("ADMIN","STAFF")
                 		.requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
