@@ -31,7 +31,7 @@ import cafe.service.MapValidationErrorService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/admin/categories")
+@RequestMapping("/api/v1/categories")
 @CrossOrigin("*")
 public class CategoryController {
 

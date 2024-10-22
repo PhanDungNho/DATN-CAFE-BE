@@ -100,7 +100,8 @@ public class OrderController {
 //		respDto.setCustomer(order.getCustomer());
 //		respDto.setFulladdresstext(order.getFulladdresstext());
 //		// Chuyển đổi OrderDetail thành OrderdetailDto
-		List<OrderdetailDto> orderDetailDtos = order.getOrderDetails().stream().map(this::convertToOrderdetailDto)
+		List<OrderdetailDto> orderDetailDtos = order.getOrderDetails().stream()
+				.map(this::convertToOrderdetailDto)
 				.collect(Collectors.toList());
 		respDto.setOrderDetails(orderDetailDtos);
 //		respDto.setPaymentmethod(order.getPaymentmethod());
