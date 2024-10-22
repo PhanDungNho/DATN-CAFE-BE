@@ -2,6 +2,7 @@ package cafe.entity;
 
 
 import java.util.List;
+import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -31,6 +32,7 @@ public class Product    {
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
+    
     @Column(name = "slug", nullable = false, length = 255)
     private String slug;
     @ManyToOne
@@ -42,15 +44,22 @@ public class Product    {
 
     @Column(name = "description", columnDefinition = "nvarchar(max)")
     private String description;
-    
 
     @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<ProductVariant> productVariants;
+    
+    @JsonIgnore
+    @OneToMany(mappedBy = "product")
+    private List<ProductToppings> productToppings;
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Image> images;
-
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id); 
+    }
     // Getters and Setters
 }

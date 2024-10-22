@@ -2,6 +2,7 @@ package cafe.dto;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
@@ -36,4 +37,9 @@ public class ProductVariantDto {
     @NotNull(message = "Price is required")
     @DecimalMin(value = "0.0", inclusive = false, message = "Price must be greater than 0")
     private BigDecimal price;
+    
+    @Override
+    public int hashCode() {
+        return Objects.hash(id);  // Chỉ sử dụng id hoặc trường duy nhất, không sử dụng các quan hệ để tránh vòng lặp
+    }
 }
