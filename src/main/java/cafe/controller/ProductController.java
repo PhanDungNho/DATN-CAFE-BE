@@ -75,10 +75,6 @@ public class ProductController {
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createProduct(@ModelAttribute ProductDto dto, BindingResult result,
 			@RequestPart List<MultipartFile> imageFiles) {
-//		Product product = productService.insertProduct(dto);
-//		dto.setImageFiles(null);
-//		dto.setImages(product.getImages());
-		
 		ResponseEntity<?> response = mapValidationErrorService.mapValidationField(result);
 	    if (response != null) {
 	        return response;
@@ -221,6 +217,24 @@ public class ProductController {
 
 				return variantDto;
 			}).toList();
+			
+			List<ProductToppingDto> productToppingDtos = product.getProductToppings().stream().map(productTopping -> {
+				ProductToppingDto productToppingDto = new ProductToppingDto();
+				productToppingDto.setId(productTopping.getId());
+				productToppingDto.setProductId(productTopping.getProduct().getId());
+				productToppingDto.setToppingId(productTopping.getTopping().getId());
+				
+				ToppingDto toppingDto = new ToppingDto();
+				toppingDto.setId(productTopping.getTopping().getId());
+				toppingDto.setName(productTopping.getTopping().getName());
+				toppingDto.setPrice(productTopping.getTopping().getPrice());
+				toppingDto.setActive(productTopping.getTopping().getActive());
+				toppingDto.setImage(productTopping.getTopping().getImage());
+				
+				productToppingDto.setTopping(toppingDto);
+				
+				return productToppingDto;
+			}).toList();
 
 			List<Image> imageDtos = product.getImages().stream().map(images -> {
 				Image imageDto = new Image();
@@ -235,6 +249,7 @@ public class ProductController {
 
 			dto.setProductVariants(variantDtos);
 			dto.setImages(imageDtos);
+			dto.setProductToppings(productToppingDtos);
 
 			return dto;
 		}).sorted(Comparator.comparing(ProductDto::getId).reversed()).toList();
