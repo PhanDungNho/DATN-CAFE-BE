@@ -32,6 +32,11 @@ public class RegisterController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody Account account) {
+    	
+    	 // Check if username already exists
+        if (accountRepository.findByUsername(account.getUsername()).isPresent()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Tên người dùng đã tồn tại"));
+        }
         // Check if email or phone already exists
         if (accountRepository.findByEmail(account.getEmail()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Email đã tồn tại"));
@@ -39,6 +44,7 @@ public class RegisterController {
         if (accountRepository.findByPhone(account.getPhone()).isPresent()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Số điện thoại đã tồn tại"));
         }
+       
 
         // Encrypt password before saving
         String encodedPassword = passwordEncoder.encode(account.getPassword());
@@ -48,13 +54,30 @@ public class RegisterController {
         String otp = generateOTP();
         account.setOtp(otp);
         account.setEnabled(false); // Account not activated
+        account.setActive(false); 
+        account.setAmountPaid(0D);
 
         // Temporarily store account and send email
         temporaryAccountStorage.addAccount(account);
         try {
         	String subject = "Xác nhận đăng ký";
 
-        	String htmlContent = "a";
+        	String htmlContent = "<div style='font-family:Arial,sans-serif; font-size:14px; color:#333; background-color:#f4f7fa; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0;'>"
+	                   + "<div style='text-align:center; margin-bottom:20px;'>"+
+"<img src='https://img.upanh.tv/2024/10/18/logo2.png' width='200' height='76'>"+
+	                    "</div>"
+	                   + "<h2 style='color:#2e6c80; text-align:center;'>Xác Nhận Đăng Ký</h2>"
+	                   + "<p>Chào bạn,</p>"
+	                   + "<p>Cảm ơn bạn đã đăng ký tài khoản với WalaCafé!</p>"
+	                   + "<p>Mã OTP của bạn là:</p>"
+	                   + "<h3 style='color:#2e6c80; text-align:center; font-weight:bold; font-size:24px; border: 2px dashed #2e6c80; padding: 10px; border-radius: 5px; display:inline-block; margin: 20px auto;'>" + otp + "</h3>"
+	                   + "<p style='text-align:center;'>Vui lòng nhập mã OTP để hoàn tất quá trình đăng ký.</p>"
+	                   + "<p>Chúc bạn một ngày tốt lành!</p>"
+	                   + "<p style='margin-top:40px;'>Trân trọng,<br/>Đội ngũ hỗ trợ WalaCafé</p>"
+	                   + "<div style='text-align:center; margin-top:40px;'>"
+	                   + "<a href='https://www.walacafe.com' style='color:#2e6c80; text-decoration:none; font-weight:bold;'>Truy cập WalaCaFé</a>"
+	                   + "</div>"
+	                   + "</div>";
 
             emailService.sendEmail(account.getEmail().toString(), subject, htmlContent);
             return ResponseEntity.ok(Map.of("message", "Đăng ký thành công! Vui lòng kiểm tra email để xác nhận."));
@@ -67,9 +90,11 @@ public class RegisterController {
     public ResponseEntity<?> verifyOtp(@RequestParam("otp") String otp) {
         Account account = temporaryAccountStorage.getAccountByOtp(otp);
         if (account == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Mã OTP không hợp lệ!"));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", "Mã OTP không hợp lệ hoặc đã hết hạn!"));
         }
+        // Proceed with enabling the account
         account.setEnabled(true);
+        account.setActive(true);
         account.setOtp(null); // Clear OTP after verification
         accountRepository.save(account);
         temporaryAccountStorage.removeAccountByOtp(otp);
