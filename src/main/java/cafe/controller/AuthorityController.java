@@ -49,7 +49,7 @@ public class AuthorityController {
 	@GetMapping
 	public List<Authority> findAll(@RequestParam("admin") Optional<Boolean> admin){
 		if(admin.orElse(false)) {
-			return authorityService.findAuthorityOfAdministrator();
+		return authorityService.findAuthorityOfAdministrator();
 		}
 		return authorityService.findAll();
 	}

@@ -1,5 +1,6 @@
 package cafe.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -13,6 +14,8 @@ import org.springframework.stereotype.Service;
 
 import cafe.dto.AccountDto;
 import cafe.entity.Account;
+import cafe.entity.Authority;
+import cafe.entity.Role;
 import cafe.exception.EntityException;
 import cafe.repository.AccountRepository;
 
@@ -22,7 +25,8 @@ public class AccountService {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private AccountRepository accountRepository;
-
+	@Autowired
+	private RoleService roleService;
 	@Autowired
 	private FileStorageService fileStorageService;
 
@@ -43,6 +47,38 @@ public class AccountService {
 		}
 		return accountRepository.save(entity);
 	}
+	
+	public Account insertAccountAdmin(AccountDto dto) {
+
+	    List<?> foundedList = accountRepository.findByUsernameContainsIgnoreCase(dto.getUsername());
+	    if (foundedList.size() > 0) {
+	        throw new EntityException("Username is existed");
+	    }
+	    Account entity = new Account();
+	    BeanUtils.copyProperties(dto, entity);
+	    entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+	    if (dto.getImageFile() != null) {
+	        String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+	        entity.setImage(filename);
+	        dto.setImage(filename);
+	    }
+	    
+	    Authority auth = new Authority();
+	    Role adminRole = roleService.findById(2L);
+	    auth.setAccount(entity);
+	    auth.setRole(adminRole);
+	    
+	    // Tạo danh sách Authority và thêm auth vào danh sách
+	    List<Authority> authorities = new ArrayList();
+	    authorities.add(auth);
+	    
+	    // Thiết lập danh sách authorities cho account
+	    entity.setAuthorities(authorities);
+
+	    return accountRepository.save(entity);
+	}
+
 	
 	public Account insertAccountWithGoogle(AccountDto dto) {
 		  Account entity = new Account();
