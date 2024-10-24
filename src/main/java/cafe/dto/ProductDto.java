@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 import cafe.entity.Image;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -32,6 +33,8 @@ public class ProductDto implements Serializable {
 
     @NotNull(message = "Product active status is required")
     private Boolean active;
+	 
+	private Integer ordering; 
 
     @Size(max = 65535, message = "Description must be less than or equal to 65535 characters")
     private String description;

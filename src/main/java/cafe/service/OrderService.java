@@ -66,10 +66,11 @@ public class OrderService {
 		order.setPaymentStatus(dto.getPaymentStatus());
 		order.setPaymentMethod(dto.getPaymentMethod());
 		order.setOrderType(dto.getOrderType());
-		order.setOrdering(dto.getOrdering());
+	 
 		order.setActive(dto.getActive());
 		order.setShippingFee(dto.getShippingFee());
 		order.setFullAddress(dto.getFullAddress());
+		order.setSlug("sds");
 	 
 		Account cashier = accountRepository.findById(dto.getCashierId())
 				.orElseThrow(() -> new EntityException("Cashier not found"));

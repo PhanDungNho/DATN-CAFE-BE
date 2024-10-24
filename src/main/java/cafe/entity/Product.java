@@ -41,6 +41,9 @@ public class Product    {
     
     @Column(name = "active")
     private Boolean active;
+    
+	@Column(name = "ordering", nullable = true)
+	private Integer ordering; 
 
     @Column(name = "description", columnDefinition = "nvarchar(max)")
     private String description;
@@ -49,14 +52,12 @@ public class Product    {
     @OneToMany(mappedBy = "product")
     private List<ProductVariant> productVariants;
     
-//    @JsonIgnore
+    @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<ProductToppings> productToppings;
-    
-    
-    
 
-    @JsonManagedReference
+
+    @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Image> images;
     

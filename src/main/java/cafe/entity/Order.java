@@ -56,8 +56,7 @@ public class Order {
 	@Column(name = "payment_status", nullable = true)
 	private PaymentStatus paymentStatus; 
 	
-	@Column(name = "ordering", nullable = true)
-	private Integer ordering; 
+
  
 	
 	@Column(name = "order_type", nullable = true)
