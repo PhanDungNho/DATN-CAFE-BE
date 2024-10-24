@@ -14,6 +14,8 @@ public class ProductVariantResponse {
 	private BigDecimal price;
 	private Size size;
 	private Product product;
+	private Long productId;
+	private Long sizeId;
 
 	public static ProductVariantResponse convert(ProductVariant entity) {
 		ProductVariantResponse response = new ProductVariantResponse();
@@ -23,6 +25,8 @@ public class ProductVariantResponse {
 		response.setPrice(entity.getPrice());
 		response.setSize(entity.getSize());
 		response.setProduct(entity.getProduct());
+		response.setProductId(entity.getProduct().getId());
+		response.setSizeId(entity.getSize().getId());
 
 		return response;
 	}

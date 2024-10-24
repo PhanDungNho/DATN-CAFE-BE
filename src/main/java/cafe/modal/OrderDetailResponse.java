@@ -11,7 +11,7 @@ import lombok.Data;
 @Data
 public class OrderDetailResponse {
 	private Long id;
-	private Order order;
+//	private Order order;
 	private ProductVariant productVariant;
 	private Integer quantity;
 	private BigDecimal momentprice;
@@ -21,7 +21,7 @@ public class OrderDetailResponse {
 	public static OrderDetailResponse convert(OrderDetail entity) {
 		OrderDetailResponse response = new OrderDetailResponse();
 		response.setId(entity.getId());
-		response.setOrder(entity.getOrder());
+//		response.setOrder(entity.getOrder());
 		response.setProductVariant(entity.getProductVariant());
 		response.setQuantity(entity.getQuantity());
 		response.setMomentprice(entity.getMomentPrice());

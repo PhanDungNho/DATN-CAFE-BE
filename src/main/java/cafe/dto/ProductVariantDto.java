@@ -40,6 +40,6 @@ public class ProductVariantDto {
     
     @Override
     public int hashCode() {
-        return Objects.hash(id);  // Chỉ sử dụng id hoặc trường duy nhất, không sử dụng các quan hệ để tránh vòng lặp
+        return Objects.hash(id);  
     }
 }
