@@ -174,95 +174,109 @@ public class ProductService {
 	
 	@Transactional
 	public Product updateProduct(Long id, ProductDto dto) {
-		// Tìm sản phẩm theo ID
-		Product product = productRepository.findById(id).orElseThrow(() -> new EntityException("Product not found"));
+	    // Tìm sản phẩm theo ID
+	    Product product = productRepository.findById(id)
+	            .orElseThrow(() -> new EntityException("Product not found"));
 
-		// Cập nhật thông tin cơ bản của sản phẩm
-		product.setName(dto.getName());
-		product.setDescription(dto.getDescription());
-		product.setActive(dto.getActive());
+	    // Cập nhật thông tin cơ bản của sản phẩm
+	    product.setName(dto.getName());
+	    product.setDescription(dto.getDescription());
+	    product.setActive(dto.getActive());
 
-		// Cập nhật danh mục nếu có
-		if (dto.getCategoryId() != null) {
-			Category cate = categoryRepository.findById(dto.getCategoryId())
-					.orElseThrow(() -> new EntityException("Category not found"));
-			product.setCategory(cate);
-		}
+	    // Cập nhật danh mục nếu có
+	    if (dto.getCategoryId() != null) {
+	        Category cate = categoryRepository.findById(dto.getCategoryId())
+	                .orElseThrow(() -> new EntityException("Category not found"));
+	        product.setCategory(cate);
+	    }
 
-		// Cập nhật hình ảnh
-		if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
-			List<Image> images = dto.getImageFiles().stream().map(file -> {
-				String filename = fileStorageService.storeLogoFile(file);
-				Image image = new Image();
-				image.setFileName(filename);
-				image.setUrl(filename);
-				image.setName(file.getName());
-				image.setProduct(product);
-				return image;
-			}).collect(Collectors.toList());
-			product.setImages(images);
-		}
+	    // Cập nhật hình ảnh
+	    if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
+	        List<Image> images = dto.getImageFiles().stream().map(file -> {
+	            String filename = fileStorageService.storeLogoFile(file);
+	            Image image = new Image();
+	            image.setFileName(filename);
+	            image.setUrl(filename);
+	            image.setName(file.getName());
+	            image.setProduct(product);
+	            return image;
+	        }).collect(Collectors.toList());
+	        product.setImages(images);
+	    }
 
-		if (dto.getProductVariants() != null) {
-			List<ProductVariant> updatedVariants = new ArrayList<>();
-			for (ProductVariantDto variantDto : dto.getProductVariants()) {
-				// Tìm productVariant theo ID
-				ProductVariant variant = productVariantRepository.findById(variantDto.getId())
-						.orElseThrow(() -> new EntityException("ProductVariant not found"));
+	    // Cập nhật hoặc thêm mới các biến thể sản phẩm
+	    if (dto.getProductVariants() != null) {
+	        List<ProductVariant> updatedVariants = new ArrayList<>();
+	        for (ProductVariantDto variantDto : dto.getProductVariants()) {
+	            
+	            ProductVariant variant;
+	            
+	            // Kiểm tra xem biến thể có ID hay không (0 nghĩa là thêm mới)
+	            if (variantDto.getId() == 0) {
+	                // Tạo mới productVariant nếu ID bằng 0
+	                variant = new ProductVariant();
+	                variant.setProduct(product);  // Liên kết với sản phẩm hiện tại
+	            } else {
+	                // Cập nhật biến thể hiện có
+	                variant = productVariantRepository.findById(variantDto.getId())
+	                        .orElseThrow(() -> new EntityException("ProductVariant not found"));
+	            }
 
-				// Cập nhật các thuộc tính cho productVariant
-				variant.setActive(variantDto.getActive());
-				variant.setPrice(variantDto.getPrice());
+	            // Cập nhật các thuộc tính cho productVariant
+	            variant.setActive(variantDto.getActive());
+	            variant.setPrice(variantDto.getPrice());
 
-				// Cập nhật size nếu có
-				if (variantDto.getSizeId() != null) {
-					Size size = sizeRepository.findById(variantDto.getSizeId())
-							.orElseThrow(() -> new EntityException("Size not found"));
-					variant.setSize(size);
-				}
+	            // Cập nhật size nếu có
+	            if (variantDto.getSizeId() != null) {
+	                Size size = sizeRepository.findById(variantDto.getSizeId())
+	                        .orElseThrow(() -> new EntityException("Size not found"));
+	                variant.setSize(size);
+	            }
 
-				updatedVariants.add(variant);
-			}
+	            updatedVariants.add(variant);
+	        }
 
-			// Cập nhật lại danh sách productVariant cho sản phẩm
-			product.setProductVariants(updatedVariants);
-		}
+	        // Cập nhật lại danh sách productVariant cho sản phẩm
+	        product.setProductVariants(updatedVariants);
+	    }
 
-		if (dto.getProductToppings() != null
-				&& dto.getProductToppings().stream().anyMatch(toppingDto -> toppingDto.getToppingId() != null)) {
-			// Xóa tất cả topping hiện tại cho sản phẩm
-			productToppingRepository.deleteByProductId(product.getId());
+	    // Cập nhật topping nếu có
+	    if (dto.getProductToppings() != null
+	            && dto.getProductToppings().stream().anyMatch(toppingDto -> toppingDto.getToppingId() != null)) {
+	        // Xóa tất cả topping hiện tại cho sản phẩm
+	        productToppingRepository.deleteByProductId(product.getId());
 
-			List<ProductToppings> updatedToppings = new ArrayList<>();
+	        List<ProductToppings> updatedToppings = new ArrayList<>();
 
-			for (ProductToppingDto productToppingDto : dto.getProductToppings()) {
-				// Kiểm tra toppingId không null
-				if (productToppingDto.getToppingId() == null) {
-					throw new EntityException("Topping ID must not be null");
-				}
+	        for (ProductToppingDto productToppingDto : dto.getProductToppings()) {
+	            // Kiểm tra toppingId không null
+	            if (productToppingDto.getToppingId() == null) {
+	                throw new EntityException("Topping ID must not be null");
+	            }
 
-				ProductToppings productTopping = new ProductToppings();
-				BeanUtils.copyProperties(productToppingDto, productTopping);
+	            ProductToppings productTopping = new ProductToppings();
+	            BeanUtils.copyProperties(productToppingDto, productTopping);
 
-				Topping topping = toppingRepository.findById(productToppingDto.getToppingId())
-						.orElseThrow(() -> new EntityException("Topping not found"));
+	            Topping topping = toppingRepository.findById(productToppingDto.getToppingId())
+	                    .orElseThrow(() -> new EntityException("Topping not found"));
 
-				productTopping.setTopping(topping);
-				productTopping.setProduct(product);
+	            productTopping.setTopping(topping);
+	            productTopping.setProduct(product);
 
-				updatedToppings.add(productTopping); // Thêm topping mới vào danh sách
-			}
+	            updatedToppings.add(productTopping); // Thêm topping mới vào danh sách
+	        }
 
-			// Cập nhật danh sách topping cho sản phẩm
-			product.setProductToppings(updatedToppings);
-			productToppingRepository.saveAll(updatedToppings); // Lưu tất cả topping đã cập nhật
-		} else {
-			// Nếu không có topping nào, bạn có thể thiết lập danh sách topping rỗng
-			product.setProductToppings(new ArrayList<>());
-		}
+	        // Cập nhật danh sách topping cho sản phẩm
+	        product.setProductToppings(updatedToppings);
+	        productToppingRepository.saveAll(updatedToppings); // Lưu tất cả topping đã cập nhật
+	    } else {
+	        // Nếu không có topping nào, bạn có thể thiết lập danh sách topping rỗng
+	        product.setProductToppings(new ArrayList<>());
+	    }
 
-		return productRepository.save(product);
+	    return productRepository.save(product);
 	}
+
 
 	// để bật tắt active
 	public Product toggleActive(Long id) {
