@@ -49,7 +49,7 @@ public class Product    {
     private String description;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariant> productVariants;
     
     @JsonIgnore
