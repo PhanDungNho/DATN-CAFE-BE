@@ -198,6 +198,8 @@ public class ProductController {
 				ProductVariantDto variantDto = new ProductVariantDto();
 				variantDto.setId(variant.getId());
 				variantDto.setActive(variant.getActive());
+				variantDto.setProductId(variant.getProduct().getId());
+				variantDto.setSizeId(variant.getSize().getId());
 
 				// Ánh xạ thông tin ProductDto vào ProductVariantDto
 				ProductDto productDto = new ProductDto();

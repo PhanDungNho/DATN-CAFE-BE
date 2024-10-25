@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -32,8 +33,7 @@ public class Product    {
 
     @Column(name = "name", nullable = false, length = 255)
     private String name;
-    
-    @Column(name = "slug", nullable = false, length = 255)
+    @Column(name = "slug", nullable = true, length = 255)
     private String slug;
     @ManyToOne
     @JoinColumn(name = "category_id")
@@ -41,17 +41,21 @@ public class Product    {
     
     @Column(name = "active")
     private Boolean active;
+    
+	@Column(name = "ordering", nullable = true)
+	private Integer ordering; 
 
     @Column(name = "description", columnDefinition = "nvarchar(max)")
     private String description;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "product")
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
     private List<ProductVariant> productVariants;
     
     @JsonIgnore
     @OneToMany(mappedBy = "product")
     private List<ProductToppings> productToppings;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

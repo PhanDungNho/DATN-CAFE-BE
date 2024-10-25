@@ -5,6 +5,7 @@ import java.util.Objects;
 
 import org.hibernate.Hibernate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
@@ -41,11 +42,9 @@ public class Image {
 
 	@Column(name = "url")
 	private String url;
-
+	
+	@JsonBackReference
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "product_id")
 	private Product product;
-
-
-	// Getters and Setters
 }
