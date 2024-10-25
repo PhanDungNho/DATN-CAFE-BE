@@ -191,7 +191,12 @@ public class AccountService {
 		List<Account> list = accountRepository.findByUsernameContainsIgnoreCase(name);
 		return list;
 	}
-
+	
+	public List<Account> findAccountByNameAdmin(String name) {
+		List<Account> list = accountRepository.getAdministratorsByUsernameContains(name);
+		return list;
+	}
+	
 	public List<Account> findAccountByPhone(String phone) {
 		List<Account> list = accountRepository.findByPhoneContainsIgnoreCase(phone);
 		return list;

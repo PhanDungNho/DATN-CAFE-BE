@@ -148,6 +148,12 @@ public class AccountController {
 		return new ResponseEntity<>(accountService.findAccountByName(query), HttpStatus.OK);
 	}
 	
+	@GetMapping("/findadmin")
+	public ResponseEntity<?> getAccountByNameAdmin(@RequestParam("query") String query) {
+		return new ResponseEntity<>(accountService.findAccountByNameAdmin(query), HttpStatus.OK);
+	}
+	
+	
 	@GetMapping("/image/{filename:.+}")
 	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {
 		Resource resource = fileStorageService.loadLogoFileResource(filename);

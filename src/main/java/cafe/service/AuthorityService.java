@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cafe.dto.AuthorityDto;
 import cafe.entity.Account;
@@ -59,12 +60,11 @@ public class AuthorityService {
 		return found.get();
 	}
 	
-	// tước quyền
+	@Transactional
 	public void delete(Long id) {
 		Authority existed = findById(id);
 		authorityRepository.delete(existed);
 	}
-	// tìm những quyên liên quan đến admin
 
 	public List<Authority> findAuthorityOfAdministrator() {
 		List<Account> accounts = accountRepository.getAdministrators();
