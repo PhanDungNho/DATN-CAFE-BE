@@ -1,5 +1,8 @@
 package cafe.dto;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import cafe.entity.Account;
 import cafe.entity.ProductVariant;
 import jakarta.persistence.Column;
@@ -19,5 +22,7 @@ public class CartDetailDto {
 	private Integer quantity;
 	private Account account;
 	private ProductVariant productVariant;
-
+	private String note;
+    List<CartDetailToppingDto> cartDetailToppings = new ArrayList<>(); 
+    
 }
