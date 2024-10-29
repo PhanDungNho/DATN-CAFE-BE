@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -50,7 +51,7 @@ public class Account {
 	@Column(name = "active", nullable = false, length = 255)
 	private Boolean active;
 
-    @JsonIgnore
+	@JsonIgnore
 	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
 	private List<Authority> authorities;
     

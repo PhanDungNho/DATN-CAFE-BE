@@ -30,7 +30,7 @@ import cafe.service.ProductVariantService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/api/v1/carts")
+@RequestMapping("/api/v1/cartDetails")
 @CrossOrigin
 public class CartDetailController {
 
@@ -48,14 +48,9 @@ public class CartDetailController {
 
 	@PostMapping
 	public ResponseEntity<?> CreateCartDetail(@Valid @RequestBody CartDetailDto dto) {
-		CartDetail entity = new CartDetail();
-		Account account = accountService.findById(dto.getUsername());
-		entity.setAccount(account);
-		ProductVariant productvariant = productVariantService.findById(dto.getProductVariantId());
-		entity.setProductvariant(productvariant);
-		entity.setQuantity(dto.getQuantity());
-		entity = cartService.save(entity);
-		dto.setId(entity.getId());
+	CartDetail cartDetail =	cartService.insertCartDetail(dto);
+		
+		dto.setId(cartDetail.getId());
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 
 	}
