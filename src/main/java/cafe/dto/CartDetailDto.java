@@ -12,7 +12,6 @@ import lombok.Data;
 
 @Data
 public class CartDetailDto {
-
 	private Long id;
 	private String username;
 	private Long productVariantId;

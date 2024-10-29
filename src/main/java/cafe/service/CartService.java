@@ -8,7 +8,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import cafe.entity.CartDetail;
-import cafe.entity.Category;
 import cafe.exception.EntityException;
 import cafe.repository.CartRepository;
 

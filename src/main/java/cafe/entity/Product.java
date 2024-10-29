@@ -1,6 +1,5 @@
 package cafe.entity;
 
-
 import java.util.List;
 import java.util.Objects;
 
@@ -17,53 +16,62 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.PostPersist;
 import jakarta.persistence.Table;
 import lombok.Data;
+
 @SuppressWarnings("serial")
 @Entity
 @Data
 @Table(name = "Products")
-public class Product    {
+public class Product {
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id")
+	private Long id;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id")
-    private Long id;
+	@Column(name = "name", nullable = false, length = 255)
+	private String name;
 
-    @Column(name = "name", nullable = false, length = 255)
-    private String name;
-    @Column(name = "slug", nullable = true, length = 255)
-    private String slug;
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Category category;
-    
-    @Column(name = "active")
-    private Boolean active;
-    
+	@Column(name = "slug", nullable = true, length = 255)
+	private String slug;
+
+	@ManyToOne
+	@JoinColumn(name = "category_id")
+	private Category category;
+
+	@Column(name = "active")
+	private Boolean active;
+
 	@Column(name = "ordering", nullable = true)
-	private Integer ordering; 
+	private Integer ordering;
 
-    @Column(name = "description", columnDefinition = "nvarchar(max)")
-    private String description;
+	@Column(name = "description", columnDefinition = "nvarchar(max)")
+	private String description;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
-    private List<ProductVariant> productVariants;
-    
-    @JsonIgnore
-    @OneToMany(mappedBy = "product")
-    private List<ProductToppings> productToppings;
+	@JsonIgnore
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL)
+	private List<ProductVariant> productVariants;
 
+	@JsonIgnore
+	@OneToMany(mappedBy = "product")
+	private List<ProductToppings> productToppings;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Image> images;
-    
-    @Override
-    public int hashCode() {
-        return Objects.hash(id); 
-    }
-    // Getters and Setters
+	@JsonIgnore
+	@OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	private List<Image> images;
+
+	@PostPersist
+	private void setOrderingAfterPersist() {
+		if (this.ordering == null) {
+			this.ordering = this.id.intValue();
+		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
+	// Getters and Setters
 }
