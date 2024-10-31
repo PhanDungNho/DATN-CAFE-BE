@@ -15,6 +15,8 @@ public class CartDetailToppingDto {
 //	private BigDecimal momentPrice;
 	private Integer quantity;
 	private ToppingDto topping;
+	private Long toppingId;
 	
+	@JsonIgnore 
 	private CartDetail cartDetail;
 }

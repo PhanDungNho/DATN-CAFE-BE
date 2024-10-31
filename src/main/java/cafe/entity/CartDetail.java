@@ -41,14 +41,12 @@ public class CartDetail {
 
 	@Column(name = "quantity")
 	private Integer quantity;
-	
 
-    @Column(columnDefinition = "TEXT")
-    private String note;
-	
-	   @JsonIgnore
-	    @OneToMany(mappedBy = "cartDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-	    private List<CartDetailTopping> cartDetailToppings;
-	    
+	@Column(columnDefinition = "TEXT")
+	private String note;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "cartDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<CartDetailTopping> cartDetailToppings;
 
 }

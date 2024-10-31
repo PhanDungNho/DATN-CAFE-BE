@@ -54,22 +54,14 @@ public class OrderController {
 
 	@GetMapping
 	public ResponseEntity<?> getAllOrder() {
-		return new ResponseEntity<>(orderService.findAll().stream()
-				.map(OrderResponse::convert)
-				.sorted(Comparator.comparing(OrderResponse::getId).reversed())
-				.toList(),
-				HttpStatus.OK);
+		return new ResponseEntity<>(orderService.findAll().stream().map(OrderResponse::convert)
+				.sorted(Comparator.comparing(OrderResponse::getId).reversed()).toList(), HttpStatus.OK);
 	}
 
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getOrder(@PathVariable("id") Long id) {
 		return orderService.findById(id).map(order -> ResponseEntity.ok(OrderResponse.convert(order))) // Chuyển đổi
-																										// Order thành
-																										// OrderResponse
 				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new OrderResponse())); // Trả về một
-																											// OrderResponse
-																											// rỗng hoặc
-																											// null
 	}
 
 //	@GetMapping("/find")
@@ -100,8 +92,7 @@ public class OrderController {
 //		respDto.setCustomer(order.getCustomer());
 //		respDto.setFulladdresstext(order.getFulladdresstext());
 //		// Chuyển đổi OrderDetail thành OrderdetailDto
-		List<OrderdetailDto> orderDetailDtos = order.getOrderDetails().stream()
-				.map(this::convertToOrderdetailDto)
+		List<OrderdetailDto> orderDetailDtos = order.getOrderDetails().stream().map(this::convertToOrderdetailDto)
 				.collect(Collectors.toList());
 		respDto.setOrderDetails(orderDetailDtos);
 //		respDto.setPaymentmethod(order.getPaymentmethod());
