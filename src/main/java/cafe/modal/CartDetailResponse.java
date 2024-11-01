@@ -2,6 +2,7 @@ package cafe.modal;
 
 import java.util.List;
 
+import cafe.dto.ImageDto;
 import cafe.entity.Account;
 import cafe.entity.CartDetail;
 import cafe.entity.ProductVariant;
@@ -14,7 +15,8 @@ public class CartDetailResponse {
 	private ProductVariant productVariant;
 	private Integer quantity;
 	private String note;
-	private List<CartDetailToppingResponse> cartDetailToppins;
+	private List<CartDetailToppingResponse> cartDetailToppings;
+	 private List<ImageDto> images;
 	
 	public static CartDetailResponse convert(CartDetail entity) {
 		CartDetailResponse response = new CartDetailResponse();
@@ -24,8 +26,12 @@ public class CartDetailResponse {
 		response.setProductVariant(entity.getProductVariant());
 		response.setQuantity(entity.getQuantity());
 		response.setNote(entity.getNote());
-		response.setCartDetailToppins(entity.getCartDetailToppings().stream().map(CartDetailToppingResponse::convert).toList());
-		
+		response.setCartDetailToppings(entity.getCartDetailToppings().stream().map(CartDetailToppingResponse::convert).toList());
+		List<ImageDto> images = entity.getProductVariant().getProduct().getImages().stream()
+                .map(ImageDto::convert)
+                .toList();
+        response.setImages(images);
+        
 		return response;
 	}
 }
