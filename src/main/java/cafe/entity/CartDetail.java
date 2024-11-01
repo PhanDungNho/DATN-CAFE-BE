@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,18 +37,16 @@ public class CartDetail {
 
 	@ManyToOne
 	@JoinColumn(name = "productvariantid", nullable = true)
-	private ProductVariant productvariant;
+	private ProductVariant productVariant;
 
 	@Column(name = "quantity")
 	private Integer quantity;
-	
 
-    @Column(columnDefinition = "TEXT")
-    private String note;
-	
-	   @JsonIgnore
-	    @OneToMany(mappedBy = "cartDetail", fetch = FetchType.EAGER)
-	    private List<CartDetailTopping> cartDetailToppings;
-	    
+	@Column(columnDefinition = "TEXT")
+	private String note;
+
+	@JsonIgnore
+	@OneToMany(mappedBy = "cartDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+	private List<CartDetailTopping> cartDetailToppings;
 
 }

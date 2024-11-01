@@ -2,6 +2,7 @@ package cafe.dto;
 
 import java.io.Serializable;
 
+import cafe.entity.Image;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -21,4 +22,14 @@ public class ImageDto implements Serializable {
     private String url;
     private String status;
     private String response = "{\"status:\" \"sucess\"}";
+    private Long productId;
+    
+    public static ImageDto convert(Image image) {
+        ImageDto dto = new ImageDto();
+        dto.setId(image.getId());
+        dto.setUrl(image.getUrl());
+        dto.setFileName(image.getFileName());
+        dto.setProductId(image.getProduct().getId());
+        return dto;
+    }
 }
