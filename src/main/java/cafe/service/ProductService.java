@@ -320,4 +320,7 @@ public class ProductService {
 		List<Product> list = productRepository.findByNameContainsIgnoreCase(name);
 		return list;
 	}
+	public List<Product> findProductsByName(String name) {
+	    return productRepository.findByNameContainsIgnoreCase(name);
+	}
 }

@@ -13,4 +13,5 @@ import cafe.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 //	List<Product> findByNameStartsWith(String name, Pageable pageable);
 	List<Product> findByNameContainsIgnoreCase(String name);
+    List<Product> findByName(String name); // Tìm kiếm sản phẩm theo tên chính xác
 }

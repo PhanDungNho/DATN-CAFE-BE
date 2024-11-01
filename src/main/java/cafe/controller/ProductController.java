@@ -319,5 +319,16 @@ public class ProductController {
 		System.out.println(dto.getUrl());
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
+	@GetMapping("/search")
+	public ResponseEntity<?> searchProductsByName(@RequestParam("name") String query) {
+	    List<Product> products = productService.findProductsByName(query);
+	    List<ProductDto> productDtos = products.stream().map(product -> {
+	        ProductDto dto = new ProductDto();
+	        BeanUtils.copyProperties(product, dto);
+	        return dto;
+	    }).toList();
+
+	    return new ResponseEntity<>(productDtos, HttpStatus.OK);
+	}
 
 }
