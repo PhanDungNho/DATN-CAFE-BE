@@ -153,10 +153,10 @@ public class AddressController {
 	    return ResponseEntity.ok(addresses);
 	}
 	
-	@DeleteMapping("/{username}/{id}")
-	public ResponseEntity<?> deleteAddress(@PathVariable String username, @PathVariable Long id) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteAddress(@PathVariable Long id) {
 	    try {
-	        addressService.deleteAddressByUsernameAndId(username, id);
+	        addressService.deleteById(id);
 	        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 	    } catch (EntityException e) {
 	        return new ResponseEntity<>(e.getMessage(), HttpStatus.NOT_FOUND);
@@ -164,6 +164,7 @@ public class AddressController {
 	        return new ResponseEntity<>("Unauthorized to delete this address.", HttpStatus.UNAUTHORIZED);
 	    }
 	}
+
 
 	
 }

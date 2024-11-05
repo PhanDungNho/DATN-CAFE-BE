@@ -114,15 +114,9 @@ public class AddressService {
 	        return addressRespository.findByAccount(account);
 	    }
 	
-	 public void deleteAddressByUsernameAndId(String username, Long addressId) {
-		    Address address = addressRespository.findById(addressId)
-		            .orElseThrow(() -> new EntityException("Address with id " + addressId + " does not exist"));
-
-		    // Kiểm tra xem địa chỉ có thuộc về username không
-		    if (!address.getAccount().getUsername().equals(username)) {
-		        throw new SecurityException("Unauthorized to delete this address.");
-		    }
-
+	 public void deleteById(Long id) {
+		    Address address = addressRespository.findById(id)
+		            .orElseThrow(() -> new EntityException("Address with id " + id + " does not exist"));
 		    addressRespository.delete(address);
 		}
 	
