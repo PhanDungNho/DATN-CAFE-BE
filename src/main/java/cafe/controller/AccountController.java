@@ -86,13 +86,10 @@ public class AccountController {
 
 	@PatchMapping("/{username}/toggle-active")
 	public ResponseEntity<?> toggleActive(@PathVariable String username) {
-		// Call the service to toggle the account's active status
 		Account updatedAccount = accountService.toggleActive(username);
-		// Check if the account was found
 		if (updatedAccount == null) {
 			return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
 		}
-		// Create AccountDto to return updated account information
 		AccountDto responseDto = new AccountDto();
 		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
 

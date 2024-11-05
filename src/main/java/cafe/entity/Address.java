@@ -43,7 +43,7 @@ public class Address {
 	private Boolean isDefault;
 	
 	@Column(name = "active", nullable = false)
-	private Boolean active;
+	private Boolean active = true;
 	
 	@ManyToOne
 	@JoinColumn(name = "account", nullable = false)
