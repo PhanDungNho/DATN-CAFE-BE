@@ -138,6 +138,6 @@ public class CartDetailController {
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteProductFromCart(@PathVariable("id") Long id) {
 		cartService.deleteById(id);
-		return new ResponseEntity<>("Category with Id: " + id + " was deleted", HttpStatus.OK);
+		return new ResponseEntity<>("Cart Detail with Id: " + id + " was deleted", HttpStatus.OK);
 	}
 }
