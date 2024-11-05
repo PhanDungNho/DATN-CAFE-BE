@@ -37,6 +37,7 @@ import cafe.entity.Account;
 import cafe.entity.Order;
 import cafe.entity.Transactions;
 import cafe.enums.OrderStatus;
+import cafe.enums.PaymentStatus;
 import cafe.exception.EntityException;
 import cafe.service.AccountService;
 import cafe.service.MapValidationErrorService;
@@ -53,51 +54,46 @@ public class TransactionController {
 
 	@Autowired
 	TransactionsService transactionsService;
-	
+
 	@PostMapping()
 	public ResponseEntity<?> createTransaction(@RequestBody Transactions transaction) {
 		Optional<Order> found = null;
-
 		try {
-	
-		
-				found = orderService.findById(transaction.getOrder().getId());
-				if (found.isEmpty()) {
-					throw new EntityException("Order id " + transaction.getOrder().getId() + " does not exist");
-				
+			found = orderService.findById(transaction.getOrder().getId());
+			if (found.isEmpty()) {
+				throw new EntityException("Order id " + transaction.getOrder().getId() + " does not exist");
 			}
 			transaction.setOrder(found.get());
-		
 			transactionsService.save(transaction);
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
 		return new ResponseEntity<>(transaction, HttpStatus.OK);
 	}
 
 	@PostMapping("/ipn")
 	public ResponseEntity<?> handleIPN(@RequestBody Transactions transaction) {
-		Transactions found= null;
-	Order orderFound = null;
+		Transactions found = null;
+		Order orderFound = null;
 
 		try {
-	
+
 			String[] parts = transaction.getOrderInfo().split(": ");
 			if (parts.length > 1) {
 				String result = parts[1];
 				orderFound = orderService.findById(Long.parseLong(result)).get();
-				 found = transactionsService.findByOrder(orderFound);
+				found = transactionsService.findByOrder(orderFound);
 			}
 			transaction.setId(found.getId());
 			transaction.setOrder(found.getOrder());
 			transaction.setPayUrl(found.getPayUrl());
 			transactionsService.save(transaction);
-			
+
 			if (found.getOrder().getOrderStatus() == OrderStatus.UNCONFIRMED
-					&& (transaction.getResultCode() == 0 || transaction.getResultCode() == 900)) {
+					&& (transaction.getResultCode() == 0 ||
+					transaction.getResultCode() == 900)) {
 				found.getOrder().setOrderStatus(OrderStatus.PROCESSING);
+				found.getOrder().setPaymentStatus(PaymentStatus.PAID);
 				orderService.save(found.getOrder());
 			}
 
@@ -105,6 +101,6 @@ public class TransactionController {
 			e.printStackTrace();
 		}
 
-		return  ResponseEntity.ok("a");
+		return ResponseEntity.ok("a");
 	}
 }

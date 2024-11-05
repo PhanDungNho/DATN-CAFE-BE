@@ -52,6 +52,10 @@ public class OrderService {
 	public List<Order> findAll() {
 		return orderRepository.findAll();
 	}
+	
+	public List<Order> findByCustomer(String username) {
+		return orderRepository.findByCustomer(accountRepository.findByUsername(username).get());
+	}
 
 	public Optional<Order> findById(Long id) {
 		return orderRepository.findById(id);
