@@ -320,7 +320,7 @@ public class ProductService {
 		return list;
 	}
 	public List<Product> findProductsByName(String name) {
-	    return productRepository.findByNameContainsIgnoreCase(name);
+	    return productRepository.findByNameContainsIgnoreCase(name);}
 	
 	@Transactional
 	public List<Product> updateOrdering(List<ProductDto> productDtos) {
