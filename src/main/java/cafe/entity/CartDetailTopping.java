@@ -41,6 +41,5 @@ public class CartDetailTopping {
 	@Column(nullable = false)
 	private Integer quantity;
 
-//	@Column(name="moment_price",nullable = false)
-//	private BigDecimal momentPrice;
+
 }

@@ -37,6 +37,7 @@ import cafe.service.MapValidationErrorService;
 import cafe.service.ProductService;
 import cafe.service.RoleService;
 import jakarta.validation.Valid;
+import org.springframework.transaction.annotation.Transactional;
 
 @RestController
 @RequestMapping("/api/v1/authorities")
@@ -66,12 +67,9 @@ public class AuthorityController {
 		
 	}
 	
-	// tước quyền
 	@DeleteMapping("{id}")
 	public  ResponseEntity<?>  delete(@PathVariable("id") Long id) {
 		 authorityService.delete(id);
-		 return new ResponseEntity<>("Access revoked", HttpStatus.OK);
-		 
-		
+		 return new ResponseEntity<>("Access revoked"+id, HttpStatus.OK);
 	}
 }

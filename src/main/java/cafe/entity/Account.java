@@ -52,7 +52,7 @@ public class Account {
 	private Boolean active;
 
 	@JsonIgnore
-	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER, cascade = CascadeType.ALL )
+	@OneToMany(mappedBy = "account", fetch = FetchType.EAGER)
 	private List<Authority> authorities;
     
     @PrePersist

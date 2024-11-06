@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -191,7 +192,12 @@ public class AccountService {
 		List<Account> list = accountRepository.findByUsernameContainsIgnoreCase(name);
 		return list;
 	}
-
+	
+	public List<Account> findAccountByNameAdmin(String name) {
+		List<Account> list = accountRepository.getAdministratorsByUsernameContains(name);
+		return list;
+	}
+	
 	public List<Account> findAccountByPhone(String phone) {
 		List<Account> list = accountRepository.findByPhoneContainsIgnoreCase(phone);
 		return list;
@@ -224,6 +230,63 @@ public class AccountService {
 	public boolean usernameExists(String username) {
         return accountRepository.existsByUsername(username);
     }
+	
+	
+	
+	///
+	
+	
+	public AccountDto getAccountByUsername(String username) {
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản với tên đăng nhập: " + username));
+        return convertToDto(account);
+    }
+
+
+    /**
+     * Cập nhật thông tin tài khoản dựa trên AccountDto và email.
+     *
+     * @param accountDto Thông tin tài khoản mới
+     * @param email      Email của tài khoản cần cập nhật
+     * @throws UsernameNotFoundException nếu không tìm thấy tài khoản với email cung cấp
+     */
+    public void updateProfile(AccountDto accountDto, String email) {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản với email: " + email));
+
+        // Cập nhật các trường từ AccountDto nếu có giá trị mới
+        if (accountDto.getFullName() != null) {
+            account.setFullName(accountDto.getFullName());
+        }
+        if (accountDto.getPhone() != null) {
+            account.setPhone(accountDto.getPhone());
+        }
+        if (accountDto.getImage() != null) {
+            account.setImage(accountDto.getImage());
+        }
+        if (accountDto.getPassword() != null) {
+            account.setPassword(accountDto.getPassword()); // Nhớ mã hóa mật khẩu trước khi lưu nếu cần
+        }
+
+        // Lưu tài khoản đã cập nhật vào cơ sở dữ liệu
+        accountRepository.save(account);
+    }
+
+    /**
+     * Chuyển đổi Account entity sang AccountDto.
+     *
+     * @param account Đối tượng Account cần chuyển đổi
+     * @return Đối tượng AccountDto
+     */
+    private AccountDto convertToDto(Account account) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setFullName(account.getFullName());
+        accountDto.setEmail(account.getEmail());
+        accountDto.setPhone(account.getPhone());
+        accountDto.setImage(account.getImage());
+        return accountDto;
+    }
+	
 	
 	
 

@@ -86,13 +86,10 @@ public class AccountController {
 
 	@PatchMapping("/{username}/toggle-active")
 	public ResponseEntity<?> toggleActive(@PathVariable String username) {
-		// Call the service to toggle the account's active status
 		Account updatedAccount = accountService.toggleActive(username);
-		// Check if the account was found
 		if (updatedAccount == null) {
 			return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
 		}
-		// Create AccountDto to return updated account information
 		AccountDto responseDto = new AccountDto();
 		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
 
@@ -147,6 +144,12 @@ public class AccountController {
 	public ResponseEntity<?> getAccountByName(@RequestParam("query") String query) {
 		return new ResponseEntity<>(accountService.findAccountByName(query), HttpStatus.OK);
 	}
+	
+	@GetMapping("/findadmin")
+	public ResponseEntity<?> getAccountByNameAdmin(@RequestParam("query") String query) {
+		return new ResponseEntity<>(accountService.findAccountByNameAdmin(query), HttpStatus.OK);
+	}
+	
 	
 	@GetMapping("/image/{filename:.+}")
 	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {

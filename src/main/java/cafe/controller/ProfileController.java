@@ -1,39 +1,38 @@
 package cafe.controller;
 
 import cafe.dto.AccountDto;
+import cafe.service.AccountService;
+
 import cafe.service.ProfileService;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/profile")
-@CrossOrigin(origins = "http://localhost:3000") // Change to frontend origin
+@CrossOrigin(origins = "http://localhost:3000")
 public class ProfileController {
 
     @Autowired
-    private ProfileService profileService;
-
+    private AccountService accountService;
+    @Autowired
+    private ProfileService ProfileService;
     @GetMapping
-    public ResponseEntity<AccountDto> getProfile() {
-        try {
-            AccountDto accountDto = profileService.getProfile();
-            return ResponseEntity.ok(accountDto);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
+    public ResponseEntity<AccountDto> getProfile(@AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername(); // Lấy tên đăng nhập từ đối tượng UserDetails
+        AccountDto accountDto = accountService.getAccountByUsername(username); // Sử dụng phương thức tìm theo tên đăng nhập
+        return ResponseEntity.ok(accountDto);
     }
-
     @PutMapping("/update")
-    public ResponseEntity<String> updateProfile(@ModelAttribute AccountDto accountDto) {
-        try {
-            profileService.updateProfile(accountDto);
-            return ResponseEntity.ok("Cập nhật thông tin thành công");
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Có lỗi xảy ra: " + e.getMessage());
-        }
+    public ResponseEntity<String> updateProfile(
+            @ModelAttribute AccountDto accountDto,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        String username = userDetails.getUsername(); // Lấy tên đăng nhập từ đối tượng UserDetails
+        ProfileService.updateProfile(accountDto, username); // Gọi phương thức cập nhật thông tin
+        
+        return ResponseEntity.ok("Cập nhật thông tin thành công.");
     }
-
 }
