@@ -27,33 +27,81 @@ public class AddressService {
 	@Autowired
 	private  AccountRepository accountRepository;
 	
+//	@Transactional
+//    public Address save(AddressDto addressDto) {
+//        // Đặt isDefault mặc định là false nếu không nhận từ Frontend
+//        if (addressDto.getIsDefault() == null) {
+//            addressDto.setIsDefault(false);
+//        }
+//
+//        Address address = new Address();
+//        mapDtoToAddress(addressDto, address);
+//        return addressRespository.save(address);
+//    }
+//
+//
+//    @Transactional
+//    public Address update(Long id, AddressDto dto) {
+//        Address address = addressRespository.findById(id).orElseThrow(
+//            () -> new IllegalArgumentException("Address not found with id: " + id)
+//        );
+//
+//        if (dto.getIsDefault()) {
+//            // Đặt các địa chỉ cũ của tài khoản về isDefault = false nếu cập nhật địa chỉ mới là mặc định
+//            resetDefaultAddress(dto.getAccount());
+//        }
+//
+//        mapDtoToAddress(dto, address);
+//        return addressRespository.save(address);
+//    }
+	
+	
 	@Transactional
-    public Address save(AddressDto addressDto) {
-        // Đặt isDefault mặc định là false nếu không nhận từ Frontend
-        if (addressDto.getIsDefault() == null) {
-            addressDto.setIsDefault(false);
-        }
+	public Address save(AddressDto addressDto) {
+	    // Set isDefault to false if not provided by frontend
+	    if (addressDto.getIsDefault() == null) {
+	        addressDto.setIsDefault(false);
+	    }
 
-        Address address = new Address();
-        mapDtoToAddress(addressDto, address);
-        return addressRespository.save(address);
-    }
+	    // Construct fullAddress if it's not provided
+	    if (addressDto.getFullAddress() == null || addressDto.getFullAddress().isEmpty()) {
+	        String fullAddress = String.format("%s,  %s,  %s,  %s",
+	                                           addressDto.getStreet(),
+	                                           addressDto.getWardCode(),
+	                                           addressDto.getDistrictCode(),
+	                                           addressDto.getCityCode());
+	        addressDto.setFullAddress(fullAddress);
+	    }
 
+	    Address address = new Address();
+	    mapDtoToAddress(addressDto, address);
+	    return addressRespository.save(address);
+	}
 
-    @Transactional
-    public Address update(Long id, AddressDto dto) {
-        Address address = addressRespository.findById(id).orElseThrow(
-            () -> new IllegalArgumentException("Address not found with id: " + id)
-        );
+	@Transactional
+	public Address update(Long id, AddressDto dto) {
+	    Address address = addressRespository.findById(id)
+	        .orElseThrow(() -> new IllegalArgumentException("Address not found with id: " + id));
 
-        if (dto.getIsDefault()) {
-            // Đặt các địa chỉ cũ của tài khoản về isDefault = false nếu cập nhật địa chỉ mới là mặc định
-            resetDefaultAddress(dto.getAccount());
-        }
+	    if (dto.getIsDefault()) {
+	        // Reset other addresses to non-default if this one is set to default
+	        resetDefaultAddress(dto.getAccount());
+	    }
 
-        mapDtoToAddress(dto, address);
-        return addressRespository.save(address);
-    }
+	    // Construct fullAddress if it's not provided
+	    if (dto.getFullAddress() == null || dto.getFullAddress().isEmpty()) {	
+	        String fullAddress = String.format("%s,  %s,  %s,  %s",
+	                                           dto.getStreet(),
+	                                           dto.getWardCode(),
+	                                           dto.getDistrictCode(),
+	                                           dto.getCityCode());
+	        dto.setFullAddress(fullAddress);
+	    }
+
+	    mapDtoToAddress(dto, address);
+	    return addressRespository.save(address);
+	}
+
 
     private void resetDefaultAddress(String username) {
         List<Address> defaultAddresses = addressRespository.findByAccountUsernameAndIsDefaultTrue(username);
@@ -120,9 +168,9 @@ public class AddressService {
 		    addressRespository.delete(address);
 		}
 	
-	public List<Address> findAddressesByFullAddress(String fullAddress) {
-	    return addressRespository.findByFullAddressContainingIgnoreCase(fullAddress);
-	}
+	 public List<Address> findAddressesByFullAddressAndAccount(String query, String username) {
+		    return addressRespository.findByAccountUsernameAndFullAddressContainingIgnoreCase(username, query);
+		}
 	
 	public Address setIsDefault(Long addressId) {
 	    // Tìm địa chỉ với id, nếu không tìm thấy thì trả về null
