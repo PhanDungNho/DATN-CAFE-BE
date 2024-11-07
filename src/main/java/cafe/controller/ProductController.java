@@ -180,6 +180,7 @@ public class ProductController {
 			ProductDto dto = new ProductDto();
 			dto.setId(product.getId());
 			dto.setName(product.getName());
+			dto.setSlug(product.getSlug());
 			dto.setActive(product.getActive());
 			dto.setDescription(product.getDescription());
 			dto.setOrdering(product.getOrdering());
@@ -268,6 +269,12 @@ public class ProductController {
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getProduct(@PathVariable("id") Long id) {
 		return productService.findById(id).map(product -> ResponseEntity.ok(ProductResponse.convert(product)))
+				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductResponse()));
+	}
+	
+	@GetMapping("/{slug}/getBySlug")
+	public ResponseEntity<?> getProductBySlug(@PathVariable("slug") String slug) {
+		return productService.findBySlug(slug).map(product -> ResponseEntity.ok(ProductResponse.convert(product)))
 				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductResponse()));
 	}
 

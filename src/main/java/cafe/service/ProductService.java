@@ -309,6 +309,10 @@ public class ProductService {
 	public Optional<Product> findById(Long id) {
 		return productRepository.findById(id);
 	}
+	
+	public Optional<Product> findBySlug(String slug) {
+		return productRepository.findBySlug(slug);
+	}
 
 //	public void deleteById(Long id) {
 //		Product existed = findById(id);
