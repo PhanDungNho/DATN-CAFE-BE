@@ -51,7 +51,7 @@ public class OrderDetail {
     private String note;
 
     @JsonIgnore
-    @OneToMany(mappedBy = "orderDetail", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderDetailTopping> orderDetailToppings;
     
 
