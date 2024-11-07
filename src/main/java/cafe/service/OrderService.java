@@ -10,14 +10,14 @@ import org.springframework.stereotype.Service;
 
 import cafe.dto.OrderDto;
 import cafe.entity.Account;
-
+import cafe.entity.CartDetail;
 import cafe.entity.Category;
 import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
- 
+
 import cafe.enums.OrderStatus;
- 
+
 import cafe.enums.OrderStatus;
 import cafe.entity.ProductVariant;
 import cafe.entity.Topping;
@@ -45,14 +45,14 @@ public class OrderService {
 
 	@Autowired
 	private ToppingRepository toppingRepository;
-	
+
 	@Autowired
 	private OrderDetailToppingRepository orderDetailToppingRepository;
 
 	public List<Order> findAll() {
 		return orderRepository.findAll();
 	}
-	
+
 	public List<Order> findByCustomer(String username) {
 		return orderRepository.findByCustomer(accountRepository.findByUsername(username).get());
 	}
@@ -63,29 +63,27 @@ public class OrderService {
 
 	public Order createOrder(OrderDto dto) {
 		Order order = new Order();
-	 
+
 //		order.setCreatedtime(dto.getCreatedtime());
 		order.setTotalAmount(dto.getTotalAmount());
 		order.setOrderStatus(dto.getOrderStatus());
 		order.setPaymentStatus(dto.getPaymentStatus());
 		order.setPaymentMethod(dto.getPaymentMethod());
 		order.setOrderType(dto.getOrderType());
-	 
+
 		order.setActive(dto.getActive());
 		order.setShippingFee(dto.getShippingFee());
 		order.setFullAddress(dto.getFullAddress());
 		order.setSlug("sds");
-	 
+
 		Account cashier = accountRepository.findById(dto.getCashierId())
 				.orElseThrow(() -> new EntityException("Cashier not found"));
 		order.setCashier(cashier);
 
-	 
 		Account customer = accountRepository.findById(dto.getCustomerId())
 				.orElseThrow(() -> new EntityException("Customer not found"));
 		order.setCustomer(customer);
 
-	 
 		Order savedOrder = orderRepository.save(order);
 
 		// Xử lý OrderDetail từ DTO và liên kết với Order vừa lưu
@@ -118,7 +116,7 @@ public class OrderService {
 						orderDetailTopping.setMomentPrice(toppingDto.getMomentPrice());
 
 						orderDetailTopping.setOrderDetail(saveOrderDetail);
-						
+
 						return orderDetailTopping;
 					}).collect(Collectors.toList());
 
@@ -131,15 +129,13 @@ public class OrderService {
 
 		// Lưu các OrderDetail
 		orderDetailRepository.saveAll(orderDetails);
-		
 
 		// Cập nhật danh sách OrderDetail vào Order và lưu lại
 		savedOrder.setOrderDetails(orderDetails);
 		return orderRepository.save(savedOrder);
 	}
-	
 
-	public Order updateStatus (Long id, Order order) {
+	public Order updateStatus(Long id, Order order) {
 		Optional<Order> existed = orderRepository.findById(id);
 		if (existed.isEmpty()) {
 			throw new EntityException("Order id " + id + " does not exist");
@@ -147,25 +143,24 @@ public class OrderService {
 		try {
 			Order existedOrder = existed.get();
 			existedOrder.setOrderStatus(order.getOrderStatus());
-		 
+
 			return orderRepository.save(existedOrder);
 		} catch (Exception ex) {
 			throw new EntityException("Order is updated failed");
 		}
 	}
- 
-	public Order save (Order order) {
+
+	public Order save(Order order) {
 		return orderRepository.save(order);
 	}
- 
-	
-	public List<Order> getOrdersBetweenDates(Date startDate, Date endDate){
+
+	public List<Order> getOrdersBetweenDates(Date startDate, Date endDate) {
 		return orderRepository.findByCreatedTimeBetween(startDate, endDate);
 	}
-	
+
 	public Order toggleActive(Long id) {
 		Optional<Order> optionalOrder = orderRepository.findById(id);
-		if(optionalOrder.isEmpty()) {
+		if (optionalOrder.isEmpty()) {
 			throw new EntityException("Order with id " + id + " do not exits");
 		}
 		Order order = optionalOrder.get();
@@ -173,50 +168,12 @@ public class OrderService {
 		return orderRepository.save(order);
 	}
 
- 
-//	public Page<OrderDto> getOrdersByStatus(OrderStatus status, Pageable pageable) {
-//		var list = orderRepository.findByStatusContainsIgnoreCase(status, pageable);
-//		
-//		var newList = list.getContent().stream()
-//				.map(item -> {
-//					OrderDto dto = new OrderDto();
-//					BeanUtils.copyProperties(item, dto, "orderdetails");
-//					
-//					dto.setCashier(item.getCashier());
-//					dto.setCustomer(item.getCustomer());
-//					dto.setPaymentmethod(item.getPaymentmethod());
-//					dto.setStatus(item.getStatus());
-//					
-//					return dto;
-//				}).collect(Collectors.toList());
-//		
-//		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
-//		
-//		return newPage;
-//	}
-	
- 
-
-//	public Page<OrderDto> getOrdersByStatus(OrderStatus status, Pageable pageable) {
-//		var list = orderRepository.findByStatusContainsIgnoreCase(status, pageable);
-//		
-//		var newList = list.getContent().stream()
-//				.map(item -> {
-//					OrderDto dto = new OrderDto();
-//					BeanUtils.copyProperties(item, dto, "orderdetails");
-//					
-//					dto.setCashier(item.getCashier());
-//					dto.setCustomer(item.getCustomer());
-//					dto.setPaymentmethod(item.getPaymentmethod());
-//					dto.setStatus(item.getStatus());
-//					
-//					return dto;
-//				}).collect(Collectors.toList());
-//		
-//		var newPage = new PageImpl<>(newList, list.getPageable(), list.getTotalElements());
-//		
-//		return newPage;
-//	}
-
+	public void deleteOrder(Long id) {
+		Optional<Order> existed = findById(id);
+		if (existed.isEmpty()) {
+			throw new EntityException("Order with id " + id + " does not exist");
+		}
+		orderRepository.delete(existed.get());
+	}
 
 }
