@@ -76,8 +76,7 @@ public class OrderService {
 		order.setFullAddress(dto.getFullAddress());
 		order.setSlug("sds");
 
-		Account cashier = accountRepository.findById(dto.getCashierId())
-				.orElseThrow(() -> new EntityException("Cashier not found"));
+		Account cashier = accountRepository.findById(dto.getCashierId()).orElse(null);
 		order.setCashier(cashier);
 
 		Account customer = accountRepository.findById(dto.getCustomerId())
