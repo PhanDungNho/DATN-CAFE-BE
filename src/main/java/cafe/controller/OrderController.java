@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -57,7 +58,13 @@ public class OrderController {
 		return new ResponseEntity<>(orderService.findAll().stream().map(OrderResponse::convert)
 				.sorted(Comparator.comparing(OrderResponse::getId).reversed()).toList(), HttpStatus.OK);
 	}
-
+	
+	@GetMapping("/{username}/getByUser")
+	public ResponseEntity<?> getAllOrderByUser(@PathVariable("username") String username) {
+		return new ResponseEntity<>(orderService.findByCustomer(username).stream().map(OrderResponse::convert)
+				.sorted(Comparator.comparing(OrderResponse::getId).reversed()).toList(), HttpStatus.OK);
+	}
+	
 	@GetMapping("/{id}/get")
 	public ResponseEntity<?> getOrder(@PathVariable("id") Long id) {
 		return orderService.findById(id).map(order -> ResponseEntity.ok(OrderResponse.convert(order))) // Chuyển đổi
@@ -84,21 +91,9 @@ public class OrderController {
 		Order order = orderService.createOrder(dto);
 		// Chuyển đổi Order thành OrderDto để trả về cho client
 		OrderDto respDto = new OrderDto();
-//		respDto.setId(order.getId());
-//		respDto.setActive(order.getActive());
-//		respDto.setCashier(order.getCashier());
-//		respDto.setOrdertype(order.getOrdertype());
-//		respDto.setCreatedtime(order.getCreatedtime());
-//		respDto.setCustomer(order.getCustomer());
-//		respDto.setFulladdresstext(order.getFulladdresstext());
-//		// Chuyển đổi OrderDetail thành OrderdetailDto
 		List<OrderdetailDto> orderDetailDtos = order.getOrderDetails().stream().map(this::convertToOrderdetailDto)
 				.collect(Collectors.toList());
 		respDto.setOrderDetails(orderDetailDtos);
-//		respDto.setPaymentmethod(order.getPaymentmethod());
-//		respDto.setShippingfee(order.getShippingfee());
-//		respDto.setStatus(order.getStatus());
-//		respDto.setTotalamount(order.getTotalamount());
 		BeanUtils.copyProperties(order, respDto);
 		return new ResponseEntity<>(respDto, HttpStatus.CREATED);
 	}
@@ -167,5 +162,11 @@ public class OrderController {
 	@GetMapping("/order-statuses")
 	public List<OrderStatus> getOrderStatuses() {
 		return Arrays.asList(OrderStatus.values());
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<?> deleteOrder(@PathVariable Long id) {
+		orderService.deleteOrder(id);
+		return new ResponseEntity<>("Order with Id: " + id + " was deleted", HttpStatus.OK);
 	}
 }
