@@ -344,5 +344,9 @@ public class ProductController {
 
 	    return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
-
+	 @GetMapping("/top-selling")
+	    public ResponseEntity<List<ProductDto>> getTopSellingProducts() {
+	        List<ProductDto> topSellingProducts = productService.getTopSellingProducts();
+	        return ResponseEntity.ok(topSellingProducts);
+	    }
 }

@@ -16,4 +16,5 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
 	List<Product> findByNameContainsIgnoreCase(String name);
     List<Product> findByName(String name); // Tìm kiếm sản phẩm theo tên chính xác
 	Optional<Product> findBySlug(String slug);
+	
 }

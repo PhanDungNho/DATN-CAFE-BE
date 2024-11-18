@@ -28,6 +28,7 @@ import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.repository.CategoryRepository;
 import cafe.repository.ImageRepository;
+import cafe.repository.OrderDetailRepository;
 import cafe.repository.ProductRepository;
 import cafe.repository.ProductToppingRepository;
 import cafe.repository.ProductVariantRepository;
@@ -339,4 +340,38 @@ public class ProductService {
 
 	    return productRepository.saveAll(products); 
 	}
+	 @Autowired
+	    private OrderDetailRepository orderDetailRepository;
+
+	 public List<ProductDto> getTopSellingProducts() {
+	        List<Object[]> results = orderDetailRepository.findTopSellingProducts();
+
+	        return results.stream()
+	            .limit(10)
+	            .map(result -> {
+	                Long productId = (Long) result[0];
+	                Long totalSales = (Long) result[1];
+
+	                Product product = productRepository.findById(productId).orElse(null);
+	                if (product != null) {
+	                    ProductDto productDto = new ProductDto();
+	                    productDto.setId(product.getId());
+	                    productDto.setName(product.getName());
+	                    productDto.setActive(product.getActive());
+	                    productDto.setDescription(product.getDescription());
+	                    productDto.setSlug(product.getSlug());
+	                    productDto.setCategoryId(product.getCategory().getId());
+	                    productDto.setTotalSales(totalSales);
+	                    // Lấy hình ảnh của sản phẩm
+	                    List<Image> images = imageRepository.findByProductId(product.getId());
+	                    productDto.setImages(images);  // Gán danh sách hình ảnh cho sản phẩm
+	                    // Map thêm các trường khác nếu cần
+	                    return productDto;
+	                }
+	                return null;
+	            })
+	            .filter(productDto -> productDto != null)
+	            .collect(Collectors.toList());
+	    }
+
 }
