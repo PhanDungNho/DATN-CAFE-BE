@@ -1,7 +1,11 @@
 package cafe.service;
 
+import java.math.BigDecimal;
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -175,5 +179,44 @@ public class OrderService {
 		}
 		orderRepository.delete(existed.get());
 	}
+	 
+	public List<Map<String, Object>> getDailyRevenue(int year, int month) {
+        List<Map<String, Object>> dailyRevenue = orderRepository.getDailyRevenueByMonth(year, month);
+        return dailyRevenue;
+    }
 
+    // Lấy doanh thu theo tháng (theo năm)
+    public List<Map<String, Object>> getMonthlyRevenue(int year) {
+        List<Map<String, Object>> monthlyRevenue = orderRepository.getMonthlyRevenueByYear(year);
+        return monthlyRevenue;
+    }
+
+//    public BigDecimal calculateTotalRevenue(LocalDate startDate, LocalDate endDate) {
+//        return orderRepository.sumTotalRevenue(startDate, endDate);
+//    }
+//
+//    public long calculateTotalOrders(LocalDate startDate, LocalDate endDate) {
+//        return orderRepository.countOrders(startDate, endDate);
+//    }
+    
+    public BigDecimal getTotalRevenue(LocalDate start, LocalDate end) {
+        // Chuyển LocalDate sang Timestamp
+        Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+        Timestamp endTimestamp = Timestamp.valueOf(end.atStartOfDay().plusDays(1).minusNanos(1));  // Bao gồm cả ngày
+
+        return orderRepository.sumTotalRevenue(startTimestamp, endTimestamp);
+    }
+
+    public long getOrderCount(LocalDate start, LocalDate end) {
+        // Chuyển LocalDate sang Timestamp
+        Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+        Timestamp endTimestamp = Timestamp.valueOf(end.atStartOfDay().plusDays(1).minusNanos(1));  // Bao gồm cả ngày
+
+        return orderRepository.countOrders(startTimestamp, endTimestamp);
+    }
 }
+
+
+	    // Thêm phương thức tính tổng số tài khoản người dùng
+	    
+

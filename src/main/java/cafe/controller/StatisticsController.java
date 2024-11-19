@@ -21,9 +21,5 @@ public class StatisticsController {
         this.orderService = orderService;
     }
 
-	@GetMapping("/total-orders")
-	public ResponseEntity<Long> getTotalOrders() {
-	    long totalOrders = orderService.countTotalOrders(); // Gọi phương thức từ OrderService
-	    return ResponseEntity.ok(totalOrders); // Trả về tổng số đơn hàng
-	}
+	
 }

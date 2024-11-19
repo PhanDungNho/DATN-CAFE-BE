@@ -46,6 +46,7 @@ import cafe.exception.EntityException;
 import cafe.exception.FileStorageException;
 import cafe.modal.OrderResponse;
 import cafe.modal.ProductResponse;
+import cafe.repository.ProductRepository;
 import cafe.service.FileStorageService;
 import cafe.service.ImageService;
 import cafe.service.MapValidationErrorService;
@@ -61,7 +62,8 @@ public class ProductController {
 
 	@Autowired
 	ProductService productService;
-
+    @Autowired
+    ProductRepository productRepository;
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
@@ -326,5 +328,9 @@ public class ProductController {
 		System.out.println(dto.getUrl());
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
-
+	@GetMapping("/productCount")
+    public ResponseEntity<Long> getProductCount() {
+        long productCount = productRepository.count(); // Lấy tổng số sản phẩm
+        return ResponseEntity.ok(productCount); // Trả về tổng số sản phẩm
+    }
 }

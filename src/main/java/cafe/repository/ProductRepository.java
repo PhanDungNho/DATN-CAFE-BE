@@ -13,4 +13,6 @@ import cafe.entity.Product;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 //	List<Product> findByNameStartsWith(String name, Pageable pageable);
 	List<Product> findByNameContainsIgnoreCase(String name);
+    long count(); // Phương thức đếm tổng số sản phẩm
+
 }
