@@ -58,19 +58,11 @@ public class AddressService {
 	
 	@Transactional
 	public Address save(AddressDto addressDto) {
-	    // Set isDefault to false if not provided by frontend
+	    // Đặt isDefault mặc định là false nếu không nhận từ Frontend
 	    if (addressDto.getIsDefault() == null) {
-	        addressDto.setIsDefault(false);
-	    }
-
-	    // Construct fullAddress if it's not provided
-	    if (addressDto.getFullAddress() == null || addressDto.getFullAddress().isEmpty()) {
-	        String fullAddress = String.format("%s,  %s,  %s,  %s",
-	                                           addressDto.getStreet(),
-	                                           addressDto.getWardCode(),
-	                                           addressDto.getDistrictCode(),
-	                                           addressDto.getCityCode());
-	        addressDto.setFullAddress(fullAddress);
+	        // Kiểm tra nếu danh sách địa chỉ hiện tại là rỗng
+	        boolean isFirstAddress = addressRespository.count() == 0;
+	        addressDto.setIsDefault(isFirstAddress);
 	    }
 
 	    Address address = new Address();
