@@ -123,12 +123,11 @@ public class CartDetailController {
 	@GetMapping("/{username}")
 	public ResponseEntity<?> getCartByAccount(@PathVariable String username) {
 		List<CartDetail> carts = cartService.getCartsByUsername(username);
-		if (carts.isEmpty()) {
-			return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new CartDetailResponse());
-		}
 		List<CartDetailResponse> cartResponses = carts.stream().map(CartDetailResponse::convert).toList();
-		return ResponseEntity.ok(cartResponses);
+		return new ResponseEntity<>(cartResponses, HttpStatus.OK);
 	}
+	
+
 
 //	@GetMapping("/{id}/get")
 //	public ResponseEntity<?> getCategories(@PathVariable("id") Long id){

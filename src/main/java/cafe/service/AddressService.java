@@ -28,17 +28,18 @@ public class AddressService {
 	private  AccountRepository accountRepository;
 	
 	@Transactional
-    public Address save(AddressDto addressDto) {
-        // Đặt isDefault mặc định là false nếu không nhận từ Frontend
-        if (addressDto.getIsDefault() == null) {
-            addressDto.setIsDefault(false);
-        }
+	public Address save(AddressDto addressDto) {
+	    // Đặt isDefault mặc định là false nếu không nhận từ Frontend
+	    if (addressDto.getIsDefault() == null) {
+	        // Kiểm tra nếu danh sách địa chỉ hiện tại là rỗng
+	        boolean isFirstAddress = addressRespository.count() == 0;
+	        addressDto.setIsDefault(isFirstAddress);
+	    }
 
-        Address address = new Address();
-        mapDtoToAddress(addressDto, address);
-        return addressRespository.save(address);
-    }
-
+	    Address address = new Address();
+	    mapDtoToAddress(addressDto, address);
+	    return addressRespository.save(address);
+	}
 
     @Transactional
     public Address update(Long id, AddressDto dto) {
