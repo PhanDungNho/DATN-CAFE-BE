@@ -56,8 +56,10 @@ public class ProductDto implements Serializable {
     private List<MultipartFile> imageFiles;
     private List<Image> images;
 
+    
     private List<ImageDto> imagesDto;
-
+    // Thêm trường tổng số lượng bán
+    private Long totalSales;  
     // Chỉ sử dụng khi trả về thông tin sản phẩm
     private CategoryDto category;
     

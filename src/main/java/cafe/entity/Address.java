@@ -23,29 +23,29 @@ public class Address {
 	@Column(name = "id", nullable = false)
 	private Long id;
 	
-	@Column(name = "street", nullable = false, length = 255)
+	@Column(name = "street", nullable = true, length = 255)
 	private String street;
 	
-	@Column(name = "ward_code", nullable = false)
+	@Column(name = "ward_code", nullable = true)
 	private int wardCode;
 	
-	@Column(name = "district_code", nullable = false)
+	@Column(name = "district_code", nullable = true)
 	private int districtCode;
 	
-	@Column(name = "city_code", nullable = false)
+	@Column(name = "city_code", nullable = true)
 	private int cityCode;
 	
  
 	 @Column(name = "full_address", columnDefinition = "nvarchar(max)")
 	private String fullAddress;
 	
-	@Column(name = "is_default", nullable = false)
+	@Column(name = "is_default", nullable = true)
 	private Boolean isDefault;
 	
-	@Column(name = "active", nullable = false)
+	@Column(name = "active", nullable = true)
 	private Boolean active = true;
 	
 	@ManyToOne
-	@JoinColumn(name = "account", nullable = false)
+	@JoinColumn(name = "account", nullable = true)
 	private Account account;
 }
