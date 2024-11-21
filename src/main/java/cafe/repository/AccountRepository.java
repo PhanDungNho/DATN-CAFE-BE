@@ -11,6 +11,7 @@ import cafe.entity.Account;
 
 public interface AccountRepository extends JpaRepository<Account, String> {
 	Optional<Account> findByUsername(String username);
+    long count(); // Phương thức đếm tổng số tài khoản
 	
 	@Query("SELECT DISTINCT ar.account FROM Authority ar WHERE ar.role.id IN (1,2)")
 	List<Account> getAdministrators();
@@ -28,6 +29,7 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
 	
 	boolean existsByUsername(String username);
-
+	 @Query("SELECT COUNT(a) FROM Account a WHERE a.active = true")
+	    int countActiveAccounts();
 
 }

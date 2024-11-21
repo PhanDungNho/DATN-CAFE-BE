@@ -46,6 +46,7 @@ import cafe.exception.EntityException;
 import cafe.exception.FileStorageException;
 import cafe.modal.OrderResponse;
 import cafe.modal.ProductResponse;
+import cafe.repository.ProductRepository;
 import cafe.service.FileStorageService;
 import cafe.service.ImageService;
 import cafe.service.MapValidationErrorService;
@@ -61,7 +62,8 @@ public class ProductController {
 
 	@Autowired
 	ProductService productService;
-
+    @Autowired
+    ProductRepository productRepository;
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
@@ -180,6 +182,7 @@ public class ProductController {
 			ProductDto dto = new ProductDto();
 			dto.setId(product.getId());
 			dto.setName(product.getName());
+			dto.setSlug(product.getSlug());
 			dto.setActive(product.getActive());
 			dto.setDescription(product.getDescription());
 			dto.setOrdering(product.getOrdering());
@@ -270,6 +273,12 @@ public class ProductController {
 		return productService.findById(id).map(product -> ResponseEntity.ok(ProductResponse.convert(product)))
 				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductResponse()));
 	}
+	
+	@GetMapping("/{slug}/getBySlug")
+	public ResponseEntity<?> getProductBySlug(@PathVariable("slug") String slug) {
+		return productService.findBySlug(slug).map(product -> ResponseEntity.ok(ProductResponse.convert(product)))
+				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductResponse()));
+	}
 
 	@PatchMapping("/update-ordering")
 	public ResponseEntity<?> updateOrdering(@RequestBody List<ProductDto> products) {
@@ -326,5 +335,25 @@ public class ProductController {
 		System.out.println(dto.getUrl());
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
+	@GetMapping("/productCount")
+    public ResponseEntity<Long> getProductCount() {
+        long productCount = productRepository.count(); // Lấy tổng số sản phẩm
+        return ResponseEntity.ok(productCount); // Trả về tổng số sản phẩm
+    }
+	@GetMapping("/search")
+	public ResponseEntity<?> searchProductsByName(@RequestParam("name") String query) {
+	    List<Product> products = productService.findProductsByName(query);
+	    List<ProductDto> productDtos = products.stream().map(product -> {
+	        ProductDto dto = new ProductDto();
+	        BeanUtils.copyProperties(product, dto);
+	        return dto;
+	    }).toList();
 
+	    return new ResponseEntity<>(productDtos, HttpStatus.OK);
+	}
+	 @GetMapping("/top-selling")
+	    public ResponseEntity<List<ProductDto>> getTopSellingProducts() {
+	        List<ProductDto> topSellingProducts = productService.getTopSellingProducts();
+	        return ResponseEntity.ok(topSellingProducts);
+	    }
 }

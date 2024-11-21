@@ -8,6 +8,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,16 +39,38 @@ public class AddressController {
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
+//	@PostMapping
+//    public ResponseEntity<?> createAddress(@Valid @RequestBody AddressDto addressDto, BindingResult result) {
+//        if (result.hasErrors()) {
+//            return new ResponseEntity<>("Validation errors", HttpStatus.BAD_REQUEST);
+//        }
+//
+//        Address address = addressService.save(addressDto);
+//        AddressDto responseDto = mapAddressToDto(address);
+//        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+//    }
+	
 	@PostMapping
-    public ResponseEntity<?> createAddress(@Valid @RequestBody AddressDto addressDto, BindingResult result) {
-        if (result.hasErrors()) {
-            return new ResponseEntity<>("Validation errors", HttpStatus.BAD_REQUEST);
-        }
+	public ResponseEntity<?> createAddress(@Valid @RequestBody AddressDto addressDto, BindingResult result) {
+	    if (result.hasErrors()) {
+        return new ResponseEntity<>("Validation errors", HttpStatus.BAD_REQUEST);
+	    }
 
-        Address address = addressService.save(addressDto);
-        AddressDto responseDto = mapAddressToDto(address);
-        return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
-    }
+	    // Construct fullAddress from street, wardCode, and cityCode if fullAddress is null
+	    if (addressDto.getFullAddress() == null || addressDto.getFullAddress().isEmpty()) {
+	        String fullAddress = String.format("%s,%s,%s,%s",
+	                                           addressDto.getStreet(), 
+	                                           addressDto.getWardCode(), 
+	                                           addressDto.getDistrictCode(),
+	                                           addressDto.getCityCode());
+	        addressDto.setFullAddress(fullAddress);
+	    }
+
+	    Address address = addressService.save(addressDto);
+	    AddressDto responseDto = mapAddressToDto(address);
+	    return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
+	}
+
 
     @PatchMapping("/{id}")
     public ResponseEntity<?> updateAddress(@PathVariable Long id, @RequestBody AddressDto dto) {
@@ -148,8 +171,10 @@ public class AddressController {
 
 	
 	@GetMapping("/find")
-	public ResponseEntity<List<Address>> getAddressByName(@RequestParam("query") String query) {
-	    List<Address> addresses = addressService.findAddressesByFullAddress(query);
+	public ResponseEntity<List<Address>> getAddressByName(@RequestParam("query") String query, Authentication authentication) {
+	    // Lấy tên tài khoản từ session hoặc JWT token
+	    String username = authentication.getName();  // Hoặc từ token nếu dùng JWT
+	    List<Address> addresses = addressService.findAddressesByFullAddressAndAccount(query, username);
 	    return ResponseEntity.ok(addresses);
 	}
 	

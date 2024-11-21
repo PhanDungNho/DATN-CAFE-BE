@@ -1,5 +1,8 @@
 package cafe.controller;
 
+import java.awt.print.Pageable;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -35,6 +38,8 @@ import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
 import cafe.enums.OrderStatus;
 import cafe.modal.OrderResponse;
+import cafe.repository.AccountRepository;
+import cafe.repository.OrderRepository;
 import cafe.service.MapValidationErrorService;
 //import cafe.service.OrderDetailService;
 import cafe.service.OrderService;
@@ -46,6 +51,10 @@ import jakarta.validation.Valid;
 public class OrderController {
 	@Autowired
 	private OrderService orderService;
+	@Autowired
+	private OrderRepository orderRepository;
+	@Autowired
+	private AccountRepository accountRepository;
 
 //	@Autowired
 //	private OrderDetailService detailService;
@@ -140,15 +149,13 @@ public class OrderController {
 
 	@GetMapping("/between-dates")
 	public ResponseEntity<List<OrderResponse>> getOrdersByDates(
-			@RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-			@RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-		List<Order> orders = orderService.getOrdersBetweenDates(startDate, endDate);
-
-		// Chuyển đổi từ Order sang OrderResponse
-		List<OrderResponse> orderResponses = orders.stream().map(OrderResponse::convert).toList();
-
-		return ResponseEntity.ok(orderResponses);
+	    @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+	    @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+	    List<Order> orders = orderService.getOrdersBetweenDates(startDate, endDate);
+	    List<OrderResponse> orderResponses = orders.stream().map(OrderResponse::convert).toList();
+	    return ResponseEntity.ok(orderResponses);
 	}
+
 
 	@PatchMapping("/{id}/toggle-active")
 	public ResponseEntity<Map<String, String>> updateOrderActive(@PathVariable Long id) {
@@ -169,4 +176,86 @@ public class OrderController {
 		orderService.deleteOrder(id);
 		return new ResponseEntity<>("Order with Id: " + id + " was deleted", HttpStatus.OK);
 	}
+	@GetMapping("/orderCount")
+    public ResponseEntity<Integer> getOrderCount() {
+        int orderCount = orderRepository.countOrders();
+        return ResponseEntity.ok(orderCount);
+    }
+
+    @GetMapping("/revenue")
+    public ResponseEntity<Map<String, Object>> getRevenue() {
+        double totalRevenue = orderRepository.calculateTotalRevenue(); // Tính tổng doanh thu cho tất cả đơn hàng
+        Map<String, Object> response = new HashMap<>();
+        response.put("total", totalRevenue);
+        return ResponseEntity.ok(response);
+    }
+    @GetMapping("/accountCount")
+    public ResponseEntity<Integer> getAccountCount() {
+        int accountCount = accountRepository.countActiveAccounts();
+        return ResponseEntity.ok(accountCount);
+    }
+    @GetMapping("/most-purchased-products")
+    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProducts() {
+        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsWithTotalAmount();
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (Object[] result : results) {
+            Map<String, Object> productInfo = new HashMap<>();
+            productInfo.put("productName", result[0]);       // Tên sản phẩm
+            productInfo.put("totalQuantity", result[1]);     // Tổng số lượng
+            productInfo.put("totalAmount", result[2]);       // Tổng tiền
+            response.add(productInfo);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/most-purchased-products/by-date")
+    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProductsByDate(
+        @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+        @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsByDateRange(startDate, endDate);
+        List<Map<String, Object>> response = new ArrayList<>();
+
+        for (Object[] result : results) {
+            Map<String, Object> productInfo = new HashMap<>();
+            productInfo.put("productName", result[0]);       // Tên sản phẩm
+            productInfo.put("totalQuantity", result[1]);     // Tổng số lượng
+            productInfo.put("totalAmount", result[2]);       // Tổng tiền
+            productInfo.put("saleDate", result[3]);          // Ngày bán
+            response.add(productInfo);
+        }
+
+        return ResponseEntity.ok(response);
+    }
+
+ // Lấy doanh thu theo ngày (theo tháng và năm)	
+    @GetMapping("/daily-revenue")
+    public ResponseEntity<List<Map<String, Object>>> getDailyRevenue(
+        @RequestParam("year") int year,
+        @RequestParam("month") int month) {
+
+        List<Map<String, Object>> dailyRevenue = orderService.getDailyRevenue(year, month);
+        return ResponseEntity.ok(dailyRevenue);
+    }
+ // Lấy doanh thu theo tháng (theo năm)
+    @GetMapping("/monthly-revenue")
+    public ResponseEntity<List<Map<String, Object>>> getMonthlyRevenue(@RequestParam("year") int year) {
+        List<Map<String, Object>> monthlyRevenue = orderService.getMonthlyRevenue(year);
+        return ResponseEntity.ok(monthlyRevenue);
+    }
+ 
+    @GetMapping("/totals")
+    public ResponseEntity<?> getTotalRevenueAndOrders(
+            @RequestParam("startDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam("endDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
+        
+        BigDecimal totalRevenue = orderService.getTotalRevenue(startDate, endDate);
+        long totalOrders = orderService.getOrderCount(startDate, endDate);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("totalRevenue", totalRevenue);
+        response.put("totalOrders", totalOrders);
+
+        return ResponseEntity.ok(response);
+    }
 }
