@@ -51,9 +51,19 @@ public class AccountService {
 	
 	public Account insertAccountAdmin(AccountDto dto) {
 
-	    List<?> foundedList = accountRepository.findByUsernameContainsIgnoreCase(dto.getUsername());
-	    if (foundedList.size() > 0) {
-	        throw new EntityException("Username is existed");
+		// Kiểm tra trùng username
+	    if (accountRepository.existsByUsername(dto.getUsername())) {
+	        throw new EntityException("Username is already in use");
+	    }
+
+	    // Kiểm tra trùng số điện thoại
+	    if (dto.getPhone() != null && accountRepository.findByPhone(dto.getPhone()).isPresent()) {
+	        throw new EntityException("Phone number is already in use");
+	    }
+
+	    // Kiểm tra trùng email
+	    if (dto.getEmail() != null && accountRepository.findByEmail(dto.getEmail()).isPresent()) {
+	        throw new EntityException("Email is already in use");
 	    }
 	    Account entity = new Account();
 	    BeanUtils.copyProperties(dto, entity);
@@ -161,6 +171,18 @@ public class AccountService {
 		}
 		var prevImage = found.get().getImage();
 		Account entity = found.get();
+		// Kiểm tra trùng số điện thoại (bỏ qua số hiện tại)
+	    if (dto.getPhone() != null && !dto.getPhone().equals(entity.getPhone()) 
+	            && accountRepository.findByPhone(dto.getPhone()).isPresent()) {
+	        throw new EntityException("Phone number is already in use");
+	    }
+
+	    // Kiểm tra trùng email (bỏ qua email hiện tại)
+	    if (dto.getEmail() != null && !dto.getEmail().equals(entity.getEmail()) 
+	            && accountRepository.findByEmail(dto.getEmail()).isPresent()) {
+	        throw new EntityException("Email is already in use");
+	    }
+		
 		if (dto.getPassword().isBlank() || dto.getPassword() == null) {
 			entity.setPassword(entity.getPassword());
 			BeanUtils.copyProperties(dto, entity, "password");

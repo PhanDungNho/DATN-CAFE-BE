@@ -13,6 +13,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.http.HttpHeaders;
@@ -60,6 +61,7 @@ public class AccountController {
 		}
 		Account account = accountService.insertAccountAdmin(accountDto);
 		accountDto.setPassword(null);
+		accountDto.setAmountPaid(null);
 		accountDto.setImage(account.getImage());
 		// trả về người dùng responseDto
 		return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
@@ -167,4 +169,10 @@ public class AccountController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
 	}
+	
+	@ExceptionHandler(EntityException.class)
+	public ResponseEntity<?> handleEntityException(EntityException ex) {
+	    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+	}
+
 }

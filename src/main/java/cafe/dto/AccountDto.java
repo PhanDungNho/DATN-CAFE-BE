@@ -35,7 +35,6 @@ public class AccountDto implements Serializable {
 	@NotNull(message = "Account active status is required")
 	private Boolean active;
 
-	@NotNull(message = "Amountpaid is required")
 	private Double amountPaid;
 
 	@NotBlank(message = "Email is required")
