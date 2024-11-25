@@ -33,6 +33,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import cafe.dto.AccountDto;
 import cafe.entity.Account;
 import cafe.exception.EntityException;
+import cafe.exception.EntityExceptionResponse;
 import cafe.service.AccountService;
 import cafe.service.FileStorageService;
 import cafe.service.MapValidationErrorService;
@@ -59,12 +60,15 @@ public class AccountController {
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		Account account = accountService.insertAccountAdmin(accountDto);
-		accountDto.setPassword(null);
-		accountDto.setAmountPaid(null);
-		accountDto.setImage(account.getImage());
-		// trả về người dùng responseDto
-		return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
+		try {
+	        Account account = accountService.insertAccountAdmin(accountDto);
+	        accountDto.setPassword(null);
+	        accountDto.setAmountPaid(null);
+	        accountDto.setImage(account.getImage());
+	        return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
+	    } catch (EntityException e) {
+	    	EntityExceptionResponse exceptionResponse = new EntityExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+	        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);	    }
 	}
 
 
@@ -78,12 +82,17 @@ public class AccountController {
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		Account account = accountService.update(username, dto);
-		dto.setPassword(null);
-		dto.setImage(account.getImage());
-		dto.setUsername(account.getUsername());
+		try {
+	        Account account = accountService.update(username, dto);
+	        dto.setPassword(null);
+	        dto.setImage(account.getImage());
+	        dto.setUsername(account.getUsername());
 
-		return new ResponseEntity<>(account, HttpStatus.OK);
+	        return new ResponseEntity<>(account, HttpStatus.OK);
+	    } catch (EntityException e) {
+	    	EntityExceptionResponse exceptionResponse = new EntityExceptionResponse(e.getMessage(), HttpStatus.BAD_REQUEST.value());
+	        return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);	 
+	    }
 	}
 
 	@PatchMapping("/{username}/toggle-active")
@@ -169,10 +178,4 @@ public class AccountController {
 				.header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=\"" + resource.getFilename() + "\"")
 				.body(resource);
 	}
-	
-	@ExceptionHandler(EntityException.class)
-	public ResponseEntity<?> handleEntityException(EntityException ex) {
-	    return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
-	}
-
 }

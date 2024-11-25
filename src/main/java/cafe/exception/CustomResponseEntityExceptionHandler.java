@@ -11,9 +11,18 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 @RestController
 public class CustomResponseEntityExceptionHandler extends ResponseEntityExceptionHandler {
+//@ExceptionHandler(EntityException.class)
+//	public final ResponseEntity<Object> handleCaResponseEntity(EntityException ex, WebRequest request){
+//		EntityExceptionResponse exceptionResponse = new EntityExceptionResponse(ex.getMessage());
+//		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
+//}
+
+
 @ExceptionHandler(EntityException.class)
-	public final ResponseEntity<Object> handleCaResponseEntity(EntityException ex, WebRequest request){
-		EntityExceptionResponse exceptionResponse = new EntityExceptionResponse(ex.getMessage());
-		return new ResponseEntity<>(exceptionResponse, HttpStatus.BAD_REQUEST);
-	}
+public final ResponseEntity<Object> handleEntityExceptionStatus(EntityException ex, WebRequest request) {
+    // Truyền mã trạng thái HTTP (400) khi xử lý lỗi
+    EntityExceptionResponse exceptionResponse = new EntityExceptionResponse(ex.getMessage(),ex.getStatus());
+    return new ResponseEntity<>(exceptionResponse, HttpStatus.valueOf(ex.getStatus()));
+}
+
 }

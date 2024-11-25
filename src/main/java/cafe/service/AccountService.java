@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -53,17 +54,17 @@ public class AccountService {
 
 		// Kiểm tra trùng username
 	    if (accountRepository.existsByUsername(dto.getUsername())) {
-	        throw new EntityException("Username is already in use");
+	        throw new EntityException(("Username is already in use"), HttpStatus.BAD_REQUEST.value());
 	    }
 
-	    // Kiểm tra trùng số điện thoại
-	    if (dto.getPhone() != null && accountRepository.findByPhone(dto.getPhone()).isPresent()) {
-	        throw new EntityException("Phone number is already in use");
+	 // Kiểm tra trùng số điện thoại
+	    if (isPhoneExists(dto.getPhone())) {
+	        throw new EntityException(("Phone number is already in use"), HttpStatus.BAD_REQUEST.value());
 	    }
 
 	    // Kiểm tra trùng email
-	    if (dto.getEmail() != null && accountRepository.findByEmail(dto.getEmail()).isPresent()) {
-	        throw new EntityException("Email is already in use");
+	    if (isEmailExists(dto.getEmail())) {
+	        throw new EntityException("Email is already in use", HttpStatus.BAD_REQUEST.value());
 	    }
 	    Account entity = new Account();
 	    BeanUtils.copyProperties(dto, entity);
@@ -164,47 +165,51 @@ public class AccountService {
 	}
 
 	public Account update(String username, AccountDto dto) {
-		var found = accountRepository.findById(username);
+	    var found = accountRepository.findById(username);
 
-		if (found.isEmpty()) {
-			throw new EntityException("Account not found");
-		}
-		var prevImage = found.get().getImage();
-		Account entity = found.get();
-		// Kiểm tra trùng số điện thoại (bỏ qua số hiện tại)
-	    if (dto.getPhone() != null && !dto.getPhone().equals(entity.getPhone()) 
-	            && accountRepository.findByPhone(dto.getPhone()).isPresent()) {
-	        throw new EntityException("Phone number is already in use");
+	    if (found.isEmpty()) {
+	        throw new EntityException("Account not found");
 	    }
 
-	    // Kiểm tra trùng email (bỏ qua email hiện tại)
-	    if (dto.getEmail() != null && !dto.getEmail().equals(entity.getEmail()) 
-	            && accountRepository.findByEmail(dto.getEmail()).isPresent()) {
-	        throw new EntityException("Email is already in use");
+	    var prevImage = found.get().getImage();
+	    Account entity = found.get();
+	    
+	    // Kiểm tra trùng số điện thoại nếu số điện thoại thay đổi
+	    if (!dto.getPhone().equals(entity.getPhone()) && isPhoneExists(dto.getPhone())) {
+	        throw new EntityException("Phone number is already in use", HttpStatus.BAD_REQUEST.value());
 	    }
-		
-		if (dto.getPassword().isBlank() || dto.getPassword() == null) {
-			entity.setPassword(entity.getPassword());
-			BeanUtils.copyProperties(dto, entity, "password");
-		} else {
-			BeanUtils.copyProperties(dto, entity);
 
-			entity.setPassword(passwordEncoder.encode(dto.getPassword()));
-		}
+	    // Kiểm tra trùng email nếu email thay đổi
+	    if (!dto.getEmail().equals(entity.getEmail()) && isEmailExists(dto.getEmail())) {
+	        throw new EntityException("Email is already in use", HttpStatus.BAD_REQUEST.value());
+	    }
 
-		if (dto.getImageFile() != null) {
-			String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+	    // Kiểm tra mật khẩu và cập nhật nếu có sự thay đổi
+	    if (dto.getPassword() == null || dto.getPassword().isBlank()) {
+	        // Nếu không thay đổi mật khẩu, giữ nguyên mật khẩu cũ
+	        entity.setPassword(entity.getPassword());
+	        BeanUtils.copyProperties(dto, entity, "password");
+	    } else {
+	        // Nếu thay đổi mật khẩu, mã hóa mật khẩu mới
+	        BeanUtils.copyProperties(dto, entity);
+	        entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+	    }
 
-			entity.setImage(filename);
-			dto.setImageFile(null);
-		}
+	    // Cập nhật hình ảnh nếu có thay đổi
+	    if (dto.getImageFile() != null) {
+	        String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+	        entity.setImage(filename);
+	        dto.setImageFile(null); // Reset hình ảnh sau khi lưu
+	    }
 
-		if (entity.getImage() == null) {
-			entity.setImage(prevImage);
-		}
+	    // Nếu không có hình ảnh mới, giữ nguyên hình ảnh cũ
+	    if (entity.getImage() == null) {
+	        entity.setImage(prevImage);
+	    }
 
-		return accountRepository.save(entity);
+	    return accountRepository.save(entity);
 	}
+
 
 	public List<Account> getAdministrators() {
 		return accountRepository.getAdministrators();
@@ -309,7 +314,13 @@ public class AccountService {
         return accountDto;
     }
 	
-	
+    private boolean isPhoneExists(String phone) {
+        return phone != null && accountRepository.findByPhone(phone).isPresent();
+    }
+
+    private boolean isEmailExists(String email) {
+        return email != null && accountRepository.findByEmail(email).isPresent();
+    }
 	
 
 }
