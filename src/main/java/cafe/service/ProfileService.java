@@ -44,7 +44,11 @@ public class ProfileService {
             accountRepository.findByEmail(accountDto.getEmail()).isPresent()) {
             throw new RuntimeException("Email đã tồn tại.");
         }
-        
+     // Kiểm tra số điện thoại có trùng hay không
+        if (!account.getPhone().equals(accountDto.getPhone()) && 
+            accountRepository.findByPhone(accountDto.getPhone()).isPresent()) {
+            throw new RuntimeException("Phone number already exists.");
+        }
         account.setFullName(accountDto.getFullName());
         account.setPhone(accountDto.getPhone());
         account.setEmail(accountDto.getEmail()); // Đảm bảo dòng này có mặt
