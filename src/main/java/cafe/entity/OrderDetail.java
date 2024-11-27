@@ -28,32 +28,31 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "OrderDetails")
 public class OrderDetail {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false)
-    private Long id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "id", nullable = false)
+	private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+	@ManyToOne
+	@JoinColumn(name = "order_id")
+	private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "product_variant_id")
-    private ProductVariant productVariant;
+	@ManyToOne
+	@JoinColumn(name = "product_variant_id")
+	private ProductVariant productVariant;
 
-    @Column(nullable = false)
-    private Integer quantity;
+	@Column(nullable = false)
+	private Integer quantity;
 
-    @Column(name="moment_price",nullable = false)
-    private BigDecimal momentPrice;
+	@Column(name = "moment_price", nullable = false)
+	private BigDecimal momentPrice;
 
-    @Column()
-    private String note;
+	@Column(name = "note", columnDefinition = "nvarchar(max)")
+	private String note;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    private List<OrderDetailTopping> orderDetailToppings;
-    
+	@JsonIgnore
+	@OneToMany(mappedBy = "orderDetail", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+	private List<OrderDetailTopping> orderDetailToppings;
 
 //    @Override
 //    public boolean equals(Object o) {
@@ -66,18 +65,19 @@ public class OrderDetail {
 //    public int hashCode() {
 //        return Objects.hash(id); // Chỉ sử dụng id hoặc các thuộc tính cơ bản khác
 //    }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Order order = (Order) o;
-        return Objects.equals(id, order.getId());
-    }
+	@Override
+	public boolean equals(Object o) {
+		if (this == o)
+			return true;
+		if (o == null || getClass() != o.getClass())
+			return false;
+		Order order = (Order) o;
+		return Objects.equals(id, order.getId());
+	}
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id); 
-    }
+	@Override
+	public int hashCode() {
+		return Objects.hash(id);
+	}
 
 }
-
