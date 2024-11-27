@@ -47,7 +47,7 @@ public class OrderDetail {
     @Column(name="moment_price",nullable = false)
     private BigDecimal momentPrice;
 
-    @Column(columnDefinition = "TEXT")
+    @Column()
     private String note;
 
     @JsonIgnore
