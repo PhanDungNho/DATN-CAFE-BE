@@ -26,7 +26,6 @@ public class FileStorageService {
 
     private Path fileLogoStorageLocation;
     private Path fileProductImageStorageLocation;
-    private String UPLOAD_DIR; // Đảm bảo biến này được khai báo
 
     // Khởi tạo đường dẫn
     public FileStorageService(FileStorageProperties fileStorageProperties) {
@@ -157,15 +156,5 @@ public class FileStorageService {
         return storeFileFromUrl(imageUrl, fileLogoStorageLocation); // Lưu ảnh logo từ URL
     }
     
-    //hieunguyen
-    public void deleteFile(String filename) {
-        Path filePath = Paths.get(UPLOAD_DIR + filename); // Đường dẫn đến tệp
-        try {
-            Files.deleteIfExists(filePath);
-        } catch (IOException e) {
-            System.err.println("Không thể xóa tệp: " + e.getMessage());
-        }
-    }
-
 }
 
