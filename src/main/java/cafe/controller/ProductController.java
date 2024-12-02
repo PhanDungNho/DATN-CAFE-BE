@@ -192,7 +192,6 @@ public class ProductController {
 				CategoryDto categoryDto = new CategoryDto();
 				categoryDto.setId(product.getCategory().getId());
 				categoryDto.setName(product.getCategory().getName());
-				categoryDto.setActive(product.getCategory().getActive());
 				dto.setCategory(categoryDto);
 			}
 

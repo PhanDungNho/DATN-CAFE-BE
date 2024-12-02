@@ -106,19 +106,7 @@ public class AccountService {
 	    entity.setImage(dto.getImage());
 	    String uuid = UUID.randomUUID().toString().replace("-", "").substring(0,14);
 		entity.setPassword(uuid);
-
-	    Authority auth = new Authority();
-	    Role adminRole = roleService.findById(3L);
-	    auth.setAccount(entity);
-	    auth.setRole(adminRole);
-	    System.out.println("12345678910");
-	    // Tạo danh sách Authority và thêm auth vào danh sách
-	    List<Authority> authorities = new ArrayList();
-	    authorities.add(auth);
-	    
-	    // Thiết lập danh sách authorities cho account
-	    entity.setAuthorities(authorities);
-		
+ 
 		return accountRepository.save(entity);
 	}
 
@@ -130,18 +118,6 @@ public class AccountService {
 		BeanUtils.copyProperties(accountDto, account);
 		System.out.println(passwordEncoder.encode(accountDto.getPassword()));
 		account.setEmail(passwordEncoder.encode(accountDto.getPassword()));
-		
-//		 Authority auth = new Authority();
-//		    Role adminRole = roleService.findById(2L);
-//		    auth.setAccount(account);
-//		    auth.setRole(adminRole);
-//		    
-//		    // Tạo danh sách Authority và thêm auth vào danh sách
-//		    List<Authority> authorities = new ArrayList();
-//		    authorities.add(auth);
-//		    
-//		    // Thiết lập danh sách authorities cho account
-//		    account.setAuthorities(authorities);
 
 		return accountRepository.save(account);
 	}

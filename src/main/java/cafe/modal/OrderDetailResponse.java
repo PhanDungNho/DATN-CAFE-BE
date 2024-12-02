@@ -14,7 +14,7 @@ public class OrderDetailResponse {
 //	private Order order;
 	private ProductVariant productVariant;
 	private Integer quantity;
-	private BigDecimal momentPrice;
+	private BigDecimal momentprice;
 	private String note;
 	private List<OrderDetailToppingResponse> orderDetailToppings;
 	
@@ -24,7 +24,7 @@ public class OrderDetailResponse {
 //		response.setOrder(entity.getOrder());
 		response.setProductVariant(entity.getProductVariant());
 		response.setQuantity(entity.getQuantity());
-		response.setMomentPrice(entity.getMomentPrice());
+		response.setMomentprice(entity.getMomentPrice());
 		response.setNote(entity.getNote());
 		response.setOrderDetailToppings(entity.getOrderDetailToppings().stream().map(OrderDetailToppingResponse::convert).toList());
 		return response;
