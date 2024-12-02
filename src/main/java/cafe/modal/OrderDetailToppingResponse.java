@@ -16,7 +16,7 @@ public class OrderDetailToppingResponse {
 	private OrderDetail orderDetail;
 	private Topping topping;
 	private Integer quantity;
-	private BigDecimal momentprice;
+	private BigDecimal momentPrice;
 	
 	public static OrderDetailToppingResponse convert(OrderDetailTopping entity) {
 		OrderDetailToppingResponse response = new OrderDetailToppingResponse();
@@ -24,7 +24,7 @@ public class OrderDetailToppingResponse {
 		response.setOrderDetail(entity.getOrderDetail());
 		response.setTopping(entity.getTopping());
 		response.setQuantity(entity.getQuantity());
-		response.setMomentprice(entity.getMomentPrice());
+		response.setMomentPrice(entity.getMomentPrice());
 		return response;
 	}
 }
