@@ -1,5 +1,7 @@
 package cafe.controller;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,8 +10,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import cafe.entity.Account;
+import cafe.entity.Authority;
+import cafe.entity.Role;
 import cafe.repository.AccountRepository;
 import cafe.service.EmailService;
+import cafe.service.RoleService;
 import cafe.service.TemporaryAccountStorage;
 import jakarta.mail.MessagingException;
 
@@ -27,6 +32,8 @@ public class RegisterController {
     @Autowired
     private TemporaryAccountStorage temporaryAccountStorage;
 
+    @Autowired
+    private RoleService roleService;
     @Autowired
     private PasswordEncoder passwordEncoder; // Inject PasswordEncoder
 
@@ -96,7 +103,23 @@ public class RegisterController {
         account.setEnabled(true);
         account.setActive(true);
         account.setOtp(null); // Clear OTP after verification
+        
+        Authority auth = new Authority();
+	    Role adminRole = roleService.findById(3L);
+	    auth.setAccount(account);
+	    auth.setRole(adminRole);
+	    
+	    // Tạo danh sách Authority và thêm auth vào danh sách
+	    List<Authority> authorities = new ArrayList();
+	    authorities.add(auth);
+	    
+	    // Thiết lập danh sách authorities cho account
+	    account.setAuthorities(authorities);
+        
+        
         accountRepository.save(account);
+        
+        
         temporaryAccountStorage.removeAccountByOtp(otp);
         return ResponseEntity.ok(Map.of("message", "Xác nhận đăng ký thành công!"));
     }
