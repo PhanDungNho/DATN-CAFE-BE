@@ -1,5 +1,6 @@
 package cafe.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,12 +24,12 @@ public class Authority {
 	@Column(name = "id", nullable = false)
 	private Long id;
 
-	@ManyToOne
-	@JoinColumn(name = "role_id", nullable = false)
+	@ManyToOne()
+	@JoinColumn(name = "role_id", nullable = true)
 	private Role role;
 	
-	@ManyToOne
-	@JoinColumn(name = "username", nullable = false)
+	@ManyToOne()
+	@JoinColumn(name = "username", nullable = true)
 	private Account account;
 }
  	
