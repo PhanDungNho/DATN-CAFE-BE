@@ -32,6 +32,7 @@ import cafe.entity.ProductVariant;
 import cafe.modal.CartDetailResponse;
 import cafe.modal.OrderResponse;
 import cafe.service.AccountService;
+import cafe.service.CartDetailToppingService;
 import cafe.service.CartService;
 import cafe.service.CategoryService;
 import cafe.service.MapValidationErrorService;
@@ -126,8 +127,6 @@ public class CartDetailController {
 		List<CartDetailResponse> cartResponses = carts.stream().map(CartDetailResponse::convert).toList();
 		return new ResponseEntity<>(cartResponses, HttpStatus.OK);
 	}
-	
-
 
 //	@GetMapping("/{id}/get")
 //	public ResponseEntity<?> getCategories(@PathVariable("id") Long id){
@@ -139,4 +138,5 @@ public class CartDetailController {
 		cartService.deleteById(id);
 		return new ResponseEntity<>("Cart Detail with Id: " + id + " was deleted", HttpStatus.OK);
 	}
+
 }

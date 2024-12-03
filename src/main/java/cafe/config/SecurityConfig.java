@@ -45,9 +45,12 @@ public class SecurityConfig {
 	            .cors().and()
 	            .csrf(AbstractHttpConfigurer::disable)
 	            .authorizeHttpRequests(authorize -> authorize
-	                    // POST requests yêu cầu role ADMIN hoặc STAFF
-	                    .requestMatchers(HttpMethod.POST, "/api/v1/products/**", "/api/v1/account/**", 
-	                                     "/api/v1/authorities/**", "/api/v1/categories/**", 
+//	                     POST requests yêu cầu role ADMIN hoặc STAFF
+	                    .requestMatchers(HttpMethod.POST, 
+	                    				 "/api/v1/products/**",
+	                    				 "/api/v1/account/**", 
+	                                     "/api/v1/authorities/**", 
+	                                     "/api/v1/categories/**", 
 	                                     "/api/v1/orders/**", "/api/v1/sizes/**", 
 	                                     "/api/v1/toppings/**").hasAnyRole("ADMIN", "STAFF")
 	                    
@@ -60,7 +63,7 @@ public class SecurityConfig {
 	                    .requestMatchers(HttpMethod.DELETE, "/api/v1/authorities").hasRole("ADMIN")
 	                    
 	                    // Các endpoint yêu cầu xác thực
-	                    .requestMatchers("/api/profile", "/api/v1/cartDetails/**").authenticated()
+	                    .requestMatchers("/api/profile", "/api/v1/cartDetails/**", "/api/v1/cartDetailToppings/**").authenticated()
 	                    
 	                    
 	                    // Mặc định cho phép tất cả các request khác
