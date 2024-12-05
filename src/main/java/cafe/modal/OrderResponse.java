@@ -27,7 +27,7 @@ public class OrderResponse {
 	private String fullAddress;
 	private Account customer;
 	private OrderType orderType;
-	private List<OrderDetailResponse> orderdetails;
+	private List<OrderDetailResponse> orderDetails;
 	private Boolean active;
 	private List<Transactions> transactions; 
 	
@@ -46,7 +46,7 @@ public class OrderResponse {
 		response.setActive(entity.getActive());
 		response.setOrderType(entity.getOrderType());
 		response.setTransactions(entity.getTransactions());
-		response.setOrderdetails(entity.getOrderDetails().stream().map(OrderDetailResponse::convert).toList());
+		response.setOrderDetails(entity.getOrderDetails().stream().map(OrderDetailResponse::convert).toList());
 		return response;
 	}
 }

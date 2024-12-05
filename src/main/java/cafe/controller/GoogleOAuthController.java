@@ -46,7 +46,7 @@ import cafe.service.util.JwtService;
 @Configuration
 @RestController
 @CrossOrigin
-public class ApiController {
+public class GoogleOAuthController {
 	@Autowired
 	JwtService jwtService;
 	@Autowired
@@ -74,11 +74,7 @@ public class ApiController {
 			// Tạo token và trả về cả token, username và roles
 			String token = jwtService.GenerateToken(authRequestDTO.getUsername());
 
-			return JwtResponseDTO.builder().accessToken(token).username(authRequestDTO.getUsername()).roles(roles) // Thêm
-																													// danh
-																													// sách
-																													// roles
-																													// vào
+			return JwtResponseDTO.builder().accessToken(token).username(authRequestDTO.getUsername()).roles(roles) // Thêm																			// vào
 																													// response
 					.build();
 		} else {

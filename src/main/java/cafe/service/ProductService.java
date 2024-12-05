@@ -79,6 +79,11 @@ public class ProductService {
 //	}
 
 	public Product insertProduct(ProductDto dto) {
+		
+		if (productRepository.existsByName(dto.getName())) {
+			throw new EntityException("Product already exists");
+		}
+		
 		Product product = new Product();
 		BeanUtils.copyProperties(dto, product);
 

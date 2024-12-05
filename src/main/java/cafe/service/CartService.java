@@ -22,6 +22,7 @@ import cafe.entity.ProductVariant;
 import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.repository.AccountRepository;
+import cafe.repository.CartDetailToppingRepository;
 import cafe.repository.CartRepository;
 import cafe.repository.ProductVariantRepository;
 import cafe.repository.ToppingRepository;
@@ -30,42 +31,44 @@ import cafe.repository.ToppingRepository;
 public class CartService {
 	@Autowired
 	private CartRepository cartRepository;
+
 	@Autowired
 	private AccountRepository accountRepository;
+
 	@Autowired
 	private ProductVariantRepository productVariantRepository;
+
 	@Autowired
 	private ToppingRepository toppingRepository;
 
 	public CartDetail save(CartDetail entity) {
 		return cartRepository.save(entity);
 	}
-	
+
 	public CartDetail insertCartDetail(CartDetailDto dto) {
 		CartDetail cartDetail = new CartDetail();
 		Account account = accountRepository.findById(dto.getUsername()).get();
-		ProductVariant productVariant = productVariantRepository.getById(dto.getProductVariantId()); 
+		ProductVariant productVariant = productVariantRepository.getById(dto.getProductVariantId());
 		cartDetail.setAccount(account);
 		cartDetail.setProductVariant(productVariant);
 		cartDetail.setQuantity(dto.getQuantity());
 		cartDetail.setNote(dto.getNote());
-		
-		List<CartDetailTopping> cartDetailToppings = dto.getCartDetailToppings().stream()
-			.map(toppingDto ->{
-				CartDetailTopping cartDetailTopping = new CartDetailTopping();
-				Topping topping = toppingRepository.findById(toppingDto.getTopping().getId())
-						.orElseThrow(() -> new EntityException("Topping not found"));
-				cartDetailTopping.setTopping(topping);
-				cartDetailTopping.setQuantity(toppingDto.getQuantity());
-				cartDetailTopping.setCartDetail(cartDetail);
-				return cartDetailTopping;
-			}).collect(Collectors.toList());
-		
+
+		List<CartDetailTopping> cartDetailToppings = dto.getCartDetailToppings().stream().map(toppingDto -> {
+			CartDetailTopping cartDetailTopping = new CartDetailTopping();
+			Topping topping = toppingRepository.findById(toppingDto.getTopping().getId())
+					.orElseThrow(() -> new EntityException("Topping not found"));
+			cartDetailTopping.setTopping(topping);
+			cartDetailTopping.setQuantity(toppingDto.getQuantity());
+			cartDetailTopping.setCartDetail(cartDetail);
+			return cartDetailTopping;
+		}).collect(Collectors.toList());
+
 		cartDetail.setCartDetailToppings(cartDetailToppings);
-			
+
 		return cartRepository.save(cartDetail);
 	}
-	 
+
 	public CartDetail updateQuantity(Long id, CartDetail entity) {
 		Optional<CartDetail> existed = cartRepository.findById(id);
 		if (existed.isEmpty()) {
@@ -105,4 +108,5 @@ public class CartService {
 		}
 		return found.get();
 	}
+
 }

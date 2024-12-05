@@ -1,4 +1,4 @@
-	package cafe.config;
+package cafe.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -39,55 +39,47 @@ public class SecurityConfig {
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
 	}
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-	    return http
-	            .cors().and()
-	            .csrf(AbstractHttpConfigurer::disable)
-	            .authorizeHttpRequests(authorize -> authorize
-	                    // POST requests yêu cầu role ADMIN hoặc STAFF
-	                    .requestMatchers(HttpMethod.POST, "/api/v1/products/**", "/api/v1/account/**", 
-	                                     "/api/v1/authorities/**", "/api/v1/categories/**", 
-	                                     "/api/v1/orders/**", "/api/v1/sizes/**", 
-	                                     "/api/v1/toppings/**").hasAnyRole("ADMIN", "STAFF")
-	                    
-	                    // PATCH requests chỉ cho phép role ADMIN
-	                    .requestMatchers(HttpMethod.PATCH, "/api/v1/products/**", "/api/v1/account/**", 
-	                                     "/api/v1/orders/**", "/api/v1/categories/**", 
-	                                     "/api/v1/sizes/**", "/api/v1/toppings/**").hasRole("ADMIN")
-	                    
-	                    // DELETE requests chỉ cho phép role ADMIN
-	                    .requestMatchers(HttpMethod.DELETE, "/api/v1/authorities").hasRole("ADMIN")
-	                    
-	                    // Các endpoint yêu cầu xác thực
-	                    .requestMatchers("/api/profile", "/api/v1/cartDetails/**", 
-	                                     "/api/v1/transactions/**").authenticated()
-	                    
-	                    
-	                    // Mặc định cho phép tất cả các request khác
-	                    .anyRequest().permitAll()
-	            )
-	            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
-	            .formLogin(form -> form
-	                    .loginPage("/login").permitAll()
-	            )
-	            .logout(logout -> logout
-	                    .logoutSuccessUrl("/home").permitAll()
-	            )
-	            .httpBasic(Customizer.withDefaults())
-	            .build();
+		return http.cors().and().csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorize -> authorize
+//	                     POST requests yêu cầu role ADMIN hoặc STAFF
+				.requestMatchers(HttpMethod.POST, "/api/v1/products/**", "/api/v1/account/**", "/api/v1/authorities/**",
+						"/api/v1/categories/**", "/api/v1/orders/**", "/api/v1/sizes/**", "/api/v1/toppings/**")
+				.hasAnyRole("ADMIN", "STAFF","SUPERADMIN")
+				
+				.requestMatchers(HttpMethod.POST,"/api/v1/orders/**")
+				.hasAnyRole("USER")
+
+				// PATCH requests chỉ cho phép role ADMIN
+				.requestMatchers(HttpMethod.PATCH, "/api/v1/products/**", "/api/v1/account/**", "/api/v1/orders/**",
+						"/api/v1/categories/**", "/api/v1/sizes/**", "/api/v1/toppings/**")
+				
+				.hasRole("ADMIN").requestMatchers(HttpMethod.POST, "/api/v1/authorities/**").hasRole("SUPERADMIN")
+				// DELETE requests chỉ cho phép role ADMIN
+				.requestMatchers(HttpMethod.DELETE, "/api/v1/authorities").hasRole("SUPERADMIN")
+
+				// Các endpoint yêu cầu xác thực
+				.requestMatchers("/api/profile", "/api/v1/cartDetails/**", "/api/v1/cartDetailToppings/**")
+				.authenticated()
+
+				// Mặc định cho phép tất cả các request khác
+				.anyRequest().permitAll()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+				.formLogin(form -> form.loginPage("/login").permitAll())
+				.logout(logout -> logout.logoutSuccessUrl("/home").permitAll()).httpBasic(Customizer.withDefaults())
+				.build();
 	}
 
-	 @Bean
-    public AuthenticationProvider authenticationProvider(){
-        DaoAuthenticationProvider authenticationProvider=new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService(passwordEncoder()));
-        authenticationProvider.setPasswordEncoder(passwordEncoder());
-        return authenticationProvider;
-    }
-	 @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
-        return config.getAuthenticationManager();
-    }
+	@Bean
+	public AuthenticationProvider authenticationProvider() {
+		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+		authenticationProvider.setUserDetailsService(userDetailsService(passwordEncoder()));
+		authenticationProvider.setPasswordEncoder(passwordEncoder());
+		return authenticationProvider;
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+		return config.getAuthenticationManager();
+	}
 }

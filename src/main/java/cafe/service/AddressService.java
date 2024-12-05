@@ -58,10 +58,10 @@ public class AddressService {
 	
 	@Transactional
 	public Address save(AddressDto addressDto) {
-	    // Đặt isDefault mặc định là false nếu không nhận từ Frontend
+	    // Kiểm tra nếu địa chỉ đầu tiên cho Account đó thì đặt isDefault = true
 	    if (addressDto.getIsDefault() == null) {
-	        // Kiểm tra nếu danh sách địa chỉ hiện tại là rỗng
-	        boolean isFirstAddress = addressRespository.count() == 0;
+	        long addressCount = addressRespository.countByAccountUsername(addressDto.getAccount());
+	        boolean isFirstAddress = addressCount == 0;
 	        addressDto.setIsDefault(isFirstAddress);
 	    }
 
@@ -69,6 +69,7 @@ public class AddressService {
 	    mapDtoToAddress(addressDto, address);
 	    return addressRespository.save(address);
 	}
+
 
 	@Transactional
 	public Address update(Long id, AddressDto dto) {

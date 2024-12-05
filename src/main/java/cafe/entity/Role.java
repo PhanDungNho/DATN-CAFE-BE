@@ -27,4 +27,9 @@ public class Role {
 	
 	@Column(name = "active")
 	private Boolean active;
+	@Override
+	public String toString() {
+	    return "Role{id=" + id + ", roleName='" + roleName + "'}";
+	}
+
 }
