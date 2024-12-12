@@ -2,6 +2,7 @@ package cafe.controller;
 
 import java.awt.print.Pageable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -195,36 +196,46 @@ public class OrderController {
         return ResponseEntity.ok(accountCount);
     }
     @GetMapping("/most-purchased-products")
-    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProducts() {
-        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsWithTotalAmount();
+    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProductsInLast2Months() {
+        // Lấy kết quả từ repository với dữ liệu 2 tháng gần nhất
+        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsInLast2Months();
+
+        // Chuẩn bị phản hồi trả về
         List<Map<String, Object>> response = new ArrayList<>();
         for (Object[] result : results) {
             Map<String, Object> productInfo = new HashMap<>();
             productInfo.put("productName", result[0]);       // Tên sản phẩm
             productInfo.put("totalQuantity", result[1]);     // Tổng số lượng
-            productInfo.put("totalAmount", result[2]);       // Tổng tiền
+            productInfo.put("totalAmount", 
+                ((BigDecimal) result[2]).setScale(2, RoundingMode.HALF_UP)); // Tổng tiền (định dạng 2 chữ số thập phân)
             response.add(productInfo);
         }
 
+        // Trả về danh sách sản phẩm
         return ResponseEntity.ok(response);
     }
+
 
     @GetMapping("/most-purchased-products/by-date")
     public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProductsByDate(
         @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
         @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        
+        // Lấy dữ liệu từ repository
         List<Object[]> results = orderRepository.findTop5MostPurchasedProductsByDateRange(startDate, endDate);
-        List<Map<String, Object>> response = new ArrayList<>();
 
+        // Xử lý kết quả trả về
+        List<Map<String, Object>> response = new ArrayList<>();
         for (Object[] result : results) {
             Map<String, Object> productInfo = new HashMap<>();
             productInfo.put("productName", result[0]);       // Tên sản phẩm
             productInfo.put("totalQuantity", result[1]);     // Tổng số lượng
-            productInfo.put("totalAmount", result[2]);       // Tổng tiền
-            productInfo.put("saleDate", result[3]);          // Ngày bán
+            productInfo.put("totalAmount", 
+                ((BigDecimal) result[2]).setScale(2, RoundingMode.HALF_UP)); // Tổng tiền (2 chữ số thập phân)
             response.add(productInfo);
         }
 
+        // Trả về JSON response
         return ResponseEntity.ok(response);
     }
 
