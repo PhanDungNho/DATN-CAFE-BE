@@ -6,6 +6,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -196,35 +197,22 @@ public class OrderController {
         return ResponseEntity.ok(accountCount);
     }
     @GetMapping("/most-purchased-products")
-    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProductsInLast2Months() {
-        // Lấy kết quả từ repository với dữ liệu 2 tháng gần nhất
-        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsInLast2Months();
+    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProducts(
+        @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+        @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
 
-        // Chuẩn bị phản hồi trả về
-        List<Map<String, Object>> response = new ArrayList<>();
-        for (Object[] result : results) {
-            Map<String, Object> productInfo = new HashMap<>();
-            productInfo.put("productName", result[0]);       // Tên sản phẩm
-            productInfo.put("totalQuantity", result[1]);     // Tổng số lượng
-            productInfo.put("totalAmount", 
-                ((BigDecimal) result[2]).setScale(2, RoundingMode.HALF_UP)); // Tổng tiền (định dạng 2 chữ số thập phân)
-            response.add(productInfo);
+        // Nếu không truyền tham số, mặc định lấy dữ liệu 2 tháng gần nhất
+        if (startDate == null || endDate == null) {
+            Calendar calendar = Calendar.getInstance();
+            endDate = calendar.getTime(); // Ngày hiện tại
+            calendar.add(Calendar.MONTH, -2); // Trừ 2 tháng
+            startDate = calendar.getTime();
         }
 
-        // Trả về danh sách sản phẩm
-        return ResponseEntity.ok(response);
-    }
-
-
-    @GetMapping("/most-purchased-products/by-date")
-    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProductsByDate(
-        @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-        @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-        
-        // Lấy dữ liệu từ repository
+        // Truy xuất dữ liệu từ repository
         List<Object[]> results = orderRepository.findTop5MostPurchasedProductsByDateRange(startDate, endDate);
 
-        // Xử lý kết quả trả về
+        // Chuẩn bị phản hồi trả về
         List<Map<String, Object>> response = new ArrayList<>();
         for (Object[] result : results) {
             Map<String, Object> productInfo = new HashMap<>();

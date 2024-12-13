@@ -27,38 +27,22 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	// Truy vấn để lấy sản phẩm được mua nhiều nhất
 	@Query(value = """
-		    SELECT TOP 5
-		        p.name AS productName,
-		        SUM(od.quantity) AS totalQuantity,
-		        SUM(od.quantity * od.moment_price) AS totalAmount
-		    FROM orders o
-		    JOIN order_details od ON o.id = od.order_id
-		    JOIN product_variants pv ON od.product_variant_id = pv.id
-		    JOIN products p ON pv.product_id = p.id
-		    WHERE o.active = 1 
-		      AND o.created_time >= DATEADD(MONTH, -2, GETDATE()) -- 2 tháng gần nhất
-		    GROUP BY p.name
-		    ORDER BY totalQuantity DESC
-		""", nativeQuery = true)
-		List<Object[]> findTop5MostPurchasedProductsInLast2Months();
+	        SELECT TOP 5
+	            p.name AS productName,
+	            SUM(od.quantity) AS totalQuantity,
+	            SUM(od.quantity * od.moment_price) AS totalAmount
+	        FROM orders o
+	        JOIN order_details od ON o.id = od.order_id
+	        JOIN product_variants pv ON od.product_variant_id = pv.id
+	        JOIN products p ON pv.product_id = p.id
+	        WHERE o.created_time BETWEEN :startDate AND :endDate
+	        GROUP BY p.name
+	        ORDER BY totalQuantity DESC
+	    """, nativeQuery = true)
+	List<Object[]> findTop5MostPurchasedProductsByDateRange(
+	    @Param("startDate") Date startDate,
+	    @Param("endDate") Date endDate);
 
-
-	@Query(value = """
-		    SELECT TOP 5
-		        p.name AS productName,
-		        SUM(od.quantity) AS totalQuantity,
-		        SUM(od.quantity * od.moment_price) AS totalAmount
-		    FROM orders o
-		    JOIN order_details od ON o.id = od.order_id
-		    JOIN product_variants pv ON od.product_variant_id = pv.id
-		    JOIN products p ON pv.product_id = p.id
-		    WHERE o.created_time BETWEEN :startDate AND :endDate
-		    GROUP BY p.name
-		    ORDER BY totalQuantity DESC
-		""", nativeQuery = true)
-		List<Object[]> findTop5MostPurchasedProductsByDateRange(
-		    @Param("startDate") Date startDate,
-		    @Param("endDate") Date endDate);
 
 
 
