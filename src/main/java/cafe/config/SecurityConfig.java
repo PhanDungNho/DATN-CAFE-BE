@@ -44,18 +44,18 @@ public class SecurityConfig {
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		return http.cors().and().csrf(AbstractHttpConfigurer::disable).authorizeHttpRequests(authorize -> authorize
 //	                     POST requests yêu cầu role ADMIN hoặc STAFF
-				.requestMatchers(HttpMethod.POST, "/api/v1/products/**", "/api/v1/account/**", "/api/v1/authorities/**",
-						"/api/v1/categories/**", "/api/v1/orders/**", "/api/v1/sizes/**", "/api/v1/toppings/**")
+				.requestMatchers(HttpMethod.POST, "/api/v1/products/**", "/api/v1/authorities/**",
+						"/api/v1/categories/**",  "/api/v1/sizes/**", "/api/v1/toppings/**")
 				.hasAnyRole("ADMIN", "STAFF","SUPERADMIN")
 				
 				.requestMatchers(HttpMethod.POST,"/api/v1/orders/**")
-				.hasAnyRole("USER")
+				.hasAnyRole("USER","ADMIN","STAFF")
 
 				// PATCH requests chỉ cho phép role ADMIN
-				.requestMatchers(HttpMethod.PATCH, "/api/v1/products/**", "/api/v1/account/**", "/api/v1/orders/**",
-						"/api/v1/categories/**", "/api/v1/sizes/**", "/api/v1/toppings/**")
-				
-				.hasRole("ADMIN").requestMatchers(HttpMethod.POST, "/api/v1/authorities/**").hasRole("SUPERADMIN")
+				.requestMatchers(HttpMethod.PATCH, "/api/v1/products/**", "/api/v1/orders/**",
+						"/api/v1/categories/**", "/api/v1/sizes/**", "/api/v1/toppings/**").hasRole("ADMIN")
+				.requestMatchers(HttpMethod.PATCH, "/api/v1/account/**").hasAnyRole("ADMIN","SUPERADMIN")
+				.requestMatchers(HttpMethod.POST, "/api/v1/authorities/**").hasRole("SUPERADMIN")
 				// DELETE requests chỉ cho phép role ADMIN
 				.requestMatchers(HttpMethod.DELETE, "/api/v1/authorities").hasRole("SUPERADMIN")
 
