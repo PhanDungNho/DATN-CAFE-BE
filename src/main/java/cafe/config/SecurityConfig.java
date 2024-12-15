@@ -60,7 +60,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.DELETE, "/api/v1/authorities").hasRole("SUPERADMIN")
 
 				// Các endpoint yêu cầu xác thực
-				.requestMatchers("/api/profile", "/api/v1/cartDetails/**", "/api/v1/cartDetailToppings/**", "/api/files/logo/**")
+				.requestMatchers("/api/profile", "/api/v1/cartDetails/**", "/api/v1/cartDetailToppings/**")
 				.authenticated()
 
 				// Mặc định cho phép tất cả các request khác
