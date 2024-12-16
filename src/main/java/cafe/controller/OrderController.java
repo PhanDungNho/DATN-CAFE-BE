@@ -38,6 +38,7 @@ import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
 import cafe.enums.OrderStatus;
+import cafe.enums.PaymentStatus;
 import cafe.modal.OrderResponse;
 import cafe.repository.AccountRepository;
 import cafe.repository.OrderRepository;
@@ -142,7 +143,13 @@ public class OrderController {
 		// chỉ quan tâm đến status thôi hà
 		Order entity = new Order();
 		entity.setOrderStatus(dto.getOrderStatus());
+		if(dto.getOrderStatus()==OrderStatus.CANCELLED) {
+			entity.setPaymentStatus(PaymentStatus.REFUND);
+		}
 		entity = orderService.updateStatus(id, entity);
+		if(dto.getOrderStatus()==OrderStatus.CANCELLED) {
+			
+		}
 		dto.setId(entity.getId());
 		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 
