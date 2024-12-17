@@ -42,8 +42,9 @@ public class CartDetail {
 	@Column(name = "quantity")
 	private Integer quantity;
 
-	@Column(columnDefinition = "TEXT")
+	@Column(name = "note", columnDefinition = "nvarchar(max)")
 	private String note;
+
 
 	@JsonIgnore
 	@OneToMany(mappedBy = "cartDetail", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
