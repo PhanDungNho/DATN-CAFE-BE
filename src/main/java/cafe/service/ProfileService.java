@@ -46,7 +46,7 @@ public class ProfileService {
 		}
 
 		// Kiểm tra số điện thoại có trùng hay không
-		if (!account.getPhone().equals(accountDto.getPhone())
+		if (accountDto.getPhone() != null && !accountDto.getPhone().equals(account.getPhone())
 				&& accountRepository.findByPhone(accountDto.getPhone()).isPresent()) {
 			throw new RuntimeException("Phone number already exists.");
 		}
