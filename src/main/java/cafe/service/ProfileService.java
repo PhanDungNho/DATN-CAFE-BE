@@ -10,44 +10,74 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProfileService {
 
-    @Autowired
-    private AccountRepository accountRepository;
+	@Autowired
+	private AccountRepository accountRepository;
+	@Autowired
+	private FileStorageService fileStorageService;
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder; // Tiêm PasswordEncoder
+	public AccountDto getProfile() {
+		// Lấy tên đăng nhập từ người dùng đang đăng nhập
+		String username = getLoggedInUsername();
 
-    public AccountDto getProfile() {
-        // Assume a logged-in user; retrieve profile by a unique identifier like email or ID.
-        Account account = accountRepository.findByEmail("dohieunguyen01@gmail.com") // Replace with real identifier
-            .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+		Account account = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-        // Map Account to AccountDto
-        AccountDto accountDto = new AccountDto();
-        accountDto.setFullName(account.getFullName());
-        accountDto.setEmail(account.getEmail());
-        accountDto.setPhone(account.getPhone());
-        return accountDto;
-    }
+		// Map Account to AccountDto
+		AccountDto accountDto = new AccountDto();
+		accountDto.setFullName(account.getFullName());
+		accountDto.setEmail(account.getEmail());
+		accountDto.setPhone(account.getPhone());
+		return accountDto;
+	}
 
-    public void updateProfile(AccountDto accountDto) {
-        Account account = accountRepository.findByEmail(accountDto.getEmail())
-            .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+	public void updateProfile(AccountDto accountDto, String username) {
+		Account account = accountRepository.findByUsername(username)
+				.orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-        account.setFullName(accountDto.getFullName());
-        account.setPhone(accountDto.getPhone());
-        
-        // Giả sử bạn có logic để xử lý lưu trữ và lấy hình ảnh
-        if (accountDto.getImage() != null && !accountDto.getImage().isEmpty()) {
-            account.setImage(accountDto.getImage());
-        }
+		// Kiểm tra email có trùng hay không
+		if (!account.getEmail().equals(accountDto.getEmail())
+				&& accountRepository.findByEmail(accountDto.getEmail()).isPresent()) {
+			throw new RuntimeException("Email đã tồn tại.");
+		}
 
-        if (accountDto.getPassword() != null && !accountDto.getPassword().isEmpty()) {
-            account.setPassword(accountDto.getPassword());
-        }
-        
+		// Kiểm tra số điện thoại có trùng hay không
+		if (accountDto.getPhone() != null && !accountDto.getPhone().equals(account.getPhone())
+				&& accountRepository.findByPhone(accountDto.getPhone()).isPresent()) {
+			throw new RuntimeException("Phone number already exists.");
+		}
 
-        accountRepository.save(account);
-    }
+		account.setFullName(accountDto.getFullName());
+		account.setPhone(accountDto.getPhone());
+		account.setEmail(accountDto.getEmail());
 
+		String oldImage = account.getImage();
+
+		// Lưu hình ảnh mới nếu có
+		if (accountDto.getImageFile() != null && !accountDto.getImageFile().isEmpty()) {
+			String filename = fileStorageService.storeLogoFile(accountDto.getImageFile());
+			account.setImage(filename); // Lưu tên tệp vào thực thể tài khoản
+
+			// Xóa hình ảnh cũ nếu tồn tại
+			if (oldImage != null) {
+				fileStorageService.deleteFile(oldImage); // Xóa tệp cũ
+			}
+		}
+
+		// Cập nhật mật khẩu nếu có
+		if (accountDto.getPassword() != null && !accountDto.getPassword().isEmpty()) {
+			account.setPassword(passwordEncoder.encode(accountDto.getPassword()));
+		}
+
+		accountRepository.save(account);
+	}
+
+	private String getLoggedInUsername() {
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		if (authentication.getPrincipal() instanceof UserDetails) {
+			return ((UserDetails) authentication.getPrincipal()).getUsername();
+		}
+		return authentication.getPrincipal().toString();
+	}
 }
-

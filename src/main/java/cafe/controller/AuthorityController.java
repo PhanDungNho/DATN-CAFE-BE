@@ -70,6 +70,6 @@ public class AuthorityController {
 	@DeleteMapping("{id}")
 	public  ResponseEntity<?>  delete(@PathVariable("id") Long id) {
 		 authorityService.delete(id);
-		 return new ResponseEntity<>("Access revoked"+id, HttpStatus.OK);
+		 return new ResponseEntity<>("Access revoked"+ id, HttpStatus.OK);
 	}
 }

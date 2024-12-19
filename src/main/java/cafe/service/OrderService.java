@@ -146,6 +146,9 @@ public class OrderService {
 		try {
 			Order existedOrder = existed.get();
 			existedOrder.setOrderStatus(order.getOrderStatus());
+			if (order.getPaymentStatus() != null) {
+				existedOrder.setPaymentStatus(order.getPaymentStatus());
+			}
 
 			return orderRepository.save(existedOrder);
 		} catch (Exception ex) {
@@ -178,17 +181,17 @@ public class OrderService {
 		}
 		orderRepository.delete(existed.get());
 	}
-	 
-	public List<Map<String, Object>> getDailyRevenue(int year, int month) {
-        List<Map<String, Object>> dailyRevenue = orderRepository.getDailyRevenueByMonth(year, month);
-        return dailyRevenue;
-    }
 
-    // Lấy doanh thu theo tháng (theo năm)
-    public List<Map<String, Object>> getMonthlyRevenue(int year) {
-        List<Map<String, Object>> monthlyRevenue = orderRepository.getMonthlyRevenueByYear(year);
-        return monthlyRevenue;
-    }
+	public List<Map<String, Object>> getDailyRevenue(int year, int month) {
+		List<Map<String, Object>> dailyRevenue = orderRepository.getDailyRevenueByMonth(year, month);
+		return dailyRevenue;
+	}
+
+	// Lấy doanh thu theo tháng (theo năm)
+	public List<Map<String, Object>> getMonthlyRevenue(int year) {
+		List<Map<String, Object>> monthlyRevenue = orderRepository.getMonthlyRevenueByYear(year);
+		return monthlyRevenue;
+	}
 
 //    public BigDecimal calculateTotalRevenue(LocalDate startDate, LocalDate endDate) {
 //        return orderRepository.sumTotalRevenue(startDate, endDate);
@@ -197,25 +200,22 @@ public class OrderService {
 //    public long calculateTotalOrders(LocalDate startDate, LocalDate endDate) {
 //        return orderRepository.countOrders(startDate, endDate);
 //    }
-    
-    public BigDecimal getTotalRevenue(LocalDate start, LocalDate end) {
-        // Chuyển LocalDate sang Timestamp
-        Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
-        Timestamp endTimestamp = Timestamp.valueOf(end.atStartOfDay().plusDays(1).minusNanos(1));  // Bao gồm cả ngày
 
-        return orderRepository.sumTotalRevenue(startTimestamp, endTimestamp);
-    }
+	public BigDecimal getTotalRevenue(LocalDate start, LocalDate end) {
+		// Chuyển LocalDate sang Timestamp
+		Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+		Timestamp endTimestamp = Timestamp.valueOf(end.atStartOfDay().plusDays(1).minusNanos(1)); // Bao gồm cả ngày
 
-    public long getOrderCount(LocalDate start, LocalDate end) {
-        // Chuyển LocalDate sang Timestamp
-        Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
-        Timestamp endTimestamp = Timestamp.valueOf(end.atStartOfDay().plusDays(1).minusNanos(1));  // Bao gồm cả ngày
+		return orderRepository.sumTotalRevenue(startTimestamp, endTimestamp);
+	}
 
-        return orderRepository.countOrders(startTimestamp, endTimestamp);
-    }
+	public long getOrderCount(LocalDate start, LocalDate end) {
+		// Chuyển LocalDate sang Timestamp
+		Timestamp startTimestamp = Timestamp.valueOf(start.atStartOfDay());
+		Timestamp endTimestamp = Timestamp.valueOf(end.atStartOfDay().plusDays(1).minusNanos(1)); // Bao gồm cả ngày
+
+		return orderRepository.countOrders(startTimestamp, endTimestamp);
+	}
 }
 
-
-	    // Thêm phương thức tính tổng số tài khoản người dùng
-	    
-
+// Thêm phương thức tính tổng số tài khoản người dùng

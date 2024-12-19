@@ -39,6 +39,7 @@ import cafe.entity.Order;
 import cafe.entity.OrderDetail;
 import cafe.entity.OrderDetailTopping;
 import cafe.enums.OrderStatus;
+import cafe.enums.PaymentStatus;
 import cafe.modal.OrderResponse;
 import cafe.repository.AccountRepository;
 import cafe.repository.OrderRepository;
@@ -143,7 +144,13 @@ public class OrderController {
 		// chỉ quan tâm đến status thôi hà
 		Order entity = new Order();
 		entity.setOrderStatus(dto.getOrderStatus());
+		if(dto.getOrderStatus()==OrderStatus.CANCELLED) {
+			entity.setPaymentStatus(PaymentStatus.REFUND);
+		}
 		entity = orderService.updateStatus(id, entity);
+		if(dto.getOrderStatus()==OrderStatus.CANCELLED) {
+			
+		}
 		dto.setId(entity.getId());
 		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 
@@ -197,22 +204,35 @@ public class OrderController {
         return ResponseEntity.ok(accountCount);
     }
     @GetMapping("/most-purchased-products")
-    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProducts(
-        @RequestParam(value = "startDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
-        @RequestParam(value = "endDate", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
-
-        // Nếu không truyền tham số, mặc định lấy dữ liệu 2 tháng gần nhất
-        if (startDate == null || endDate == null) {
-            Calendar calendar = Calendar.getInstance();
-            endDate = calendar.getTime(); // Ngày hiện tại
-            calendar.add(Calendar.MONTH, -2); // Trừ 2 tháng
-            startDate = calendar.getTime();
-        }
-
-        // Truy xuất dữ liệu từ repository
-        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsByDateRange(startDate, endDate);
+    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProductsInLast2Months() {
+        // Lấy kết quả từ repository với dữ liệu 2 tháng gần nhất
+        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsInLast2Months();
 
         // Chuẩn bị phản hồi trả về
+        List<Map<String, Object>> response = new ArrayList<>();
+        for (Object[] result : results) {
+            Map<String, Object> productInfo = new HashMap<>();
+            productInfo.put("productName", result[0]);       // Tên sản phẩm
+            productInfo.put("totalQuantity", result[1]);     // Tổng số lượng
+            productInfo.put("totalAmount", 
+                ((BigDecimal) result[2]).setScale(2, RoundingMode.HALF_UP)); // Tổng tiền (định dạng 2 chữ số thập phân)
+            response.add(productInfo);
+        }
+
+        // Trả về danh sách sản phẩm
+        return ResponseEntity.ok(response);
+    }
+
+
+    @GetMapping("/most-purchased-products/by-date")
+    public ResponseEntity<List<Map<String, Object>>> getMostPurchasedProductsByDate(
+        @RequestParam("startDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date startDate,
+        @RequestParam("endDate") @DateTimeFormat(pattern = "yyyy-MM-dd") Date endDate) {
+        
+        // Lấy dữ liệu từ repository
+        List<Object[]> results = orderRepository.findTop5MostPurchasedProductsByDateRange(startDate, endDate);
+
+        // Xử lý kết quả trả về
         List<Map<String, Object>> response = new ArrayList<>();
         for (Object[] result : results) {
             Map<String, Object> productInfo = new HashMap<>();

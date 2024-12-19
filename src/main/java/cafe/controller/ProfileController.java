@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/profile")
-@CrossOrigin(origins = "http://localhost:3000") // Change to frontend origin
+@CrossOrigin(origins = "*")
 public class ProfileController {
 
     @Autowired
