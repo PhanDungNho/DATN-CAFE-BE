@@ -62,77 +62,90 @@ public class GoogleOAuthController {
 
 	@PostMapping("/api/v1/login")
 	public JwtResponseDTO AuthenticateAndGetToken(@RequestBody AuthRequestDTO authRequestDTO) {
-		Authentication authentication = authenticationManager.authenticate(
-				new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
+	    Authentication authentication = authenticationManager.authenticate(
+	            new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
 
-		if (authentication.isAuthenticated()) {
-			// Lấy thông tin từ UserDetails
-			UserDetails userDetails = (UserDetails) authentication.getPrincipal(); // Sử dụng UserDetails
-			Set<String> roles = userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority)
-					.collect(Collectors.toSet());
+	    if (authentication.isAuthenticated()) {
+	        // Lấy thông tin từ UserDetails
+	        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-			// Tạo token và trả về cả token, username và roles
-			String token = jwtService.GenerateToken(authRequestDTO.getUsername());
+	        // Kiểm tra trạng thái active
+	        Account account = accountRepository.findByUsername(authRequestDTO.getUsername())
+	                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+	        
+	        if (!account.getActive()) {
+	            throw new RuntimeException("Account is deactivated. Please contact support.");
+	        }
 
-			return JwtResponseDTO.builder().accessToken(token).username(authRequestDTO.getUsername()).roles(roles) // Thêm																			// vào
-																													// response
-					.build();
-		} else {
-			throw new UsernameNotFoundException("Invalid user request..!!");
-		}
+	        Set<String> roles = userDetails.getAuthorities().stream()
+	                .map(GrantedAuthority::getAuthority)
+	                .collect(Collectors.toSet());
+
+	        // Tạo token và trả về response
+	        String token = jwtService.GenerateToken(authRequestDTO.getUsername());
+
+	        return JwtResponseDTO.builder()
+	                .accessToken(token)
+	                .username(authRequestDTO.getUsername())
+	                .roles(roles).image(account.getImage())
+	                .build();
+	    } else {
+	        throw new UsernameNotFoundException("Invalid user request..!!");
+	    }
 	}
+
 
 	@PostMapping("/api/v1/auth/google")
 	public JwtResponseDTO authenticateWithGoogle(@RequestBody Map<String, String> token) {
-		try {
-			// In ra các giá trị của token
-			for (Map.Entry<String, String> entry : token.entrySet()) {
-				System.out.println("Key: " + entry.getKey() + ", Value: " + entry.getValue());
-			}
-			System.out.println(token.get("credential"));
+	    try {
+	        // Giải mã token từ Google
+	        Jwt jwt = jwtDecoder.decode(token.get("credential"));
+	        String email = jwt.getClaimAsString("email");
+	        String picture = jwt.getClaimAsString("picture");
+	        String name = jwt.getClaimAsString("name");
 
-			// Giải mã token từ Google
-			Jwt jwt = jwtDecoder.decode(token.get("credential"));
-			String email = jwt.getClaimAsString("email");
-			String picture = jwt.getClaimAsString("picture");
-			String name = jwt.getClaimAsString("name");
-			System.out.println(email);
-			System.out.println(picture);
-			System.out.println(fileStorageService.storeLogoFileFromUrl(picture));
+	        Optional<Account> accountOptional = accountRepository.findByEmail(email);
+	        Account account;
 
-			Optional<Account> accountOptional = accountRepository.findByEmail(email);
-Account account = new Account();
-			if (accountOptional.isEmpty()) {
-				String[] parts = email.split("@");
-				AccountDto newAccountDto = new AccountDto();
-				newAccountDto.setUsername(parts[0]);
-				newAccountDto.setFullName(name);
-				newAccountDto.setEmail(email);
-				newAccountDto.setPhone("+84");
-				newAccountDto.setAmountPaid(0D);
-				newAccountDto.setEmail(email);
-				String image = fileStorageService.storeLogoFileFromUrl(picture);
-				newAccountDto.setImage(image);
-				account = accountService.insertAccountWithGoogle(newAccountDto);
-			}else {
-				account = 	accountOptional.get();
-			}
+	        if (accountOptional.isEmpty()) {
+	            String[] parts = email.split("@");
+	            AccountDto newAccountDto = new AccountDto();
+	            newAccountDto.setUsername(parts[0]);
+	            newAccountDto.setFullName(name);
+	            newAccountDto.setEmail(email);
+	            newAccountDto.setPhone("+84");
+	            newAccountDto.setAmountPaid(0D);
+	            String image = fileStorageService.storeLogoFileFromUrl(picture);
+	            newAccountDto.setImage(image);
+	            account = accountService.insertAccountWithGoogle(newAccountDto);
+	        } else {
+	            account = accountOptional.get();
 
-			   Set<String> authorities = account.getAuthorities() != null 
-			            ? account.getAuthorities().stream()
-			                .map((au) -> "ROLE_" + au.getRole().getRoleName()).collect(Collectors.toSet())
-			            : Collections.emptySet();
-//			Set<String> authorities = account.getAuthorities().stream()
-//					.map((au) -> "ROLE_" + au.getRole().getRolename()).collect(Collectors.toSet());
+	            // Kiểm tra trạng thái active
+	            if (!account.getActive()) {
+	                throw new RuntimeException("Account is deactivated. Please contact support.");
+	            }
+	        }
 
-			String jwtToken = jwtService.GenerateToken(account.getUsername());
-			return JwtResponseDTO.builder().accessToken(jwtToken).username(account.getUsername())
-					.image(account.getImage()).roles(authorities).build();
+	        Set<String> authorities = account.getAuthorities() != null 
+	                ? account.getAuthorities().stream()
+	                    .map((au) -> "ROLE_" + au.getRole().getRoleName()).collect(Collectors.toSet())
+	                : Collections.emptySet();
 
-		} catch (Exception e) {
-			throw new RuntimeException("Google authentication failed: " + e.getMessage());
-		}
+	        String jwtToken = jwtService.GenerateToken(account.getUsername());
+
+	        return JwtResponseDTO.builder()
+	                .accessToken(jwtToken)
+	                .username(account.getUsername())
+	                .image(account.getImage())
+	                .roles(authorities)
+	                .build();
+
+	    } catch (Exception e) {
+	        throw new RuntimeException("Google authentication failed: " + e.getMessage());
+	    }
 	}
+
 
 	private Account toDetails(String email) {
 		Account account = accountService.findByEmail(email);

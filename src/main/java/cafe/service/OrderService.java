@@ -148,6 +148,7 @@ public class OrderService {
 			existedOrder.setOrderStatus(order.getOrderStatus());
 			if (order.getPaymentStatus() != null) {
 				existedOrder.setPaymentStatus(order.getPaymentStatus());
+				existedOrder.setActive(order.getActive());
 			}
 
 			return orderRepository.save(existedOrder);

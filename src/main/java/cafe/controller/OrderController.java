@@ -145,11 +145,10 @@ public class OrderController {
 		entity.setOrderStatus(dto.getOrderStatus());
 		if(dto.getOrderStatus()==OrderStatus.CANCELLED) {
 			entity.setPaymentStatus(PaymentStatus.REFUND);
+			entity.setActive(false);
 		}
 		entity = orderService.updateStatus(id, entity);
-		if(dto.getOrderStatus()==OrderStatus.CANCELLED) {
-			
-		}
+	 
 		dto.setId(entity.getId());
 		return new ResponseEntity<>(entity, HttpStatus.CREATED);
 

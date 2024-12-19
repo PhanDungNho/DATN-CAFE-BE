@@ -56,7 +56,7 @@ public class SecurityConfig {
 				// PATCH requests chỉ cho phép role ADMIN
 				.requestMatchers(HttpMethod.PATCH, "/api/v1/products/**", "/api/v1/account/**", 
 						"/api/v1/categories/**", "/api/v1/sizes/**", "/api/v1/toppings/**")
-				.hasRole("ADMIN")
+				.hasAnyRole("ADMIN", "SUPERADMIN")
 				.requestMatchers(HttpMethod.POST, "/api/v1/authorities/**").hasRole("SUPERADMIN")
 				// DELETE requests chỉ cho phép role ADMIN
 				.requestMatchers(HttpMethod.DELETE, "/api/v1/authorities").hasRole("SUPERADMIN")
