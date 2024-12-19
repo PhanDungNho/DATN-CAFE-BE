@@ -187,13 +187,13 @@ public class OrderController {
 	}
 	@GetMapping("/orderCount")
     public ResponseEntity<Integer> getOrderCount() {
-        int orderCount = orderRepository.countOrders();
+        int orderCount = orderRepository.countOrdersLastMonth();
         return ResponseEntity.ok(orderCount);
     }
 
     @GetMapping("/revenue")
     public ResponseEntity<Map<String, Object>> getRevenue() {
-        double totalRevenue = orderRepository.calculateTotalRevenue(); // Tính tổng doanh thu cho tất cả đơn hàng
+        double totalRevenue = orderRepository.calculateTotalRevenueLastMonth(); // Tính tổng doanh thu cho tất cả đơn hàng
         Map<String, Object> response = new HashMap<>();
         response.put("total", totalRevenue);
         return ResponseEntity.ok(response);

@@ -18,12 +18,25 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
 
 	List<Order> findByCustomer(Account customer);
 
-	@Query("SELECT SUM(o.totalAmount) FROM Order o WHERE o.active = true")
-	double calculateTotalRevenue();
+	// Tính tổng doanh thu trong tháng trước
+    @Query(value = """
+            SELECT SUM(o.total_amount)
+            FROM orders o
+            WHERE o.active = 1
+              AND YEAR(o.created_time) = YEAR(DATEADD(MONTH, -1, GETDATE()))
+              AND MONTH(o.created_time) = MONTH(DATEADD(MONTH, -1, GETDATE()))
+            """, nativeQuery = true)
+    Double calculateTotalRevenueLastMonth();
 
-	// Truy vấn số lượng đơn hàng
-	@Query("SELECT COUNT(o) FROM Order o WHERE o.active = true")
-	int countOrders();
+    // Đếm tổng số đơn hàng trong tháng trước
+    @Query(value = """
+            SELECT COUNT(*)
+            FROM orders o
+            WHERE o.active = 1
+              AND YEAR(o.created_time) = YEAR(DATEADD(MONTH, -1, GETDATE()))
+              AND MONTH(o.created_time) = MONTH(DATEADD(MONTH, -1, GETDATE()))
+            """, nativeQuery = true)
+    Integer countOrdersLastMonth();
 
 	// Truy vấn để lấy sản phẩm được mua nhiều nhất
 	@Query(value = """
