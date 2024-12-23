@@ -12,6 +12,7 @@ import cafe.enums.OrderStatus;
 import cafe.enums.OrderType;
 import cafe.enums.PaymentMethod;
 import cafe.enums.PaymentStatus;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -55,18 +56,12 @@ public class Order {
 	
 	@Column(name = "payment_status", nullable = true)
 	private PaymentStatus paymentStatus; 
-	
-	@Column(name = "ordering", nullable = true)
-	private Integer ordering; 
  
-	
 	@Column(name = "order_type", nullable = true)
 	private OrderType orderType;
 	
-	
 	@Column(name = "payment_method", nullable = false)
 	private PaymentMethod paymentMethod; 
-	
 	
 	@Column(name = "active", nullable = false)
 	private Boolean active;
@@ -82,11 +77,11 @@ public class Order {
     private Account customer;
 	
     @JsonIgnore
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<OrderDetail> orderDetails; 
     
     @JsonIgnore
-    @OneToMany(mappedBy = "order", fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Transactions> transactions;
 
     @Override
@@ -102,7 +97,7 @@ public class Order {
         return Objects.hash(id); // Chỉ sử dụng id hoặc các thuộc tính cơ bản khác
     }
 	@PrePersist
-	public void prePdersist() {
+	public void prePersist() {
 		createdTime = new Date();
 		active=true;
 	}

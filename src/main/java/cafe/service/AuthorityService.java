@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import cafe.dto.AuthorityDto;
 import cafe.entity.Account;
@@ -21,6 +22,7 @@ import cafe.repository.AuthorityRepository;
 import cafe.repository.CategoryRepository;
 import cafe.repository.ProductRepository;
 import cafe.repository.RoleRepository;
+import jakarta.persistence.EntityNotFoundException;
 
 @Service
 public class AuthorityService {
@@ -59,15 +61,32 @@ public class AuthorityService {
 		return found.get();
 	}
 	
-	// tước quyền
+	@Transactional
 	public void delete(Long id) {
-		Authority existed = findById(id);
-		authorityRepository.delete(existed);
+	    try {
+	        // Tìm kiếm Authority
+	        Authority existed = findById(id);
+	        
+	        if (existed != null) {
+	            // Nếu có mối quan hệ với Account hay Role, hãy giải phóng chúng/kết thúc nó
+	             existed.setAccount(null);
+	             existed.setRole(null);
+
+	            // Xóa Authority
+	            authorityRepository.delete(existed);
+	        }
+	    } catch (EntityNotFoundException e) {
+	        System.out.println("Authority not found: " + e.getMessage());
+	    } catch (Exception e) {
+	        System.out.println("Error while deleting authority: " + e.getMessage());
+	    }
 	}
-	// tìm những quyên liên quan đến admin
 
 	public List<Authority> findAuthorityOfAdministrator() {
 		List<Account> accounts = accountRepository.getAdministrators();
+		for (Account account : accounts) {
+			System.out.println(account.getUsername());
+		}
 		return authorityRepository.authoritiesOf(accounts);
 	}
 

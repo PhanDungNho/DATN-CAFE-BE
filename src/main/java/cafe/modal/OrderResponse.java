@@ -11,6 +11,7 @@ import cafe.entity.Transactions;
 import cafe.enums.OrderStatus;
 import cafe.enums.OrderType;
 import cafe.enums.PaymentMethod;
+import cafe.enums.PaymentStatus;
 import lombok.Data;
 
 @Data
@@ -19,13 +20,14 @@ public class OrderResponse {
 	private Account cashier;
 	private Date createdTime;
 	private BigDecimal totalAmount;
+	private PaymentStatus paymentStatus;
 	private OrderStatus orderStatus;
 	private PaymentMethod paymentMethod;
 	private BigDecimal shippingFee;
 	private String fullAddress;
 	private Account customer;
-	private OrderType ordertype;
-	private List<OrderDetailResponse> orderdetails;
+	private OrderType orderType;
+	private List<OrderDetailResponse> orderDetails;
 	private Boolean active;
 	private List<Transactions> transactions; 
 	
@@ -36,14 +38,15 @@ public class OrderResponse {
 		response.setCreatedTime(entity.getCreatedTime());
 		response.setTotalAmount(entity.getTotalAmount());
 		response.setOrderStatus(entity.getOrderStatus());
+		response.setPaymentStatus(entity.getPaymentStatus());
 		response.setPaymentMethod(entity.getPaymentMethod());
 		response.setShippingFee(entity.getShippingFee());
 		response.setFullAddress(entity.getFullAddress());
 		response.setCustomer(entity.getCustomer());
 		response.setActive(entity.getActive());
-		response.setOrdertype(entity.getOrderType());
+		response.setOrderType(entity.getOrderType());
 		response.setTransactions(entity.getTransactions());
-		response.setOrderdetails(entity.getOrderDetails().stream().map(OrderDetailResponse::convert).toList());
+		response.setOrderDetails(entity.getOrderDetails().stream().map(OrderDetailResponse::convert).toList());
 		return response;
 	}
 }

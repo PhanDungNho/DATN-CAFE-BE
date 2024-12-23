@@ -58,32 +58,14 @@ public class AccountController {
 		if (responseEntity != null) {
 			return responseEntity;
 		}
-		Account account = accountService.insertAccount(accountDto);
+		Account account = accountService.insertAccountAdmin(accountDto);
 		accountDto.setPassword(null);
 		accountDto.setImage(account.getImage());
 		// trả về người dùng responseDto
 		return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
 	}
 
-//	@PostMapping(consumes = { MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_FORM_URLENCODED_VALUE,
-//	        MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
-//	public ResponseEntity<?> createAccount(@Valid @ModelAttribute AccountDto accountDto, BindingResult result) {
-//	    // Xử lý các lỗi validation từ BindingResult
-//	    ResponseEntity<?> responseEntity = mapValidationErrorService.mapValidationField(result);
-//	    if (responseEntity != null) {
-//	        return responseEntity;
-//	    }
-//
-//	    // Lưu tài khoản vào cơ sở dữ liệu
-//	    Account account = accountService.save(accountDto);
-//	    
-//	    // Đặt mật khẩu null trong DTO trước khi trả về để bảo mật
-//	    accountDto.setPassword(null);
-//	    accountDto.setImage(account.getImage());
-//
-//	    // Trả về đối tượng AccountDto đã được lưu
-//	    return new ResponseEntity<>(accountDto, HttpStatus.CREATED);
-//	}
+
 
 	@PatchMapping(value = "/{username}", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_FORM_URLENCODED_VALUE,
@@ -104,13 +86,10 @@ public class AccountController {
 
 	@PatchMapping("/{username}/toggle-active")
 	public ResponseEntity<?> toggleActive(@PathVariable String username) {
-		// Call the service to toggle the account's active status
 		Account updatedAccount = accountService.toggleActive(username);
-		// Check if the account was found
 		if (updatedAccount == null) {
 			return new ResponseEntity<>("Account not found", HttpStatus.NOT_FOUND);
 		}
-		// Create AccountDto to return updated account information
 		AccountDto responseDto = new AccountDto();
 		BeanUtils.copyProperties(updatedAccount, responseDto, "password");
 
@@ -123,24 +102,23 @@ public class AccountController {
 	}
 
 	@GetMapping()
-	public ResponseEntity<?> getAccounts() {
-		List<Account> accounts = accountService.findAll();
-
+	public ResponseEntity<?> getAccounts( @RequestParam("admin") Optional<Boolean> admin) {
+		List<Account> accounts;
+		if(admin.orElse(false)) {
+			accounts = accountService.getAdministrators();
+		}else {
+			accounts = accountService.findAll();	
+		}
+		
 		List<AccountDto> accountDtos = accounts.stream().map(account -> {
 			AccountDto dto = new AccountDto();
 			BeanUtils.copyProperties(account, dto, "password");
-//	        dto.setUsername(account.getUsername());
-//	        dto.setActive(account.getActive());
-//	        dto.setAmountpaid(account.getAmountpaid());
-//	        dto.setEmail(account.getEmail());
-//	        dto.setPassword(account.getPassword());
-//	        dto.setFullname(account.getFullname());
-//	        dto.setPhone(account.getPhone());
-
 			return dto;
 		}).toList();
 		return new ResponseEntity<>(accountDtos, HttpStatus.OK);
 	}
+	
+
 
 	// cái này để phân trang
 	@GetMapping("/page")
@@ -160,19 +138,18 @@ public class AccountController {
 		return new ResponseEntity<>("Product with Id: " + username + " was deleted", HttpStatus.OK);
 	}
 
-	/// phân quyền
-	@GetMapping("/admin")
-	public List<Account> findAll(@RequestParam("admin") Optional<Boolean> admin) {
-		if (admin.orElse(false)) {
-			return accountService.getAdministrators();
-		}
-		return accountService.findAll();
-	}
+
 
 	@GetMapping("/find")
 	public ResponseEntity<?> getAccountByName(@RequestParam("query") String query) {
 		return new ResponseEntity<>(accountService.findAccountByName(query), HttpStatus.OK);
 	}
+	
+	@GetMapping("/findadmin")
+	public ResponseEntity<?> getAccountByNameAdmin(@RequestParam("query") String query) {
+		return new ResponseEntity<>(accountService.findAccountByNameAdmin(query), HttpStatus.OK);
+	}
+	
 	
 	@GetMapping("/image/{filename:.+}")
 	public ResponseEntity<?> downloadFile(@PathVariable String filename, HttpServletRequest request) {

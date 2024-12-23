@@ -1,5 +1,6 @@
 package cafe.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -8,11 +9,14 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import cafe.dto.AccountDto;
 import cafe.entity.Account;
+import cafe.entity.Authority;
+import cafe.entity.Role;
 import cafe.exception.EntityException;
 import cafe.repository.AccountRepository;
 
@@ -22,7 +26,8 @@ public class AccountService {
 	private PasswordEncoder passwordEncoder;
 	@Autowired
 	private AccountRepository accountRepository;
-
+	@Autowired
+	private RoleService roleService;
 	@Autowired
 	private FileStorageService fileStorageService;
 
@@ -44,6 +49,38 @@ public class AccountService {
 		return accountRepository.save(entity);
 	}
 	
+	public Account insertAccountAdmin(AccountDto dto) {
+
+	    List<?> foundedList = accountRepository.findByUsernameContainsIgnoreCase(dto.getUsername());
+	    if (foundedList.size() > 0) {
+	        throw new EntityException("Username is existed");
+	    }
+	    Account entity = new Account();
+	    BeanUtils.copyProperties(dto, entity);
+	    entity.setPassword(passwordEncoder.encode(dto.getPassword()));
+
+	    if (dto.getImageFile() != null) {
+	        String filename = fileStorageService.storeLogoFile(dto.getImageFile());
+	        entity.setImage(filename);
+	        dto.setImage(filename);
+	    }
+	    
+	    Authority auth = new Authority();
+	    Role adminRole = roleService.findById(2L);
+	    auth.setAccount(entity);
+	    auth.setRole(adminRole);
+	    
+	    // Tạo danh sách Authority và thêm auth vào danh sách
+	    List<Authority> authorities = new ArrayList();
+	    authorities.add(auth);
+	    
+	    // Thiết lập danh sách authorities cho account
+	    entity.setAuthorities(authorities);
+
+	    return accountRepository.save(entity);
+	}
+
+	
 	public Account insertAccountWithGoogle(AccountDto dto) {
 		  Account entity = new Account();
 		    String baseUsername = dto.getUsername();
@@ -58,7 +95,19 @@ public class AccountService {
 	    entity.setImage(dto.getImage());
 	    String uuid = UUID.randomUUID().toString().replace("-", "").substring(0,14);
 		entity.setPassword(uuid);
- 
+
+	    Authority auth = new Authority();
+	    Role adminRole = roleService.findById(3L);
+	    auth.setAccount(entity);
+	    auth.setRole(adminRole);
+	    System.out.println("12345678910");
+	    // Tạo danh sách Authority và thêm auth vào danh sách
+	    List<Authority> authorities = new ArrayList();
+	    authorities.add(auth);
+	    
+	    // Thiết lập danh sách authorities cho account
+	    entity.setAuthorities(authorities);
+		
 		return accountRepository.save(entity);
 	}
 
@@ -70,6 +119,18 @@ public class AccountService {
 		BeanUtils.copyProperties(accountDto, account);
 		System.out.println(passwordEncoder.encode(accountDto.getPassword()));
 		account.setEmail(passwordEncoder.encode(accountDto.getPassword()));
+		
+//		 Authority auth = new Authority();
+//		    Role adminRole = roleService.findById(2L);
+//		    auth.setAccount(account);
+//		    auth.setRole(adminRole);
+//		    
+//		    // Tạo danh sách Authority và thêm auth vào danh sách
+//		    List<Authority> authorities = new ArrayList();
+//		    authorities.add(auth);
+//		    
+//		    // Thiết lập danh sách authorities cho account
+//		    account.setAuthorities(authorities);
 
 		return accountRepository.save(account);
 	}
@@ -155,7 +216,12 @@ public class AccountService {
 		List<Account> list = accountRepository.findByUsernameContainsIgnoreCase(name);
 		return list;
 	}
-
+	
+	public List<Account> findAccountByNameAdmin(String name) {
+		List<Account> list = accountRepository.getAdministratorsByUsernameContains(name);
+		return list;
+	}
+	
 	public List<Account> findAccountByPhone(String phone) {
 		List<Account> list = accountRepository.findByPhoneContainsIgnoreCase(phone);
 		return list;
@@ -188,6 +254,63 @@ public class AccountService {
 	public boolean usernameExists(String username) {
         return accountRepository.existsByUsername(username);
     }
+	
+	
+	
+	///
+	
+	
+	public AccountDto getAccountByUsername(String username) {
+        Account account = accountRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản với tên đăng nhập: " + username));
+        return convertToDto(account);
+    }
+
+
+    /**
+     * Cập nhật thông tin tài khoản dựa trên AccountDto và email.
+     *
+     * @param accountDto Thông tin tài khoản mới
+     * @param email      Email của tài khoản cần cập nhật
+     * @throws UsernameNotFoundException nếu không tìm thấy tài khoản với email cung cấp
+     */
+    public void updateProfile(AccountDto accountDto, String email) {
+        Account account = accountRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Không tìm thấy tài khoản với email: " + email));
+
+        // Cập nhật các trường từ AccountDto nếu có giá trị mới
+        if (accountDto.getFullName() != null) {
+            account.setFullName(accountDto.getFullName());
+        }
+        if (accountDto.getPhone() != null) {
+            account.setPhone(accountDto.getPhone());
+        }
+        if (accountDto.getImage() != null) {
+            account.setImage(accountDto.getImage());
+        }
+        if (accountDto.getPassword() != null) {
+            account.setPassword(accountDto.getPassword()); // Nhớ mã hóa mật khẩu trước khi lưu nếu cần
+        }
+
+        // Lưu tài khoản đã cập nhật vào cơ sở dữ liệu
+        accountRepository.save(account);
+    }
+
+    /**
+     * Chuyển đổi Account entity sang AccountDto.
+     *
+     * @param account Đối tượng Account cần chuyển đổi
+     * @return Đối tượng AccountDto
+     */
+    private AccountDto convertToDto(Account account) {
+        AccountDto accountDto = new AccountDto();
+        accountDto.setFullName(account.getFullName());
+        accountDto.setEmail(account.getEmail());
+        accountDto.setPhone(account.getPhone());
+        accountDto.setImage(account.getImage());
+        return accountDto;
+    }
+	
 	
 	
 

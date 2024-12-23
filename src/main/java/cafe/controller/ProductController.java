@@ -46,6 +46,7 @@ import cafe.exception.EntityException;
 import cafe.exception.FileStorageException;
 import cafe.modal.OrderResponse;
 import cafe.modal.ProductResponse;
+import cafe.repository.ProductRepository;
 import cafe.service.FileStorageService;
 import cafe.service.ImageService;
 import cafe.service.MapValidationErrorService;
@@ -61,7 +62,8 @@ public class ProductController {
 
 	@Autowired
 	ProductService productService;
-
+    @Autowired
+    ProductRepository productRepository;
 	@Autowired
 	MapValidationErrorService mapValidationErrorService;
 
@@ -75,74 +77,68 @@ public class ProductController {
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> createProduct(@ModelAttribute ProductDto dto, BindingResult result,
 			@RequestPart List<MultipartFile> imageFiles) {
-//		Product product = productService.insertProduct(dto);
-//		dto.setImageFiles(null);
-//		dto.setImages(product.getImages());
-		
 		ResponseEntity<?> response = mapValidationErrorService.mapValidationField(result);
-	    if (response != null) {
-	        return response;
-	    }
+		if (response != null) {
+			return response;
+		}
 
-	    if (dto.getProductToppings() == null) {
-	        dto.setProductToppings(new ArrayList<>());
-	    }
+		if (dto.getProductToppings() == null) {
+			dto.setProductToppings(new ArrayList<>());
+		}
 
-	    if (dto.getProductVariants() == null) {
-	        dto.setProductVariants(new ArrayList<>());
-	    }
+		if (dto.getProductVariants() == null) {
+			dto.setProductVariants(new ArrayList<>());
+		}
 
-	    try {
-	        Product product = productService.insertProduct(dto);
-	        ProductDto respDto = new ProductDto();
-	        respDto.setSlug(null);
-	        
-	        List<ProductToppingDto> productToppingDto = product.getProductToppings().stream()
-	        		.map(this::convertProductTopingDto)	  
-	        		.collect(Collectors.toList());
-	        respDto.setProductToppings(productToppingDto);
-	        
-	        List<ProductVariantDto> productVariantDto = product.getProductVariants().stream()
-	        		.map(this::convertProductVariantDto)
-	        		.collect(Collectors.toList());
-	        respDto.setProductVariants(productVariantDto);
-	        
-	        BeanUtils.copyProperties(product, respDto);
+		try {
+			Product product = productService.insertProduct(dto);
+			ProductDto respDto = new ProductDto();
+			respDto.setSlug(null);
 
-	        return new ResponseEntity<>(respDto, HttpStatus.CREATED);
-	    } catch (EntityException e) {
-	        return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
-	    }
+			List<ProductToppingDto> productToppingDto = product.getProductToppings().stream()
+					.map(this::convertProductTopingDto).collect(Collectors.toList());
+			respDto.setProductToppings(productToppingDto);
+
+			List<ProductVariantDto> productVariantDto = product.getProductVariants().stream()
+					.map(this::convertProductVariantDto).collect(Collectors.toList());
+			respDto.setProductVariants(productVariantDto);
+
+			BeanUtils.copyProperties(product, respDto);
+
+			return new ResponseEntity<>(respDto, HttpStatus.CREATED);
+		} catch (EntityException e) {
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+		}
 	}
-	
+
 	private ProductToppingDto convertProductTopingDto(ProductToppings productTopping) {
-	    if (productTopping == null) {
-	        return null; // Hoặc có thể ném một exception tùy theo yêu cầu
-	    }
+		if (productTopping == null) {
+			return null; // Hoặc có thể ném một exception tùy theo yêu cầu
+		}
 
-	    ProductToppingDto dto = new ProductToppingDto();
-	    dto.setId(productTopping.getId());
-	    dto.setProductId(productTopping.getProduct().getId());
-	    dto.setToppingId(productTopping.getTopping().getId());
+		ProductToppingDto dto = new ProductToppingDto();
+		dto.setId(productTopping.getId());
+		dto.setProductId(productTopping.getProduct().getId());
+		dto.setToppingId(productTopping.getTopping().getId());
 
-	    return dto;
+		return dto;
 	}
-	
+
 	private ProductVariantDto convertProductVariantDto(ProductVariant productVariant) {
-	    if (productVariant == null) {
-	        return null; // Hoặc ném một exception tùy theo yêu cầu
-	    }
+		if (productVariant == null) {
+			return null; // Hoặc ném một exception tùy theo yêu cầu
+		}
 
-	    ProductVariantDto dto = new ProductVariantDto();
-	    dto.setId(productVariant.getId());
-	    dto.setActive(productVariant.getActive());
-	    dto.setProductId(productVariant.getProduct().getId());
-	    dto.setSizeId(productVariant.getSize().getId());
-	    dto.setPrice(productVariant.getPrice());
-	   
-	    return dto;
+		ProductVariantDto dto = new ProductVariantDto();
+		dto.setId(productVariant.getId());
+		dto.setActive(productVariant.getActive());
+		dto.setProductId(productVariant.getProduct().getId());
+		dto.setSizeId(productVariant.getSize().getId());
+		dto.setPrice(productVariant.getPrice());
+
+		return dto;
 	}
-	
+
 	@PatchMapping(value = "/{id}", consumes = { MediaType.APPLICATION_JSON_VALUE,
 			MediaType.APPLICATION_FORM_URLENCODED_VALUE,
 			MediaType.MULTIPART_FORM_DATA_VALUE }, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -186,14 +182,17 @@ public class ProductController {
 			ProductDto dto = new ProductDto();
 			dto.setId(product.getId());
 			dto.setName(product.getName());
+			dto.setSlug(product.getSlug());
 			dto.setActive(product.getActive());
 			dto.setDescription(product.getDescription());
+			dto.setOrdering(product.getOrdering());
 
 			// Ánh xạ danh mục (category) nếu tồn tại
 			if (product.getCategory() != null) {
 				CategoryDto categoryDto = new CategoryDto();
 				categoryDto.setId(product.getCategory().getId());
 				categoryDto.setName(product.getCategory().getName());
+				categoryDto.setActive(product.getCategory().getActive());
 				dto.setCategory(categoryDto);
 			}
 
@@ -202,6 +201,8 @@ public class ProductController {
 				ProductVariantDto variantDto = new ProductVariantDto();
 				variantDto.setId(variant.getId());
 				variantDto.setActive(variant.getActive());
+				variantDto.setProductId(variant.getProduct().getId());
+				variantDto.setSizeId(variant.getSize().getId());
 
 				// Ánh xạ thông tin ProductDto vào ProductVariantDto
 				ProductDto productDto = new ProductDto();
@@ -222,6 +223,24 @@ public class ProductController {
 				return variantDto;
 			}).toList();
 
+			List<ProductToppingDto> productToppingDtos = product.getProductToppings().stream().map(productTopping -> {
+				ProductToppingDto productToppingDto = new ProductToppingDto();
+				productToppingDto.setId(productTopping.getId());
+				productToppingDto.setProductId(productTopping.getProduct().getId());
+				productToppingDto.setToppingId(productTopping.getTopping().getId());
+
+				ToppingDto toppingDto = new ToppingDto();
+				toppingDto.setId(productTopping.getTopping().getId());
+				toppingDto.setName(productTopping.getTopping().getName());
+				toppingDto.setPrice(productTopping.getTopping().getPrice());
+				toppingDto.setActive(productTopping.getTopping().getActive());
+				toppingDto.setImage(productTopping.getTopping().getImage());
+
+				productToppingDto.setTopping(toppingDto);
+
+				return productToppingDto;
+			}).toList();
+
 			List<Image> imageDtos = product.getImages().stream().map(images -> {
 				Image imageDto = new Image();
 				imageDto.setId(images.getId());
@@ -235,10 +254,11 @@ public class ProductController {
 
 			dto.setProductVariants(variantDtos);
 			dto.setImages(imageDtos);
+			dto.setProductToppings(productToppingDtos);
 
 			return dto;
-		}).sorted(Comparator.comparing(ProductDto::getId).reversed()).toList();
-
+		}).sorted(Comparator.comparing(ProductDto::getOrdering)).toList();
+		
 		return new ResponseEntity<>(productDtos, HttpStatus.OK);
 	}
 
@@ -254,6 +274,21 @@ public class ProductController {
 		return productService.findById(id).map(product -> ResponseEntity.ok(ProductResponse.convert(product)))
 				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductResponse()));
 	}
+	
+	@GetMapping("/{slug}/getBySlug")
+	public ResponseEntity<?> getProductBySlug(@PathVariable("slug") String slug) {
+		return productService.findBySlug(slug).map(product -> ResponseEntity.ok(ProductResponse.convert(product)))
+				.orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(new ProductResponse()));
+	}
+
+	@PatchMapping("/update-ordering")
+	public ResponseEntity<?> updateOrdering(@RequestBody List<ProductDto> products) {
+		for (ProductDto productDto : products) {
+			System.out.println(productDto.getId());
+		}
+        productService.updateOrdering(products);
+        return new ResponseEntity<>(products, HttpStatus.OK);
+    }
 
 	@GetMapping("/find")
 	public ResponseEntity<?> getProductByName(@RequestParam("query") String query) {
@@ -282,7 +317,6 @@ public class ProductController {
 	public ResponseEntity<?> deleteImageByFilename(@PathVariable String filename) {
 		imageService.deleteImageByFilename(filename);
 		fileStorageService.deleteLogoFile(filename);
-
 		return new ResponseEntity<>("removed", HttpStatus.OK);
 	}
 
@@ -302,5 +336,25 @@ public class ProductController {
 		System.out.println(dto.getUrl());
 		return new ResponseEntity<>(dto, HttpStatus.CREATED);
 	}
+	@GetMapping("/productCount")
+    public ResponseEntity<Long> getProductCount() {
+        long productCount = productRepository.count(); // Lấy tổng số sản phẩm
+        return ResponseEntity.ok(productCount); // Trả về tổng số sản phẩm
+    }
+	@GetMapping("/search")
+	public ResponseEntity<?> searchProductsByName(@RequestParam("name") String query) {
+	    List<Product> products = productService.findProductsByName(query);
+	    List<ProductDto> productDtos = products.stream().map(product -> {
+	        ProductDto dto = new ProductDto();
+	        BeanUtils.copyProperties(product, dto);
+	        return dto;
+	    }).toList();
 
+	    return new ResponseEntity<>(productDtos, HttpStatus.OK);
+	}
+	 @GetMapping("/top-selling")
+	    public ResponseEntity<List<ProductDto>> getTopSellingProducts() {
+	        List<ProductDto> topSellingProducts = productService.getTopSellingProducts();
+	        return ResponseEntity.ok(topSellingProducts);
+	    }
 }

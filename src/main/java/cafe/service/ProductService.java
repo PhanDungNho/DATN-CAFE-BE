@@ -3,6 +3,7 @@ package cafe.service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.hibernate.annotations.NaturalId;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import cafe.dto.ProductDto;
+import cafe.dto.ProductToppingDto;
+import cafe.dto.ProductVariantDto;
 import cafe.dto.UploadedFileInfo;
 import cafe.entity.Category;
 import cafe.entity.Image;
@@ -25,11 +28,13 @@ import cafe.entity.Topping;
 import cafe.exception.EntityException;
 import cafe.repository.CategoryRepository;
 import cafe.repository.ImageRepository;
+import cafe.repository.OrderDetailRepository;
 import cafe.repository.ProductRepository;
 import cafe.repository.ProductToppingRepository;
 import cafe.repository.ProductVariantRepository;
 import cafe.repository.SizeRepository;
 import cafe.repository.ToppingRepository;
+import jakarta.transaction.Transactional;
 
 @Service
 public class ProductService {
@@ -41,19 +46,19 @@ public class ProductService {
 
 	@Autowired
 	private FileStorageService fileStorageService;
-	
+
 	@Autowired
 	private ImageRepository imageRepository;
-	
+
 	@Autowired
 	private ToppingRepository toppingRepository;
-	
+
 	@Autowired
 	private SizeRepository sizeRepository;
-	
+
 	@Autowired
 	private ProductToppingRepository productToppingRepository;
-	
+
 	@Autowired
 	private ProductVariantRepository productVariantRepository;
 
@@ -74,77 +79,80 @@ public class ProductService {
 //	}
 
 	public Product insertProduct(ProductDto dto) {
-	    Product product = new Product();
-	    BeanUtils.copyProperties(dto, product);
+		
+		if (productRepository.existsByName(dto.getName())) {
+			throw new EntityException("Product already exists");
+		}
+		
+		Product product = new Product();
+		BeanUtils.copyProperties(dto, product);
 
-	    // Validate category ID
-	    if (dto.getCategoryId() == null) {
-	        throw new EntityException("Category ID must not be null");
-	    }
-	    
-	    // Find category once
-	    Category cate = categoryRepository.findById(dto.getCategoryId())
-	            .orElseThrow(() -> new EntityException("Category not found"));
-	    product.setCategory(cate);
+		// Validate category ID
+		if (dto.getCategoryId() == null) {
+			throw new EntityException("Category ID must not be null");
+		}
 
-	    // Handle images
-	    if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
-	        List<Image> images = dto.getImageFiles().stream().map(file -> {
-	            String filename = fileStorageService.storeLogoFile(file);
-	            Image image = new Image();
-	            image.setFileName(filename);
-	            image.setUrl(filename);
-	            image.setName(file.getName());
-	            image.setProduct(product);
-	            return image;
-	        }).collect(Collectors.toList());
-	        product.setImages(images);
-	    }
+		// Find category once
+		Category cate = categoryRepository.findById(dto.getCategoryId())
+				.orElseThrow(() -> new EntityException("Category not found"));
+		product.setCategory(cate);
 
-	    // Save product first
-	    Product savedProduct = productRepository.save(product);
+		// Handle images
+		if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
+			List<Image> images = dto.getImageFiles().stream().map(file -> {
+				String filename = fileStorageService.storeLogoFile(file);
+				Image image = new Image();
+				image.setFileName(filename);
+				image.setUrl(filename);
+				image.setName(file.getName());
+				image.setProduct(product);
+				return image;
+			}).collect(Collectors.toList());
+			product.setImages(images);
+		}
 
-	    // Handle product toppings
-	    List<ProductToppings> productToppings = dto.getProductToppings().stream().map(productToppingDto -> {
-	        if (productToppingDto.getToppingId() == null) {
-	            throw new EntityException("Topping ID must not be null");
-	        }
-	        ProductToppings productTopping = new ProductToppings();
-	        BeanUtils.copyProperties(productToppingDto, productTopping);
+		// Save product first
+		Product savedProduct = productRepository.save(product);
 
-	        productTopping.setProduct(savedProduct); // Use the saved product
+		// Handle product toppings
+		List<ProductToppings> productToppings = dto.getProductToppings().stream().map(productToppingDto -> {
+			if (productToppingDto.getToppingId() == null) {
+				throw new EntityException("Topping ID must not be null");
+			}
+			ProductToppings productTopping = new ProductToppings();
+			BeanUtils.copyProperties(productToppingDto, productTopping);
 
-	        Topping topping = toppingRepository.findById(productToppingDto.getToppingId())
-	                .orElseThrow(() -> new EntityException("Topping not found"));
-	        productTopping.setTopping(topping);
+			productTopping.setProduct(savedProduct); // Use the saved product
 
-	        return productTopping;
-	    }).collect(Collectors.toList());
-	    savedProduct.setProductToppings(productToppings);
-	    productToppingRepository.saveAll(productToppings);
+			Topping topping = toppingRepository.findById(productToppingDto.getToppingId())
+					.orElseThrow(() -> new EntityException("Topping not found"));
+			productTopping.setTopping(topping);
 
-	    // Handle product variants
-	    List<ProductVariant> productVariants = dto.getProductVariants().stream().map(productVariantDto -> {
-	        if (productVariantDto.getSizeId() == null) {
-	            throw new EntityException("Size ID must not be null");
-	        }
-	        ProductVariant productVariant = new ProductVariant();
-	        BeanUtils.copyProperties(productVariantDto, productVariant);
+			return productTopping;
+		}).collect(Collectors.toList());
+		savedProduct.setProductToppings(productToppings);
+		productToppingRepository.saveAll(productToppings);
 
-	        productVariant.setProduct(savedProduct); // Use the saved product
-	        Size size = sizeRepository.findById(productVariantDto.getSizeId())
-	                .orElseThrow(() -> new EntityException("Size not found"));
-	        productVariant.setSize(size);
+		// Handle product variants
+		List<ProductVariant> productVariants = dto.getProductVariants().stream().map(productVariantDto -> {
+			if (productVariantDto.getSizeId() == null) {
+				throw new EntityException("Size ID must not be null");
+			}
+			ProductVariant productVariant = new ProductVariant();
+			BeanUtils.copyProperties(productVariantDto, productVariant);
 
-	        return productVariant;
-	    }).collect(Collectors.toList());
-	    savedProduct.setProductVariants(productVariants);
-	    productVariantRepository.saveAll(productVariants);
+			productVariant.setProduct(savedProduct); // Use the saved product
+			Size size = sizeRepository.findById(productVariantDto.getSizeId())
+					.orElseThrow(() -> new EntityException("Size not found"));
+			productVariant.setSize(size);
 
-	    return savedProduct; // Return the saved product
+			return productVariant;
+		}).collect(Collectors.toList());
+		savedProduct.setProductVariants(productVariants);
+		productVariantRepository.saveAll(productVariants);
+
+		return savedProduct; // Return the saved product
 	}
-
-
 
 //	public Product update(Long id, ProductDto dto) {
 //		Optional<Product> existed = productRepository.findById(id);
@@ -169,23 +177,26 @@ public class ProductService {
 //
 //		return productRepository.save(existedProduct);
 //	}
-	
+
+	@Transactional
 	public Product updateProduct(Long id, ProductDto dto) {
-	    // Tìm sản phẩm theo ID
-	    Product product = productRepository.findById(id)
-	            .orElseThrow(() -> new EntityException("Product not found"));
+		// Tìm sản phẩm theo ID
+		Product product = productRepository.findById(id).orElseThrow(() -> new EntityException("Product not found"));
 
-	    product.setName(dto.getName());
-	    product.setDescription(dto.getDescription());
-	    product.setActive(dto.getActive());
+		// Cập nhật thông tin cơ bản của sản phẩm
+		product.setName(dto.getName());
+		product.setDescription(dto.getDescription());
+		product.setActive(dto.getActive());
 
-	    if (dto.getCategoryId() != null) {
-	        Category cate = categoryRepository.findById(dto.getCategoryId())
-	                .orElseThrow(() -> new EntityException("Category not found"));
-	        product.setCategory(cate);
-	    }
+		// Cập nhật danh mục nếu có
+		if (dto.getCategoryId() != null) {
+			Category cate = categoryRepository.findById(dto.getCategoryId())
+					.orElseThrow(() -> new EntityException("Category not found"));
+			product.setCategory(cate);
+		}
 
-	    if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
+		// Cập nhật hình ảnh
+		if (dto.getImageFiles() != null && !dto.getImageFiles().isEmpty()) {
 			List<Image> images = dto.getImageFiles().stream().map(file -> {
 				String filename = fileStorageService.storeLogoFile(file);
 				Image image = new Image();
@@ -198,10 +209,79 @@ public class ProductService {
 			product.setImages(images);
 		}
 
-	    // Lưu sản phẩm và các hình ảnh mới vào cơ sở dữ liệu
-	    return productRepository.save(product);
-	}
+		// Cập nhật hoặc thêm mới các biến thể sản phẩm
+		if (dto.getProductVariants() != null) {
+			List<ProductVariant> updatedVariants = new ArrayList<>();
+			for (ProductVariantDto variantDto : dto.getProductVariants()) {
 
+				ProductVariant variant;
+
+				// Kiểm tra xem biến thể có ID hay không (0 nghĩa là thêm mới)
+				if (variantDto.getId() == 0) {
+					// Tạo mới productVariant nếu ID bằng 0
+					variant = new ProductVariant();
+					variant.setProduct(product); // Liên kết với sản phẩm hiện tại
+				} else {
+					// Cập nhật biến thể hiện có
+					variant = productVariantRepository.findById(variantDto.getId())
+							.orElseThrow(() -> new EntityException("ProductVariant not found"));
+				}
+
+				// Cập nhật các thuộc tính cho productVariant
+				variant.setActive(variantDto.getActive());
+				variant.setPrice(variantDto.getPrice());
+
+				// Cập nhật size nếu có
+				if (variantDto.getSizeId() != null) {
+					Size size = sizeRepository.findById(variantDto.getSizeId())
+							.orElseThrow(() -> new EntityException("Size not found"));
+					variant.setSize(size);
+				}
+
+				updatedVariants.add(variant);
+			}
+
+			// Cập nhật lại danh sách productVariant cho sản phẩm
+			product.setProductVariants(updatedVariants);
+		}
+
+		// Cập nhật topping nếu có
+		if (dto.getProductToppings() != null
+				&& dto.getProductToppings().stream().anyMatch(toppingDto -> toppingDto.getToppingId() != null)) {
+			// Xóa tất cả topping hiện tại cho sản phẩm
+			productToppingRepository.deleteByProductId(product.getId());
+
+			List<ProductToppings> updatedToppings = new ArrayList<>();
+
+			for (ProductToppingDto productToppingDto : dto.getProductToppings()) {
+				// Kiểm tra toppingId không null
+				if (productToppingDto.getToppingId() == null) {
+					throw new EntityException("Topping ID must not be null");
+				}
+
+				ProductToppings productTopping = new ProductToppings();
+				BeanUtils.copyProperties(productToppingDto, productTopping);
+
+				Topping topping = toppingRepository.findById(productToppingDto.getToppingId())
+						.orElseThrow(() -> new EntityException("Topping not found"));
+
+				productTopping.setTopping(topping);
+				productTopping.setProduct(product);
+
+				updatedToppings.add(productTopping); // Thêm topping mới vào danh sách
+			}
+
+			// Cập nhật danh sách topping cho sản phẩm
+			product.setProductToppings(updatedToppings);
+			productToppingRepository.saveAll(updatedToppings); // Lưu tất cả topping đã cập nhật
+		} else {
+			// Nếu không có topping nào, bạn có thể thiết lập danh sách topping rỗng
+			productToppingRepository.deleteByProductId(product.getId());
+			product.setProductToppings(new ArrayList<>());
+		}
+
+		return productRepository.save(product);
+	}
 
 	// để bật tắt active
 	public Product toggleActive(Long id) {
@@ -231,18 +311,72 @@ public class ProductService {
 //		
 //		return found.get();
 //	}
-	
-	public Optional<Product> findById(Long id){
+
+	public Optional<Product> findById(Long id) {
 		return productRepository.findById(id);
+	}
+	
+	public Optional<Product> findBySlug(String slug) {
+		return productRepository.findBySlug(slug);
 	}
 
 //	public void deleteById(Long id) {
 //		Product existed = findById(id);
 //		productRepository.delete(existed);
 //	}
-	
-	public List<Product> findProductByName(String name){
+
+	public List<Product> findProductByName(String name) {
 		List<Product> list = productRepository.findByNameContainsIgnoreCase(name);
 		return list;
 	}
+	public List<Product> findProductsByName(String name) {
+	    return productRepository.findByNameContainsIgnoreCase(name);}
+	
+	@Transactional
+	public List<Product> updateOrdering(List<ProductDto> productDtos) {
+	    List<Product> products = productDtos.stream().map(dto -> {
+	        Product product = productRepository.findById(dto.getId())
+	            .orElseThrow(() -> new EntityException("Product with id " + dto.getId() + " does not exist"));
+	        
+	        product.setOrdering(dto.getOrdering());
+	        
+	        return product;
+	    }).collect(Collectors.toList());
+
+	    return productRepository.saveAll(products); 
+	}
+	 @Autowired
+	    private OrderDetailRepository orderDetailRepository;
+
+	 public List<ProductDto> getTopSellingProducts() {
+	        List<Object[]> results = orderDetailRepository.findTopSellingProducts();
+
+	        return results.stream()
+	            .limit(10)
+	            .map(result -> {
+	                Long productId = (Long) result[0];
+	                Long totalSales = (Long) result[1];
+
+	                Product product = productRepository.findById(productId).orElse(null);
+	                if (product != null) {
+	                    ProductDto productDto = new ProductDto();
+	                    productDto.setId(product.getId());
+	                    productDto.setName(product.getName());
+	                    productDto.setActive(product.getActive());
+	                    productDto.setDescription(product.getDescription());
+	                    productDto.setSlug(product.getSlug());
+	                    productDto.setCategoryId(product.getCategory().getId());
+	                    productDto.setTotalSales(totalSales);
+	                    // Lấy hình ảnh của sản phẩm
+	                    List<Image> images = imageRepository.findByProductId(product.getId());
+	                    productDto.setImages(images);  // Gán danh sách hình ảnh cho sản phẩm
+	                    // Map thêm các trường khác nếu cần
+	                    return productDto;
+	                }
+	                return null;
+	            })
+	            .filter(productDto -> productDto != null)
+	            .collect(Collectors.toList());
+	    }
+
 }
